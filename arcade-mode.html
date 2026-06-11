@@ -946,7 +946,7 @@
             sortedData.slice(0, 6).forEach((entry, idx) => {
                 let entryEl = document.createElement('div');
                 entryEl.className = `leaderboard-entry ${idx === 0 ? 'top-spot' : ''}`;
-                let flag = idx === 0 ? '<span style="margin-right: 6px;">🚩</span>' : '';
+let flag = idx === 0 ? '<span style="margin-right: 6px;"><img src="https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-25.png" width="20" height="20"></span>' : '';
 
                 entryEl.innerHTML = `
                     <span>${flag}${idx + 1}. ${entry.name}</span>
