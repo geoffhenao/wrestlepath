@@ -1,33 +1,164 @@
 <!DOCTYPE html>
-<html>
-    <head>
-  <style>
-    body {
-      font-family: 'monospace', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    h1 {
-      font-family: monospace, serif;
-    }
-  </style>
-        <title>
-            Arcade Game with No Name!
-        </title>
-    </head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8YCZ6PXJ3B"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YCZ6PXJ3B"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7VTBFP1ZC2');
+    </script>
 
-  gtag('config', 'G-7VTBFP1ZC2');
-</script>
-    <body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEOFFAMANIA - Select Mode</title>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-        <h1>Hello People of the Internet!</h1>
-        <p>This is the home page for two new games I just created (with framework/most coding help from AI. I'm going to hell. </p>
+        :root {
+            --blue-jeopardy: #222;
+            --yellow-jeopardy: #336699;
+            --panel-bg: #111;
+            --text-gold: #ff0000;
+            --neon-glow: rgba(85, 153, 255, 0.5);
+        }
 
-        <p><a href="https://geoffhenao.github.io/arcade/arcade-mode.html">Arcade Mode</a> - This is an Arcade Mode game where you make combinations of RGBY to get points.</p>
-<p><a href="https://geoffhenao.github.io/arcade/mission-mode.html">Mission Mode</a> - Similar to Arcade Mode, this has specific combinations that need to be made in order to complete the level. I'll work on adding more levels later.</p>
-    </body>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: monospace !important;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* Creates a subtle radial gradient in the background to focus the center */
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 80%);
+        }
+
+        /* Logo and Header Styling */
+        .header-container {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: floatLogo 4s ease-in-out infinite;
+        }
+
+        .header-container img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            filter: drop-shadow(0 0 15px var(--neon-glow));
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Menu Container */
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        /* Mode Selection Buttons */
+        .mode-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--panel-bg);
+            border: 4px solid var(--yellow-jeopardy);
+            color: #fff;
+            padding: 25px 20px;
+            font-family: monospace;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .mode-desc {
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+        }
+
+        /* Hover Effects */
+        .mode-btn:hover {
+            background-color: #336699;
+            border-color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--neon-glow), inset 0 0 15px rgba(255,255,255,0.2);
+        }
+
+        .mode-btn:hover .mode-title {
+            color: #fff;
+            text-shadow: 0 0 8px #fff;
+        }
+
+        .mode-btn:hover .mode-desc {
+            color: #e0e0e0;
+        }
+
+        /* Decorative Scanline Effect for the Retro Arcade feel */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <img src="https://geoffhenao.github.io/geoffamania/geoffamania-logo-x.GIF" alt="Geoffamania">
+    </div>
+
+    <div class="menu-container">
+        
+        <a href="arcade-mode.html" class="mode-btn">
+            <span class="mode-title">ARCADE MODE</span>
+            <span class="mode-desc">Survive as long as possible and build massive chains to climb the endless Global Leaderboard!</span>
+        </a>
+
+        <a href="mission-mode.html" class="mode-btn">
+            <span class="mode-title">MISSION MODE</span>
+            <span class="mode-desc">Book specific sequences to clear levels. Complete objectives quickly to dominate the ranks!</span>
+        </a>
+
+    </div>
+
+</body>
 </html>
