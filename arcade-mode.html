@@ -358,19 +358,6 @@
         }
 
         /* --- NEW: CHAIN CONNECTORS AND BADGES --- */
-        .chain-connector {
-            position: absolute;
-            z-index: 1; /* Sits beneath the glyph icon */
-            border: 2px solid #111; /* Matches the dark outline of the completed box */
-            box-shadow: 0 0 5px #000;
-            pointer-events: none;
-        }
-        
-        /* Calculates 100% of the cell width + the 6px gap to reach center-to-center */
-        .connect-right { top: 50%; left: 50%; width: calc(100% + 6px); height: 14px; transform: translateY(-50%); }
-        .connect-left  { top: 50%; right: 50%; width: calc(100% + 6px); height: 14px; transform: translateY(-50%); }
-        .connect-down  { left: 50%; top: 50%; height: calc(100% + 6px); width: 14px; transform: translateX(-50%); }
-        .connect-up    { left: 50%; bottom: 50%; height: calc(100% + 6px); width: 14px; transform: translateX(-50%); }
 
         .combo-badge {
             position: absolute;
@@ -870,21 +857,6 @@
                             badge.innerText = '' + currentComboId;
                             badge.style.setProperty('--match-color', cellData.variantData.color);
                             cellEl.appendChild(badge);
-
-                            // Spawn the Connector Line across the grid gap to the next tile
-                            if (i < successChainRef.length - 1) {
-                                let next = successChainRef[i+1];
-                                let connector = document.createElement('div');
-                                connector.className = 'chain-connector';
-                                connector.style.backgroundColor = cellData.variantData.color;
-
-                                if (next.c === coord.c + 1) connector.classList.add('connect-right');
-                                else if (next.c === coord.c - 1) connector.classList.add('connect-left');
-                                else if (next.r === coord.r + 1) connector.classList.add('connect-down');
-                                else if (next.r === coord.r - 1) connector.classList.add('connect-up');
-                                
-                                cellEl.appendChild(connector);
-                            }
                         }
                     }, 1200); 
                 });
