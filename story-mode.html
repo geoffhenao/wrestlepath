@@ -591,8 +591,8 @@
                 { symbol: 'Y', type: 'BRAWLER', name: 'YELLOW GOLD B', img: 'images/yellow_brand_2.png', color: '#f1c40f', glowFade: 'rgba(241, 196, 15, 0.6)' }
             ],
             SPECIAL: [
-                { symbol: 'S', type: 'MANAGER', name: 'WILD CARD A',   img: 'images/special_brand_1.png', color: '#ffffff', glowFade: 'rgba(255, 255, 255, 0.6)' },
-                { symbol: 'S', type: 'MANAGER', name: 'WILD CARD B',   img: 'images/special_brand_2.png', color: '#ffffff', glowFade: 'rgba(255, 255, 255, 0.6)' }
+                { symbol: 'W', type: 'MANAGER', name: 'WILD CARD A',   img: 'images/special_brand_1.png', color: '#ffffff', glowFade: 'rgba(255, 255, 255, 0.6)' },
+                { symbol: 'W', type: 'MANAGER', name: 'WILD CARD B',   img: 'images/special_brand_2.png', color: '#ffffff', glowFade: 'rgba(255, 255, 255, 0.6)' }
             ]
         };
 
@@ -605,7 +605,8 @@
                 sequences: [
                     { target: ["R", "G", "Y"], completed: false },
                     { target: ["B", "R", "G"], completed: false },
-                    { target: ["R", "B", "G", "Y"], completed: false },
+                    { target: ["G", "Y", "R"], completed: false },
+                    { target: ["R", "B", "G", "Y"], completed: false }
                 ]
             },
             {
@@ -613,11 +614,38 @@
                 name: "LEVEL 2",
                 sequences: [
                     { target: ["B", "B", "Y"], completed: false },
-                    { target: ["G", "R", "Y", "B"], completed: false },
+                    { target: ["B", "R", "G"], completed: false },
                     { target: ["Y", "G", "R"], completed: false },
-                    { target: ["S", "R", "Y", "G"], completed: false },
+                    { target: ["G", "R", "Y", "B"], completed: false },
+                    { target: ["W", "R", "Y", "G"], completed: false },
+                    { target: ["R", "W", "B", "B"], completed: false }
                 ]
-            }
+            },
+
+            {
+                level: 3,
+                name: "LEVEL 3",
+                sequences: [
+                    { target: ["B", "G", "R"], completed: false },
+                    { target: ["W", "G", "Y"], completed: false },
+                    { target: ["W", "G", "Y"], completed: false },
+                    { target: ["R", "B", "G", "Y"], completed: false },
+                    { target: ["Y", "G", "Y", "G"], completed: false },
+                    { target: ["Y", "G", "Y", "G"], completed: false }
+                ]
+            },
+
+            {
+                level: 4,
+                name: "LEVEL 4",
+                sequences: [
+                    { target: ["R", "G", "Y"], completed: false },
+                    { target: ["W", "W", "G"], completed: false },
+                    { target: ["B", "R", "G"], completed: false },
+                    { target: ["Y", "R", "G", "B"], completed: false },
+                    { target: ["R", "B", "G", "Y"], completed: false }
+                ]
+            },
         ];
 
         const API_URL = "https://script.google.com/macros/s/AKfycbyygfSiaLHY_oZVMlhYv5dboBe67XWU0SuDz4l2OG5nfdlarrNgVyUWwvFVtiOMfGQS3g/exec";
