@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[HIGH SCORE ARCADE MODE]</title>
+    <title>[WRESTLEPATH: ARCADE MODE]</title>
     <style>
         * {
             box-sizing: border-box;
@@ -464,7 +464,7 @@
 </head>
 <body>
 
-    <div class="board-title">[ARCADE MODE]</div>
+    <div class="board-title">[WRESTLEPATH: ARCADE MODE]</div>
     <button class="utils-btn" style="width: 200px; margin-bottom: 20px;" onclick="openRules()">VIEW RULES</button>
 
     <div class="game-container">
@@ -735,7 +735,7 @@
                 dot.innerText = cellData.type[0];
                 chainDisplay.appendChild(dot);
             });
-            document.getElementById('chainHint').innerText = playerPos === null ? "SELECT A TILE TO BEGIN!" : `CURRENT CHAIN LENGTH: ${currentChain.length}/4. NO DUPLICATES!`;
+            document.getElementById('chainHint').innerText = playerPos === null ? "CLICK ON START TO BEGIN!" : `CURRENT CHAIN LENGTH: ${currentChain.length}/4. NO DUPLICATES!`;
 
             calculateValidMoves();
         }
@@ -900,9 +900,10 @@
 
         // --- NETWORK, API & RULES FUNCTIONS ---
 
-        async function fetchAndRenderLeaderboard() {
+                async function fetchAndRenderLeaderboard() {
             try {
-                const response = await fetch(API_URL);
+                // Tell the script to pull from the Arcade tab
+                const response = await fetch(API_URL + "?mode=Arcade");
                 const data = await response.json();
                 renderLiveLeaderboard(data);
             } catch (error) {
@@ -913,18 +914,17 @@
         async function submitHighScore() {
             const initials = document.getElementById('playerInitials').value.toUpperCase() || "PLAYER_1";
             const originalText = document.getElementById('finalScoreText').innerText;
-            document.getElementById('finalScoreText').innerText = "SAVING..."; // UI Feedback
+            document.getElementById('finalScoreText').innerText = "SAVING..."; 
             
             try {
                 await fetch(API_URL, {
                     method: "POST",
-                    mode: "no-cors", // <--- THIS IS THE MAGIC FIX FOR GOOGLE SHEETS
+                    mode: "no-cors", 
                     headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-                    body: JSON.stringify({ name: initials, score: score })
+                    // Tell the script to save to the Arcade tab
+                    body: JSON.stringify({ name: initials, score: score, mode: "Arcade" })
                 });
 
-                // Because no-cors makes the response "opaque", we just assume success 
-                // and wait 1 full second for Google to update the sheet before fetching.
                 setTimeout(() => {
                     fetchAndRenderLeaderboard();
                     document.getElementById('gameOverModal').style.display = 'none';
@@ -957,7 +957,7 @@
         }
 
         function openRules() {
-            const rulesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbhFuSdU-gISkGnD1PO5RbSKGbvOyTTL88VBfjP2aNmaaGeNbqrNgv0GIvVeqBqwpK_w7pfn1GQa5J/pub?gid=2097755677&single=true&output=csv";
+            const rulesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThEneZk9zSyUQ3uTizZ8z8Ur7hBjqXeQaq8p0bgv__VQQlp2EeYLeJ0QAmVpDP02jcQI4IzHFAFbds/pub?gid=1360806124&single=true&output=csv";
             const rulesContainer = document.getElementById('rules-text');
             
             document.getElementById('rules-modal').style.display = 'flex';
