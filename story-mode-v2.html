@@ -178,8 +178,12 @@
         }
 
         /* HIGH SPOT ANIMATION & STYLING */
+                /* HIGH SPOT ANIMATION & STYLING */
         .high-spot-text {
-            position: absolute; font-size: 12px; font-weight: bold; letter-spacing: 1px;
+            position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); /* Locks to center instantly */
+            width: 100%; /* Prevents accidental wrapping */
+            font-size: 12px; font-weight: bold; letter-spacing: 1px;
             font-family: monospace; z-index: 5; pointer-events: none;
             animation: hsCycle 1.5s infinite alternate; text-align: center;
         }
@@ -240,8 +244,10 @@
         
         .grid-space.start-anim { animation: rgbCycle 3s infinite alternate; border: 2px solid;}
         
-        .grid-space.start-anim::after, .grid-space.start-static::after {
-            content: "START"; position: absolute; font-size: 14px; font-weight: bold; letter-spacing: 1px;
+                .grid-space.start-anim::after, .grid-space.start-static::after, .grid-space.start-locked::after {
+            content: "START"; position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); /* Locks to center instantly */
+            font-size: 14px; font-weight: bold; letter-spacing: 1px;
             color: #ffffff; text-shadow: 0 0 8px #000; z-index: 5; pointer-events: none; font-family: monospace;
         }
         
@@ -400,7 +406,7 @@
                 </div>
 
                 <div class="imessage-input-bar" id="inputBar">
-                    <img src="/images/8-bit-binterman-25.png" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-bottom: 4px;" alt="Binterman">
+                    <img src="https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-bottom: 4px;" alt="Binterman">
                     
                     <div class="imessage-input">
                         <span id="chainDisplay">iMessage</span>
@@ -430,7 +436,8 @@
     <div id="introModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px; border-color: #336699;">
             <h2 id="introTitle" style="color: var(--yellow-jeopardy); margin: 0; letter-spacing:2px; font-family: monospace;"></h2>
-            <p id="introSubtitle" style="color: #fff; font-size: 12px; margin-top: -10px; font-family: monospace;"></p>
+            <p id="introSubtitle" style="color: #fff; font-size: 16px; margin-top: -10px; font-family: monospace;"></p>
+            <img id="introImage" src="" style="width: 100%; max-height: 200px; object-fit: contain; margin: 10px 0; border-radius: 8px; display: none;"> 
             <button class="modal-btn" onclick="document.getElementById('introModal').style.display='none'; triggerLevelStart();">START LEVEL</button>
         </div>
     </div>
@@ -501,7 +508,7 @@
         };
 
         const PROMOTERS = {
-            "P1": { name: "MR. GALAXY", img: "images/red_brand_1.png" },
+            "P1": { name: "BINTERMAN", img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" },
             "P2": { name: "ROBO-BOOKER", img: "https://api.dicebear.com/7.x/bottts/svg?seed=Robo&backgroundColor=111" }
         };
 
@@ -509,20 +516,20 @@
 
         const GAME_LEVELS = [ 
             {
-                level: 1, name: "LEVEL 1", subtitle: "Live from the High School Gym!", promoterUid: "P1", targetScore: 100,
-                intro: "Rookie, the crowd is dead tonight. We need to wake them up. Get these matches booked exactly as I send them to you!",
+                level: 1, name: "LEVEL 1", subtitle: "<br><br>Live from the High School Gym!", img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png", promoterUid: "P1", targetScore: 100,
+                intro: "Dude, almost all the wrestlers I booked for tonight got arrested fighting at Waffle House! I need your help finding some available wrestlers. I'll send you details for each match in a bit!",
                 failText: "This is a disaster! The crowd is literally leaving! We're ruined!",
                 winText: "Not bad for your first night! The crowd is actually on their feet.",
                 sequences: [
                     // Example of custom objective text utilizing the {reqString} placeholder
-                    { target: ["R1", "G", "Y"], completed: false, chatPhase: 0, objectiveText: "We need a strong opener. Find me {reqString}!" }, 
+                    { target: ["R", "G", "Y"], completed: false, chatPhase: 0, objectiveText: "We need a strong opener. Find me {reqString}!" }, 
                     { target: ["B", "R", "G"], highSpotTarget: "B", completed: false, chatPhase: 0, objectiveText: "Keep the momentum going. I want to see {reqString} out there next!" }, 
                     { target: ["G", "Y", "R"], completed: false, chatPhase: 0, objectiveText: "Time for a classic showdown. Send out {reqString}." }, 
                     { target: ["R", "B", "G", "Y"], completed: false, chatPhase: 0, objectiveText: "Main event time! {reqString} is going to tear the roof off!" }
                 ]
             },
             {
-                level: 2, name: "LEVEL 2", subtitle: "Live from the Bingo Hall!", promoterUid: "P1", targetScore: 250,
+                level: 2, name: "LEVEL 2", subtitle: "Live from the Bingo Hall!", promoterUid: "P1", targetScore: 125,
                 intro: "The network executives are here. Set up these complex multi-man tag matches and integrate those wildcard managers to maximize the hype!",
                 failText: "The network just called... they're pulling our television deal. It's over.",
                 winText: "Incredible! Ratings just went through the roof. You're a natural booker.",
@@ -536,7 +543,7 @@
                 ]
             },
             {
-                level: 3, name: "LEVEL 3", subtitle: "Live from the Arena!", promoterUid: "P2", targetScore: 350,
+                level: 3, name: "LEVEL 3", subtitle: "Live from the Arena!", promoterUid: "P2", targetScore: 150,
                 intro: "The champions are demanding better storylines. You'll need to use every resource available. Don't let me down.",
                 failText: "That was a catastrophe. The champions just walked out with the belts.",
                 winText: "They didn't see that coming! The pay-per-view buys are skyrocketing.",
@@ -649,7 +656,16 @@
             document.getElementById('promoterName').innerText = pData.name;
             
             document.getElementById('introTitle').innerText = levelData.name;
-            document.getElementById('introSubtitle').innerText = levelData.subtitle || "";
+            document.getElementById('introSubtitle').innerHTML = levelData.subtitle || "";
+            
+            let img = document.getElementById('introImage');
+            if (levelData.img) {
+                img.src = levelData.img;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+            
             document.getElementById('introModal').style.display = 'flex';
         }
 
@@ -661,8 +677,7 @@
 
         function resetLevel() {
             document.getElementById('statusModal').style.display = 'none';
-            runningObjectives = JSON.parse(JSON.stringify(GAME_LEVELS[currentLevelIndex].sequences));
-            resetLevelData();
+            loadLevel(currentLevelIndex); 
         }
 
         function resetLevelData() {
@@ -780,7 +795,7 @@
             }
         }
 
-                function updateUI() {
+        function updateUI() {
             let searchBtn = document.getElementById('searchContactsBtn');
             if(searchBtn) {
                 if (rerollsAvailable > 0) {
@@ -891,19 +906,16 @@
                 <div class="chat-bubble promoter-bubble">"${GAME_LEVELS[currentLevelIndex].intro}"</div>
             `;
             
-            // Array of simulated times to show time passing as new matches are requested
             const TIME_STEPS = ["8:22 PM", "8:41 PM", "9:04 PM", "9:27 PM", "9:48 PM", "10:12 PM"];
 
             if (levelPhase === "playing" || levelPhase === "gameover" || levelPhase === "cleared") {
                 for (let i = 0; i < runningObjectives.length; i++) {
                     let obj = runningObjectives[i];
                     
-                    // --- NEW TIMESTAMP LOGIC ---
-                    // Only apply a new timestamp for objectives AFTER the very first one
                     if (i > 0) {
                         let tsBubble = document.createElement('div');
                         tsBubble.className = 'timestamp';
-                        tsBubble.style.marginTop = '15px'; // Extra breathing room to separate sequences
+                        tsBubble.style.marginTop = '15px'; 
                         tsBubble.innerText = `Today ${TIME_STEPS[i-1] || "10:30 PM"}`;
                         objContainer.appendChild(tsBubble);
                     }
@@ -916,14 +928,12 @@
                     let reqBubble = document.createElement('div');
                     reqBubble.className = `chat-bubble promoter-bubble`;
 
-                    // --- NEW DYNAMIC OBJECTIVE TEXT LOGIC ---
                     let finalObjectiveText = obj.objectiveText 
                         ? obj.objectiveText.replace('{reqString}', reqString) 
                         : `Hey, I have a match that needs booking! Find me ${reqString}!`;
 
                     reqBubble.innerHTML = `"${finalObjectiveText}"`;
                     objContainer.appendChild(reqBubble);
-                    // 
 
                     if (obj.completed) {
                         if (obj.chatPhase >= 1) {
@@ -1008,7 +1018,6 @@
 
             if (levelPhase === "gameover" || levelPhase === "cleared") return;
 
-            // Permanent locked text behavior strictly anchored to the starting space
             let initialSpaceEl = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
             if (currentChain.length > 0 || playerPos !== null) {
                 initialSpaceEl.classList.add('start-locked');
@@ -1066,10 +1075,18 @@
             promoterReaction = ""; 
 
             let chosenCard = currentHand[selectedCardIndex];
-            let sym = chosenCard.symbol; // Save the symbol here before the hand resets
+            let sym = chosenCard.symbol; 
             
             playerPos = { r: r, c: c };
             boardState[r][c].occupied = true; boardState[r][c].type = chosenCard.type; boardState[r][c].variantData = chosenCard;
+
+            let keyEl = document.getElementById(`key-${sym}`);
+            if(keyEl) {
+                keyEl.classList.add(`active-${sym.toLowerCase()}`);
+                setTimeout(() => {
+                    if (keyEl) keyEl.classList.remove(`active-${sym.toLowerCase()}`);
+                }, 250);
+            }
 
             appendGlyphToSpace(el, chosenCard);
             currentChain.push({ r: r, c: c });
@@ -1079,18 +1096,7 @@
             
             isScrollingList = true;
             evaluateSequences();
-            
-            // updateUI runs and resets the board classes
             updateUI();
-            
-            // NOW we apply the 250ms button flash effect!
-            let keyEl = document.getElementById(`key-${sym}`);
-            if(keyEl) {
-                keyEl.classList.add(`active-${sym.toLowerCase()}`);
-                setTimeout(() => {
-                    if (keyEl) keyEl.classList.remove(`active-${sym.toLowerCase()}`);
-                }, 250);
-            }
             
             setTimeout(() => {
                 isScrollingList = false;
@@ -1357,4 +1363,4 @@
 
     </script>
 </body>
-</html>
+</html>elga
