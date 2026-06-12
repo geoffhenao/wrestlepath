@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=1200, user-scalable=no">
     <title>[WRESTLEPATH: STORY MODE]</title>
     <style>
         :root {
@@ -381,7 +381,7 @@
             to { transform: translateX(-100vw); opacity: 0; }
         }
 
-        /* === MOBILE STACKING === */
+        /* === MOBILE STACKING === 
         @media (max-width: 1024px) {
             body { padding: 10px; height: auto; overflow: auto; }
             .game-layout { display: flex; flex-direction: column; height: auto; max-width: 100%; gap: 15px; }
@@ -392,11 +392,25 @@
             .hype-container { order: 3; margin-top: 15px;}
             .center-column { order: 4; height: auto; padding: 0; }
             .left-column { order: 5; height: 60vh; min-height: 500px; margin-bottom: 20px;}
+        } */
+
+                /* === LANDSCAPE LOCK === */
+        #landscape-lock {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 9999; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; font-family: monospace; padding: 20px;
+        }
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #landscape-lock { display: flex; }
+            .game-layout { display: none; }
         }
     </style>
 </head>
 <body>
-
+    <div id="landscape-lock">
+        <h2 style="color: var(--yellow-jeopardy); margin-bottom: 10px;">PLEASE ROTATE YOUR DEVICE</h2>
+        <p style="color: #fff; font-size: 14px;">[WRESTLEPATH: STORY MODE] requires landscape orientation.</p>
+    </div>
     <div class="game-layout">
         
         <div class="title-area">
