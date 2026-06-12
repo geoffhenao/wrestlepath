@@ -247,7 +247,7 @@
         
         .grid-space.start-locked::after {
             content: "START"; position: absolute; font-size: 14px; font-weight: bold; letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.6); text-shadow: 0 0 8px #000; z-index: 5; pointer-events: none; font-family: monospace;
+            color: rgba(255, 255, 255, 0.4); text-shadow: 0 0 8px #000; z-index: 5; pointer-events: none; font-family: monospace;
         }
 
         /* === 3. RIGHT COLUMN: iMESSAGE UI === */
@@ -332,7 +332,7 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; z-index: 50; padding: 20px; font-family: monospace;}
         .modal-content { background: #111; border: 4px solid var(--yellow-jeopardy); padding: 30px; border-radius: 8px; text-align: center; width: 100%; max-width: 450px; box-shadow: 0 0 30px rgba(51, 102, 153, 0.6); display: flex; flex-direction: column; gap: 15px; }
         .modal-btn { background-color: transparent; border: 2px solid #fff; color: #fff; padding: 12px; font-family: monospace; font-weight: bold; cursor: pointer; border-radius: 4px; transition: all 0.2s; font-size: 14px; text-transform: uppercase; margin-top: 15px;}
-        .modal-btn:hover { background-color: #fff; color: #000; }
+        .modal-btn:hover { background-color: var(--yellow-jeopardy); color: #fff; border-color: var(--yellow-jeopardy); }
 
         /* === MOBILE STACKING === */
         @media (max-width: 1024px) {
@@ -348,7 +348,7 @@
         }
     </style>
 </head>
-<body onclick="closePlusMenu(event)">
+<body>
 
     <div class="game-layout">
         
@@ -364,12 +364,13 @@
             <div class="contacts-app-inner">
                 <div class="contacts-sidebar">
                     <div class="contacts-search-bar" style="justify-content: center; background: transparent; padding: 0;">
+                        <br><br><br><br>
                         <button id="searchContactsBtn" onclick="openRerollModal()" class="search-btn">SEARCH CONTACTS</button>
                     </div>
                     <div class="contacts-list-wrapper">
                         <div id="rosterList" class="contacts-list"></div>
                         <div class="alpha-scroll">
-                            A<br>B<br>C<br>D<br>E<br>F<br>G<br>H<br>I<br>J<br>K<br>L<br>M<br>N<br>O<br>P<br>Q<br>R<br>S<br>T<br>U<br>V<br>W<br>X<br>Y<br>Z
+                            <br><br><br><br><br>A<br>B<br>C<br>D<br>E<br>F<br>G<br>H<br>I<br>J<br>K<br>L<br>M<br>N<br>O<br>P<br>Q<br>R<br>S<br>T<br>U<br>V<br>W<br>X<br>Y<br>Z
                         </div>
                     </div>
                 </div>
@@ -394,7 +395,7 @@
                 
                 <div class="chat-history" id="chatContainer">
                     <div class="chat-filler"></div>
-                    <div class="timestamp">Today 8:05 PM</div>
+                    <div class="timestamp">Today 6:05 PM</div>
                     <div id="objectivesList"></div>
                 </div>
 
@@ -418,7 +419,7 @@
                     <div class="keyboard-row" style="margin-top: 10px;">
                         <button class="modal-btn" style="padding: 8px 12px; font-size: 10px; flex: 1;" onclick="openRules()">RULES</button>
                         <button class="modal-btn" style="padding: 8px 12px; font-size: 10px; flex: 1;" onclick="resetLevel()">RESTART</button>
-                        <button class="modal-btn" style="padding: 8px 12px; font-size: 10px; flex: 1;" onclick="openMainMenuConfirm()">MENU</button>
+                        <button class="modal-btn" style="padding: 8px 12px; font-size: 10px; flex: 1;" onclick="openMainMenuConfirm()">MAIN MENU</button>
                     </div>
                 </div>
             </div>
@@ -475,7 +476,7 @@
             BLUE: [
                 { uid: 'B1', symbol: 'B', type: 'FLYER', name: 'AERO STAR', home: 'Mexico City, MX', special: 'Springboard Cutter', finisher: '630 Splash', accolades: 'Cruiserweight Champ', img: 'images/blue_brand_1.png', color: '#336699', glowFade: 'rgba(51, 102, 153, 0.4)' },
                 { uid: 'B2', symbol: 'B', type: 'FLYER', name: 'GRAVITY BOY', home: 'Los Angeles, CA', special: 'Hurricanrana', finisher: 'Shooting Star Press', accolades: 'Tag Team Champ', img: 'images/blue_brand_2.png', color: '#336699', glowFade: 'rgba(51, 102, 153, 0.4)' },
-                { uid: 'B3', symbol: 'B', type: 'FLYER', name: 'SKY WALKER', home: 'Tokyo, JPN', special: 'Moonsault', finisher: 'Phoenix Splash', accolades: 'Best of the Super J', img: 'images/blue_brand_3.png', color: '#336699', glowFade: 'rgba(51, 102, 153, 0.4)' } 
+                { uid: 'B3', symbol: 'B', type: 'FLYER', name: 'SKY WALKER', home: 'Tokyo, JPN', special: 'Moonsault', finisher: 'Phoenix Splash', accolades: 'Best of the Super J', img: 'images/blue_brand_3.png', color: '#336699', glowFade: 'rgba(51, 0, 0, 0.4)' } 
             ],
             RED: [
                 { uid: 'R1', symbol: 'R', type: 'HARDCORE', name: 'BARB WIRE', home: 'Philadelphia, PA', special: 'Chair Shot', finisher: 'Table Powerbomb', accolades: 'Deathmatch King', img: 'images/red_brand_1.png',  color: '#ff0000', glowFade: 'rgba(255, 0, 0, 0.4)' },
@@ -500,7 +501,7 @@
         };
 
         const PROMOTERS = {
-            "P1": { name: "MR. GALAXY", img: "https://api.dicebear.com/7.x/bottts/svg?seed=Galaxy&backgroundColor=111" },
+            "P1": { name: "MR. GALAXY", img: "images/red_brand_1.png" },
             "P2": { name: "ROBO-BOOKER", img: "https://api.dicebear.com/7.x/bottts/svg?seed=Robo&backgroundColor=111" }
         };
 
@@ -513,10 +514,11 @@
                 failText: "This is a disaster! The crowd is literally leaving! We're ruined!",
                 winText: "Not bad for your first night! The crowd is actually on their feet.",
                 sequences: [
-                    { target: ["R1", "G", "Y"], completed: false, chatPhase: 0 }, 
-                    { target: ["B", "R", "G"], highSpotTarget: "B", completed: false, chatPhase: 0 }, 
-                    { target: ["G", "Y", "R"], completed: false, chatPhase: 0 }, 
-                    { target: ["R", "B", "G", "Y"], completed: false, chatPhase: 0 }
+                    // Example of custom objective text utilizing the {reqString} placeholder
+                    { target: ["R1", "G", "Y"], completed: false, chatPhase: 0, objectiveText: "We need a strong opener. Find me {reqString}!" }, 
+                    { target: ["B", "R", "G"], highSpotTarget: "B", completed: false, chatPhase: 0, objectiveText: "Keep the momentum going. I want to see {reqString} out there next!" }, 
+                    { target: ["G", "Y", "R"], completed: false, chatPhase: 0, objectiveText: "Time for a classic showdown. Send out {reqString}." }, 
+                    { target: ["R", "B", "G", "Y"], completed: false, chatPhase: 0, objectiveText: "Main event time! {reqString} is going to tear the roof off!" }
                 ]
             },
             {
@@ -584,6 +586,9 @@
             loadLevel(0); 
         };
 
+        function openRules() { document.getElementById('rules-modal').style.display = 'flex'; }
+        function openMainMenuConfirm() { document.getElementById('mainMenuModal').style.display = 'flex'; }
+        
         function openRerollModal() { 
             if (rerollsAvailable > 0) document.getElementById('rerollModal').style.display = 'flex'; 
         }
@@ -731,15 +736,6 @@
             return variantArray[Math.floor(Math.random() * variantArray.length)];
         }
 
-        // Updated helper function to parse hex values to text names safely
-        function getRawHexName(hex) {
-            if (hex === '#ff0000') return 'HARDCORE';
-            if (hex === '#336699') return 'FLYER';
-            if (hex === '#008000') return 'TECHNICIAN';
-            if (hex === '#f1c40f') return 'BRAWLER';
-            return 'WILD';
-        }
-
         function drawCardAtIndex(index) {
             let newCard = getRandomCard();
             currentHand[index] = newCard;
@@ -768,7 +764,7 @@
                 switch(val) {
                     case 'R': return '<span style="color: #ff0000; font-weight: bold; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">HARDCORE</span>';
                     case 'B': return '<span style="color: #336699; font-weight: bold; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">FLYER</span>';
-                    case 'G': return '<span style="color: #008000; font-weight: bold; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">TECHNICIAN</span>'; // Fixed fallback mismatch
+                    case 'G': return '<span style="color: #008000; font-weight: bold; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">TECHNICIAN</span>'; 
                     case 'Y': return '<span style="color: #f1c40f; font-weight: bold; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">BRAWLER</span>';
                     case 'W': default: return '<span style="color: #ffffff; font-weight: bold; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">WILDCARD</span>';
                 }
@@ -784,7 +780,7 @@
             }
         }
 
-        function updateUI() {
+                function updateUI() {
             let searchBtn = document.getElementById('searchContactsBtn');
             if(searchBtn) {
                 if (rerollsAvailable > 0) {
@@ -891,14 +887,27 @@
             const objContainer = document.getElementById('chatContainer');
             objContainer.innerHTML = `
                 <div class="chat-filler"></div>
-                <div class="timestamp">Today 8:05 PM</div>
+                <div class="timestamp">Today 8:00 PM</div>
                 <div class="chat-bubble promoter-bubble">"${GAME_LEVELS[currentLevelIndex].intro}"</div>
             `;
             
+            // Array of simulated times to show time passing as new matches are requested
+            const TIME_STEPS = ["8:22 PM", "8:41 PM", "9:04 PM", "9:27 PM", "9:48 PM", "10:12 PM"];
+
             if (levelPhase === "playing" || levelPhase === "gameover" || levelPhase === "cleared") {
                 for (let i = 0; i < runningObjectives.length; i++) {
                     let obj = runningObjectives[i];
                     
+                    // --- NEW TIMESTAMP LOGIC ---
+                    // Only apply a new timestamp for objectives AFTER the very first one
+                    if (i > 0) {
+                        let tsBubble = document.createElement('div');
+                        tsBubble.className = 'timestamp';
+                        tsBubble.style.marginTop = '15px'; // Extra breathing room to separate sequences
+                        tsBubble.innerText = `Today ${TIME_STEPS[i-1] || "10:30 PM"}`;
+                        objContainer.appendChild(tsBubble);
+                    }
+
                     let textReqs = obj.target.map(val => getIndefiniteArticle(val) + getStylizedTypeName(val));
                     let reqString = textReqs.length > 1 ? textReqs.slice(0, -1).join(', ') + ', and ' + textReqs.slice(-1) : textReqs[0];
                     
@@ -906,8 +915,15 @@
 
                     let reqBubble = document.createElement('div');
                     reqBubble.className = `chat-bubble promoter-bubble`;
-                    reqBubble.innerHTML = `"Hey, I have a match that needs booking! Find me ${reqString}!"`;
+
+                    // --- NEW DYNAMIC OBJECTIVE TEXT LOGIC ---
+                    let finalObjectiveText = obj.objectiveText 
+                        ? obj.objectiveText.replace('{reqString}', reqString) 
+                        : `Hey, I have a match that needs booking! Find me ${reqString}!`;
+
+                    reqBubble.innerHTML = `"${finalObjectiveText}"`;
                     objContainer.appendChild(reqBubble);
+                    // 
 
                     if (obj.completed) {
                         if (obj.chatPhase >= 1) {
@@ -992,7 +1008,7 @@
 
             if (levelPhase === "gameover" || levelPhase === "cleared") return;
 
-            // Permanent locked text behavior on the initial node coordinate strictly
+            // Permanent locked text behavior strictly anchored to the starting space
             let initialSpaceEl = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
             if (currentChain.length > 0 || playerPos !== null) {
                 initialSpaceEl.classList.add('start-locked');
@@ -1050,17 +1066,10 @@
             promoterReaction = ""; 
 
             let chosenCard = currentHand[selectedCardIndex];
+            let sym = chosenCard.symbol; // Save the symbol here before the hand resets
+            
             playerPos = { r: r, c: c };
             boardState[r][c].occupied = true; boardState[r][c].type = chosenCard.type; boardState[r][c].variantData = chosenCard;
-
-            let sym = chosenCard.symbol;
-            let keyEl = document.getElementById(`key-${sym}`);
-            if(keyEl) {
-                keyEl.classList.add(`active-${sym.toLowerCase()}`);
-                setTimeout(() => {
-                    if (keyEl) keyEl.classList.remove(`active-${sym.toLowerCase()}`);
-                }, 250);
-            }
 
             appendGlyphToSpace(el, chosenCard);
             currentChain.push({ r: r, c: c });
@@ -1070,7 +1079,18 @@
             
             isScrollingList = true;
             evaluateSequences();
+            
+            // updateUI runs and resets the board classes
             updateUI();
+            
+            // NOW we apply the 250ms button flash effect!
+            let keyEl = document.getElementById(`key-${sym}`);
+            if(keyEl) {
+                keyEl.classList.add(`active-${sym.toLowerCase()}`);
+                setTimeout(() => {
+                    if (keyEl) keyEl.classList.remove(`active-${sym.toLowerCase()}`);
+                }, 250);
+            }
             
             setTimeout(() => {
                 isScrollingList = false;
@@ -1178,7 +1198,6 @@
                         }
                     });
 
-                    // Explicit Wildcard check completely overrides clone reactions per rules
                     if (wildcardUsedForUid) {
                         let wr = ["Wasn't exactly what I was looking for, but it still worked.", "I guess that wild card covers up the fact we didn't get who we wanted.", "Not the specific talent I asked for, but the crowd didn't riot."];
                         obj.reaction = wr[Math.floor(Math.random() * wr.length)];
@@ -1196,13 +1215,9 @@
                     let affirmations = ["I got you!", "No problem!", "Hell yeah, what's next?", "All good!"];
                     obj.affirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
 
-                    // Keep entire chain data for point calculation but clear current workspace
-                    obj.completedChainData = clearChainRef.map(coord => boardState[coord.r][coord.c].variantData);
-
                     currentChain = []; 
                     updateHype();
 
-                    // Generate badges and text name overlays dynamically on completed slots
                     let badgeHTML = '';
                     obj.target.forEach(char => {
                         let vis = getStyleDataByChar(char);
@@ -1216,7 +1231,6 @@
                         if (cellEl.classList.contains('player-here')) cellEl.classList.remove('player-here');
                         cellEl.classList.remove('placed-dim'); cellEl.classList.add('pulse-match');
                         
-                        // Overlay character meta details
                         let nameLabel = document.createElement('div');
                         nameLabel.className = 'grid-name-overlay';
                         nameLabel.style.color = cellData.variantData.color;
@@ -1228,7 +1242,6 @@
                                 cellEl.classList.remove('pulse-match'); cellEl.classList.add('completed');
                                 boardState[coord.r][coord.c].locked = true;
                                 
-                                // Restored badges engine placement
                                 let badge = document.createElement('div'); 
                                 badge.className = 'combo-badge';
                                 badge.style.setProperty('--match-color', cellData.variantData.color); 
@@ -1281,7 +1294,7 @@
                 let namesHTML = displayChain.map(cData => {
                     return `<span style="color: ${cData.variantData.color}; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-weight: bold;">${cData.variantData.name}</span>`;
                 }).join(', ');
-                chainBubble.innerHTML = `How about... ${namesHTML}`;
+                chainBubble.innerHTML = `How about... ${namesHTML}?`;
                 chatHistory.appendChild(chainBubble);
             }
 
@@ -1311,7 +1324,7 @@
                 document.getElementById('modalContent').innerHTML = `
                     <h2 style="color: #ff0000; margin-top: 0; font-family: monospace;">SHOW CANCELLED</h2>
                     <p style="font-size: 14px; color: #ccc; font-family: monospace;">The event was a catastrophe!</p>
-                    <button class="modal-btn" onclick="document.getElementById('statusModal').style.display='none'; resetLevel()">RETRY MISSION</button>
+                    <button class="modal-btn" onclick="resetLevel()">RETRY MISSION</button>
                 `;
                 document.getElementById('statusModal').style.display = 'flex';
             }, 1500);
@@ -1322,12 +1335,13 @@
             document.getElementById('modalContent').innerHTML = `
                 <h2 style="color: #00ff00; margin-top: 0; font-family: monospace;">LEVEL CLEARED!</h2>
                 <p style="font-family: monospace;">${winString}</p>
-                <button class="modal-btn" onclick="document.getElementById('statusModal').style.display='none'; advanceLevel()">PROCEED TO NEXT LEVEL</button>
+                <button class="modal-btn" onclick="advanceLevel()">PROCEED TO NEXT LEVEL</button>
             `;
             document.getElementById('statusModal').style.display = 'flex';
         }
 
         function advanceLevel() { 
+            document.getElementById('statusModal').style.display = 'none';
             currentLevelIndex++; 
             loadLevel(currentLevelIndex); 
         }
