@@ -375,6 +375,20 @@
             background: #000; z-index: 9999; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; font-family: monospace; padding: 20px;
         }
+                /* === iPHONE SCALING FIX === */
+        /* Targets short landscape screens (Phones) while ignoring Desktops and iPads */
+        @media (max-height: 850px) {
+            .left-column, .right-column {
+                height: 88vh; /* Stretches the panels vertically to utilize the empty space */
+            }
+            .contacts-sidebar {
+                overflow-y: auto; /* Adds a scroll mechanism just in case */
+            }
+            /* Keeps the scrollbar invisible for a clean UI */
+            .contacts-sidebar::-webkit-scrollbar {
+                display: none; 
+            }
+        }
         /* Lock screen only appears if device is held vertically (portrait) */
         @media screen and (orientation: portrait) {
             #landscape-lock { display: flex; }
@@ -638,7 +652,7 @@
             buildBoardHTML();
             loadLevel(0); 
         };
-        
+
         // Forces fullscreen on Android/Desktop, handles iPhones gracefully
         function enterFullScreen() {
             // Check if it's an iOS device
