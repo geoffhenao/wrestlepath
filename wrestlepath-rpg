@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7VTBFP1ZC2');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WrestlePath: RPG Battle System v1</title>
+    <style>
+        /* |<< [] || |> >>| */
+        :root {
+            --blue-jeopardy: #1a1a22;
+            --yellow-jeopardy: #336699;
+            --panel-bg: #0c0c10;
+            
+            /* ATB Cyclic Tier Colors */
+            --atb-level-0: #ffffff; /* White */
+            --atb-level-1: #3388ff; /* Blue */
+            --atb-level-2: #008000; /* Green */
+            --atb-level-3: #ff3333; /* Red */
+
+            /* Style Archetype Definitions */
+            --color-blue: #336699;
+            --color-red: #ff0000;
+            --color-green: #008000;
+            --color-yellow: #f1c40f;
+        }
+
+        /* STRICT GLOBAL FONT PARITY ENFORCEMENT */
+        * { 
+            box-sizing: border-box; 
+            font-family: monospace !important;
+        }
+        
+        body {
+            background-color: #000; color: #fff;
+            margin: 0; padding: 0;
+            height: 100vh; width: 100vw; overflow: hidden;
+            display: flex; flex-direction: column;
+            font-size: 15px;
+        }
+
+        /* RESPONSIVE LAYOUT MATRIX CONTROLLERS */
+        .top-arena {
+            height: 75vh; width: 100vw;
+            border-bottom: 4px solid #222;
+            position: relative; background: linear-gradient(180deg, #050508 0%, #15151f 100%);
+            padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .bottom-command {
+            height: 25vh; width: 100vw;
+            background-color: var(--panel-bg);
+            position: relative; padding: 8px;
+            display: flex; gap: 12px;
+        }
+
+        /* === ARENA HUD LAYOUTS === */
+        .hud-row { display: flex; justify-content: space-between; align-items: flex-start; z-index: 10; position: relative; width: 100%; }
+        
+        /* Centered Panel Alignment Setup */
+        .boss-card, .player-card { 
+            background: rgba(0,0,0,0.8); 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            border: 1px solid #333; 
+            width: 280px; 
+            max-width: 35vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .player-card div, .player-card span, .boss-card div, .boss-card span {
+            font-size: 15px !important;
+            font-weight: bold !important;
+        }
+
+        /* Hype Meter Center Alignment */
+        .hype-container { 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 30%; 
+            text-align: center; 
+            z-index: 10;
+        }
+        .hype-header { display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+        .hype-track { background: #111; border: 2px solid #444; height: 18px; border-radius: 9px; overflow: hidden; }
+        .hype-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff0000, #f1c40f, #00ff00); transition: width 0.3s ease; }
+
+        /* ATB METER BARS WITH CENTERED TEXT LABELS */
+        .atb-wrapper { margin-top: 8px; width: 100%; }
+        .atb-label-row { display: flex; justify-content: center; font-size: 12px; font-weight: bold; margin-bottom: 4px; width: 100%; text-align: center; }
+        .atb-track-frame { background: #1a1a1a; border: 1px solid #444; height: 14px; border-radius: 3px; position: relative; overflow: hidden; width: 100%; }
+        .atb-fill-node { height: 100%; width: 0%; background: #fff; transition: width 0.1s linear, background-color 0.2s ease; }
+        
+        @keyframes atbGlowPulse {
+            0% { box-shadow: inset 0 0 4px #ff0000, 0 0 4px #ff0000; border-color: #ff3333; }
+            100% { box-shadow: inset 0 0 16px #ff0000, 0 0 12px #ff0000; border-color: #ff8888; }
+        }
+        .atb-glow { animation: atbGlowPulse 0.6s infinite alternate; }
+
+        /* SPRITE PERSPECTIVE AND COMBAT ANIMATION MATRIX */
+        .stage-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .sprite-container { position: absolute; width: 22vw; height: 35vh; max-width: 220px; max-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+        .opponent-placement { top: 15%; right: 15%; }
+        .player-placement { bottom: 5%; left: 15%; }
+        
+        .wrestler-png { 
+            width: 100%; height: auto; max-height: 100%; object-fit: contain;
+            filter: drop-shadow(0 0 0px transparent);
+            transition: filter 0.4s ease-in-out;
+        }
+
+        .wrestler-label {
+            font-size: 15px !important;
+            font-weight: bold !important;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 10px;
+            margin-top: 4px;
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+
+        /* --- SPRITE ANIMATION KEYFRAMES --- */
+        /* DROPKICK BLUEPRINT: Wind-up tilt, diagonal dash launch, recoil return */
+        @keyframes dropkickSequence {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-30px, 30px) rotate(-90deg); } 
+            45% { transform: translate(35vw, -30vh) rotate(-90deg); } 
+            60% { transform: translate(30vw, -25vh) rotate(-75deg); } 
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .animate-dropkick { animation: dropkickSequence 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+        /* DAMAGE TAKEN SHAKE: Fast horizontal micro-jittering */
+        @keyframes damageShakeSequence {
+            0%, 100% { transform: translate(0, 0); }
+            15% { transform: translate(-15px, 0); }
+            30% { transform: translate(15px, 0); }
+            45% { transform: translate(-12px, 0); }
+            60% { transform: translate(12px, 0); }
+            75% { transform: translate(-6px, 0); }
+            90% { transform: translate(6px, 0); }
+        }
+        .animate-damage { animation: damageShakeSequence 0.6s linear forwards; }
+
+        /* === PERSISTENT LEFT MENU SELECTION PANEL === */
+        .menu-column { width: 180px; border-right: 2px solid #2a2a2a; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; height: 100%; }
+        .menu-btn { background: #111; border: 1px solid #444; color: #fff; padding: 0 12px; text-align: left; cursor: pointer; font-size: 15px; flex: 1; display: flex; align-items: center; font-weight: bold; }
+        .menu-btn:hover:not(:disabled) { background: var(--yellow-jeopardy); }
+        .menu-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+        .menu-btn.active-tab { background: #111; border-color: var(--yellow-jeopardy); color: var(--yellow-jeopardy); font-weight: bold; }
+        
+        #finisherMenuBtn { background: #230a0a; border-color: #ff3333; color: #ff3333; font-weight: bold; }
+        #finisherMenuBtn:hover:not(:disabled) { background: #ff3333; color: #fff; }
+
+        /* DYNAMIC CONTENT WRAPPER CONTAINER */
+        .submenu-wrapper { flex: 1; height: 100%; position: relative; }
+
+        /* MOVES MATRIX WORKSPACE GRID (2-Columns x 5-Rows) */
+        .moves-grid-matrix {
+            display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr);
+            gap: 4px; height: 100%; width: 100%;
+        }
+        
+        .action-row-card { 
+            border: 1px solid #2a2a35; border-radius: 4px; 
+            padding: 6px 14px; display: flex; justify-content: space-between; align-items: center;
+            transition: opacity 0.2s ease, box-shadow 0.2s ease;
+            background-color: #13131a;
+        }
+        .action-row-card.cost-1 { border-color: rgba(51, 136, 255, 0.4); box-shadow: inset 0 0 10px rgba(51, 136, 255, 0.12); }
+        .action-row-card.cost-2 { border-color: rgba(0, 128, 0, 0.4); box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.12); }
+        .action-row-card.cost-3 { border-color: rgba(255, 51, 51, 0.4); box-shadow: inset 0 0 10px rgba(255, 51, 51, 0.12); }
+        
+        .action-row-card.selectable { cursor: pointer !important; opacity: 1 !important; }
+        .action-row-card.disabled { cursor: not-allowed !important; opacity: 0.25 !important; }
+        
+        /* Typography Parity 1:1 Matching Definitions */
+        .move-title-txt { font-size: 15px; font-weight: bold; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .move-cost-sub { font-size: 15px; font-weight: bold; color: #888; }
+        .recipe-dots { display: flex; gap: 4px; align-items: center; }
+        .mini-dot { width: 20px; height: 20px; border-radius: 3px; font-size: 11px; font-weight: bold; text-align: center; line-height: 20px; color: #fff; flex-shrink: 0; }
+        .uses-counter-label { font-size: 15px; color: #fff; font-weight: bold; }
+
+        /* PUZZLE GRID EXECUTION OVERLAY LAYOUT */
+        .grid-panel-layout { display: flex; gap: 15px; height: 100%; width: 100%; }
+        .grid-left-side { flex: 0 0 auto; height: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; }
+        .grid-board {
+            display: grid; background-color: #050508; padding: 4px;
+            border: 3px solid var(--yellow-jeopardy); border-radius: 6px;
+            height: 100%; width: 100%; gap: 3px;
+        }
+        .grid-space {
+            background-color: #15151c; border: 1px solid #2d2d3a; border-radius: 3px;
+            position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
+            transition: box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+        .grid-space.valid-move { 
+            cursor: pointer; border-color: var(--active-glow-color, #fff) !important; 
+            box-shadow: inset 0 0 10px var(--active-glow-color, rgba(255,255,255,0.5));
+        }
+        
+        /* FIXED: Dashed outlines removed completely when placed */
+        .grid-space.player-here { box-shadow: inset 0 0 12px #fff !important; z-index: 2; }
+        
+        /* FAINT SUBTLE INNER GLOW ON SELECTIONS */
+        .grid-space.placed-dim { 
+            opacity: 1; 
+            box-shadow: inset 0 0 14px var(--match-color) !important; 
+        }
+        
+        /* SUCCESSFUL MATCH OUTLINE AND INTENSIFIED INNER GLOW */
+        .grid-space.completed { 
+            border: 3px solid var(--match-color) !important; 
+            box-shadow: inset 0 0 25px var(--match-color), 0 0 10px var(--match-color) !important;
+            opacity: 1 !important;
+        }
+
+        .start-label {
+            position: absolute; font-size: 8px; font-weight: bold; color: #fff;
+            text-shadow: 0 0 4px #000; z-index: 5; pointer-events: none;
+        }
+        .start-locked { color: rgba(255,255,255,0.25); }
+
+        /* STATE B PARITY LAYOUT */
+        .grid-right-side { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-left: 2px; height: 100%; overflow: hidden; }
+        .execution-tracker-box { width: 100%; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .execution-header { border-bottom: 1px dashed #2a2a35; padding-bottom: 4px; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .move-name-display { font-size: 15px; font-weight: bold; color: var(--color-yellow); }
+        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 15px; padding: 4px 12px; cursor: pointer; border-radius: 3px; font-weight: bold; }
+        .rethink-action-btn:hover { background: #551111; color: #fff; }
+
+        .execution-tracker-box .mini-dot {
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            font-size: 14px;
+            border-radius: 4px;
+            opacity: 0.35; 
+            transition: opacity 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .hand-rack-container { width: 100%; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; flex: 1; overflow: hidden; }
+        .hand-label-txt { font-size: 15px; color: #888; font-weight: bold; text-transform: uppercase; }
+        
+        .hand-rack { display: flex; flex-direction: column; gap: 4px; flex: 1; width: 100%; }
+        .hand-card {
+            background: #111; border: 1px solid #333; border-radius: 4px;
+            padding: 0 12px; width: 100%; flex: 1; cursor: pointer; 
+            display: flex; align-items: center; gap: 8px; transition: border-color 0.1s;
+        }
+        .hand-card.selected { border-color: #fff !important; box-shadow: 0 0 8px var(--card-glow); background: #161622; }
+        .hand-card-badge { width: 16px; height: 16px; border-radius: 2px; font-size: 11px; font-weight: bold; text-align: center; line-height: 16px; color:#fff; flex-shrink: 0; }
+        .hand-card-name { font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; color: #eee; white-space: nowrap; font-weight: bold; }
+
+        /* TOAST OVERLAY SCREEN NOTIFICATION */
+        .toast-overlay {
+            position: absolute; top: 25%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(5, 5, 8, 0.95); border: 3px solid #fff; border-radius: 8px;
+            padding: 15px 40px; z-index: 99999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; pointer-events: none; opacity: 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast-overlay.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .toast-title { font-size: 20px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0; text-align: center; }
+        .toast-desc { font-size: 13px; color: #aaa; margin-top: 6px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="combatToast" class="toast-overlay">
+        <h2 id="toastTitle" class="toast-title">COMBO SIGNED!</h2>
+        <div id="toastDesc" class="toast-desc">Execution parameters successfully applied.</div>
+    </div>
+
+    <!-- TOP ARENA PANEL (75%) -->
+    <div class="top-arena">
+        <div class="hud-row">
+            <!-- PLAYER CARD (LEFT PANEL) -->
+            <div class="player-card">
+                <div style="font-weight: bold; font-size: 13px;">BINTERMAN BOT</div>
+                <span id="hudPlayerBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-blue); color:#fff;"></span>
+                
+                <div class="atb-wrapper">
+                    <div class="atb-label-row">
+                        <span id="atbLevelIndicator" style="color: #fff;">Charging...</span>
+                    </div>
+                    <div id="atbTrackFrame" class="atb-track-frame">
+                        <div id="playerAtbFill" class="atb-fill-node"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTERED HYPE TRACKER -->
+            <div class="hype-container">
+                <div class="hype-header"><span>MATCH HYPE CAPACITY</span><span id="hypeTxt">0%</span></div>
+                <div class="hype-track"><div id="hypeFill" class="hype-fill"></div></div>
+            </div>
+
+            <!-- BOSS CARD (RIGHT PANEL) -->
+            <div class="boss-card">
+                <div style="font-weight: bold; font-size: 13px;">BINTERMAN</div>
+                <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
+                
+                <div class="atb-wrapper">
+                    <div class="atb-label-row">
+                        <span id="bossAtbIndicator" style="color: #fff;">Charging...</span>
+                    </div>
+                    <div id="bossAtbTrackFrame" class="atb-track-frame">
+                        <div id="bossAtbFill" class="atb-fill-node"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE CANVAS PLATFORM WITH SYNCED LABELS -->
+        <div class="stage-view">
+            <!-- Boss Container -->
+            <div class="sprite-container opponent-placement">
+                <img src="https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" class="wrestler-png" id="bossSprite">
+                <!-- Replace your hardcoded div with this -->
+<div class="wrestler-label" id="bossNameLabel"></div>
+            </div>
+
+            <!-- Player Container -->
+            <div class="sprite-container player-placement" id="playerSpriteWrapper">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Geoff&backgroundColor=transparent" class="wrestler-png" id="playerSprite">
+                <div class="wrestler-label" style="color:var(--color-blue);">BINTERMAN BOT</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM COMMAND CONSOLE CONTAINER (25%) -->
+    <div class="bottom-command">
+        
+        <!-- Persistent Left Menu Selection Panel -->
+        <div class="menu-column" id="persistentMenuSidebar">
+            <button class="menu-btn" id="attackMenuBtn" onclick="clickAttackMenuTab()">&gt; ATTACK</button>
+            <button class="menu-btn" id="finisherMenuBtn" style="display: none;" onclick="clickFinisherMenuTab()">&gt; FINISHER</button>
+            <button class="menu-btn" id="defendMenuBtn" disabled>&gt; DEFEND</button>
+            <button class="menu-btn" id="itemMenuBtn" disabled>&gt; ITEM</button>
+        </div>
+
+        <!-- Dynamic Context Workspace Switcher Panel -->
+        <div class="submenu-wrapper">
+            
+            <!-- SUBMENU STATE A: 10 Moves Matrix Grid Panel Layout -->
+            <div id="movesMenuSubpanel" class="moves-grid-matrix" style="display: none;"></div>
+
+            <!-- SUBMENU STATE B: WrestlePath Execution Framework Grid Layout -->
+            <div id="gridExecutionSubpanel" class="grid-panel-layout" style="display: none;">
+                <div class="grid-left-side">
+                    <div id="gridBoard" class="grid-board"></div>
+                </div>
+                
+                <div class="grid-right-side">
+                    <div class="execution-tracker-box">
+                        <div class="execution-header">
+                            <div id="executionMoveName" class="move-name-display">MOVE</div>
+                            <button class="rethink-action-btn" onclick="abortGridPuzzleExecution()">RE-THINK MOVE</button>
+                        </div>
+                        <div class="hand-label-txt" style="margin-bottom: 2px;">Target Sequence Chain:</div>
+                        <div id="executionRecipeTracker" class="recipe-dots"></div>
+                    </div>
+
+                    <div class="hand-rack-container">
+                        <div class="hand-label-txt" style="margin-bottom: 2px;">Reflex Hand:</div>
+                        <div class="hand-rack" id="handContainer"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function initUiTextProfiles() {
+    // Sync Boss Panel
+    const boss = BOSS_MANIFEST[currentBossIndex];
+    const bossArch = ARCHETYPES[boss.archetype];
+    const bossBadge = document.getElementById('hudBossBadge');
+    
+    bossBadge.style.backgroundColor = bossArch.color;
+    bossBadge.innerText = `${bossArch.name.toUpperCase()}`; // Only Name
+    
+    // Sync Boss Label below sprite
+    const bossLabel = document.getElementById('bossNameLabel');
+    bossLabel.innerText = boss.name;
+    bossLabel.style.color = bossArch.color;
+    
+    // Sync Player Panel
+    const playerArch = ARCHETYPES['B'];
+    const playerBadge = document.getElementById('hudPlayerBadge');
+    
+    playerBadge.style.backgroundColor = playerArch.color;
+    playerBadge.innerText = `${playerArch.name.toUpperCase()}`; // Only Name
+}
+        // FIXED REVERSAL MAPPING: R = Hardcore, Y = Brawler
+const ARCHETYPES = {
+    'R': { symbol: 'R', name: 'Hardcore', color: 'var(--color-red)', glowRaw: "rgba(255, 0, 0, 0.8)" },
+    'B': { symbol: 'B', name: 'Flyer', color: 'var(--color-blue)', glowRaw: "rgba(51, 102, 153, 0.8)" },
+    'G': { symbol: 'G', name: 'Technician', color: 'var(--color-green)', glowRaw: "rgba(0, 128, 0, 0.8)" },
+    'Y': { symbol: 'Y', name: 'Brawler', color: 'var(--color-yellow)', glowRaw: "rgba(241, 196, 15, 0.8)" } 
+};
+
+// This defines the "Advantage" relationship
+const STRENGTH_CYCLE = {
+    'B': 'R', // Blue (Flyer) > Red (Brawler)
+    'R': 'G', // Red (Brawler) > Green (Technician)
+    'G': 'Y', // Green (Technician) > Yellow (Hardcore)
+    'Y': 'B'  // Yellow (Hardcore) > Blue (Flyer)
+};
+
+const BOSS_MANIFEST = [
+    { 
+        name: "BINTERMAN", 
+        archetype: "Y", 
+        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" 
+    },
+    { 
+        name: "IRON SHEIK", 
+        archetype: "R", 
+        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-sheik.png" 
+    },
+    { 
+        name: "ULTIMATE WARRIOR", 
+        archetype: "G", 
+        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png" 
+    }
+];
+let currentBossIndex = 0; // Increment this when you defeat a boss
+
+const MOVES_MANIFEST = [
+    { id: 'm1', name: 'DROPKICK', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','G','Y'], gridSize: 3 },
+    { id: 'm2', name: 'GERMAN SUPLEX', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','G','R'], gridSize: 3 },
+    { id: 'm3', name: 'CHOP SERIES', cost: 1, maxUses: 5, currentUses: 5, recipe: ['R','R','Y'], gridSize: 3 },
+    { id: 'm4', name: 'ARMBAR HOLD', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','B','G'], gridSize: 3 },
+    { id: 'm5', name: 'HURRICANRANA', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','B','G'], gridSize: 3 },
+    { id: 'm6', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','Y','G','R'], gridSize: 4 },
+    { id: 'm7', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, recipe: ['B','R','B','Y'], gridSize: 4 },
+    { id: 'm8', name: 'FIGURE-4 LEGLOCK', cost: 2, maxUses: 3, currentUses: 3, recipe: ['G','Y','G','B'], gridSize: 4 },
+    { id: 'm9', name: 'CHOKESLAM', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','R','Y','Y'], gridSize: 4 },
+    { id: 'm10', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, recipe: ['R','G','B','Y','R'], gridSize: 5 }
+];
+
+        const ACTIVE_BOSS = { name: "BINTERMAN BOT", archetype: "Y" };
+        let PLAYER_STATS = {
+    'B': 0, // Flyer
+    'R': 0, // Brawler
+    'G': 0, // Technician
+    'Y': 0  // Hardcore
+};
+
+        let totalAtbChargePoints = 0.0; 
+        let bossAtbChargePoints = 0.0; 
+        const MAX_ATB_CAPACITY = 300.0; 
+        let atbIntervalLoop = null;
+        let isListActiveView = false; 
+        let isGridPuzzleExecuting = false; 
+
+        let currentHypePoints = 0; 
+        const MAX_HYPE_LIMIT = 500;
+
+        let selectedMoveInstance = null;
+        let isFinisherRunning = false; 
+        let gridMatrix = [];
+        let randomStartPos = null;
+        let playerCoordinates = null;
+        
+        let currentChainTrace = [];      
+        let successfulNodeCoords = [];  
+        let executionHand = [];
+        let selectedHandCardIndex = null;
+
+        window.onload = function() {
+            initUiTextProfiles();
+            applyDynamicCharacterPngGlow();
+            buildMovesMatrixOnce(); 
+            syncHypeMeterDisplay();
+            startAtbCycle();
+        };
+
+        function getArchetypeMultiplier(attackerArchetype, defenderArchetype) {
+    // 1. Check for Advantage: Attacker beats Defender
+    if (STRENGTH_CYCLE[attackerArchetype] === defenderArchetype) {
+        return 1.5; 
+    }
+    
+    // 2. Check for Disadvantage: Defender beats Attacker (Reverse of the cycle)
+    if (STRENGTH_CYCLE[defenderArchetype] === attackerArchetype) {
+        return 0.5; // Halve the points
+    }
+    
+    // 3. Neutral
+    return 1.0;
+}
+
+        function applyDynamicCharacterPngGlow() {
+            document.getElementById('playerSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES.B.glowRaw})`;
+            document.getElementById('bossSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES.Y.glowRaw})`; 
+        }
+
+        function syncHypeMeterDisplay() {
+            let percent = Math.floor((currentHypePoints / MAX_HYPE_LIMIT) * 100);
+            if (percent > 100) percent = 100;
+            if (percent < 0) percent = 0;
+
+            document.getElementById('hypeTxt').innerText = percent + '%';
+            document.getElementById('hypeFill').style.width = percent + '%';
+
+            const finishBtn = document.getElementById('finisherMenuBtn');
+            if (currentHypePoints >= MAX_HYPE_LIMIT) {
+                finishBtn.style.display = isGridPuzzleExecuting ? 'none' : 'block';
+            } else {
+                finishBtn.style.display = 'none';
+                finishBtn.classList.remove('active-tab');
+            }
+        }
+
+        function startAtbCycle() {
+            if (atbIntervalLoop) clearInterval(atbIntervalLoop);
+            if (isGridPuzzleExecuting) return; 
+            
+            atbIntervalLoop = setInterval(() => {
+                if (totalAtbChargePoints < MAX_ATB_CAPACITY) {
+                    totalAtbChargePoints += 1.5; 
+                    if (totalAtbChargePoints > MAX_ATB_CAPACITY) totalAtbChargePoints = MAX_ATB_CAPACITY;
+                    updatePlayerAtbVisualBar();
+                }
+                
+                if (bossAtbChargePoints < MAX_ATB_CAPACITY) {
+                    bossAtbChargePoints += 1.5;
+                    if (bossAtbChargePoints > MAX_ATB_CAPACITY) bossAtbChargePoints = MAX_ATB_CAPACITY;
+                    updateBossAtbVisualBar();
+                }
+
+                updateMoveSelectabilityState(); 
+            }, 50);
+        }
+
+        function updatePlayerAtbVisualBar() {
+            let currentTierLevel = Math.floor(totalAtbChargePoints / 100);
+            let displayPercent = totalAtbChargePoints % 100;
+            
+            if (totalAtbChargePoints === MAX_ATB_CAPACITY) { 
+                currentTierLevel = 3; 
+                displayPercent = 100; 
+            }
+
+            const fillNode = document.getElementById('playerAtbFill');
+            const lblNode = document.getElementById('atbLevelIndicator');
+            const trackFrame = document.getElementById('atbTrackFrame');
+
+            if (displayPercent === 0 && totalAtbChargePoints > 0 && totalAtbChargePoints < MAX_ATB_CAPACITY) {
+                displayPercent = 100;
+                currentTierLevel -= 1;
+            }
+
+            fillNode.style.width = displayPercent + '%';
+            trackFrame.classList.remove('atb-glow');
+
+            if (isGridPuzzleExecuting) return;
+
+            let hasAnyValidCharge = totalAtbChargePoints >= 100;
+            document.getElementById('attackMenuBtn').disabled = !hasAnyValidCharge;
+            document.getElementById('finisherMenuBtn').disabled = (totalAtbChargePoints < 300);
+
+            if (totalAtbChargePoints === 0) {
+                fillNode.style.backgroundColor = 'transparent';
+                lblNode.innerHTML = `Charging...`;
+                lblNode.style.color = "var(--atb-level-0)";
+            } else if (currentTierLevel === 0) {
+                fillNode.style.backgroundColor = 'var(--atb-level-0)'; 
+                lblNode.innerHTML = `Charging...`;
+                lblNode.style.color = "var(--atb-level-0)";
+            } else if (currentTierLevel === 1) {
+                fillNode.style.backgroundColor = 'var(--atb-level-1)'; 
+                lblNode.innerHTML = `Tier 1 Ready`;
+                lblNode.style.color = "var(--atb-level-1)";
+            } else if (currentTierLevel === 2) {
+                fillNode.style.backgroundColor = 'var(--atb-level-2)'; 
+                lblNode.innerHTML = `Tier 2 Ready`;
+                lblNode.style.color = "var(--atb-level-2)";
+            } else if (currentTierLevel === 3) {
+                fillNode.style.backgroundColor = 'var(--atb-level-3)'; 
+                trackFrame.classList.add('atb-glow');                 
+                lblNode.innerHTML = `Tier 3 Ready`;
+                lblNode.style.color = "var(--atb-level-3)";
+            }
+        }
+
+        function updateBossAtbVisualBar() {
+            let currentTierLevel = Math.floor(bossAtbChargePoints / 100);
+            let displayPercent = bossAtbChargePoints % 100;
+            
+            if (bossAtbChargePoints === MAX_ATB_CAPACITY) { 
+                currentTierLevel = 3; 
+                displayPercent = 100; 
+            }
+
+            const fillNode = document.getElementById('bossAtbFill');
+            const lblNode = document.getElementById('bossAtbIndicator');
+            const trackFrame = document.getElementById('bossAtbTrackFrame');
+
+            if (displayPercent === 0 && bossAtbChargePoints > 0 && bossAtbChargePoints < MAX_ATB_CAPACITY) {
+                displayPercent = 100;
+                currentTierLevel -= 1;
+            }
+
+            fillNode.style.width = displayPercent + '%';
+            trackFrame.classList.remove('atb-glow');
+
+            if (bossAtbChargePoints === 0) {
+                fillNode.style.backgroundColor = 'transparent';
+                lblNode.innerHTML = `Charging...`;
+                lblNode.style.color = "var(--atb-level-0)";
+            } else if (currentTierLevel === 0) {
+                fillNode.style.backgroundColor = 'var(--atb-level-0)'; 
+                lblNode.innerHTML = `Charging...`;
+                lblNode.style.color = "var(--atb-level-0)";
+            } else if (currentTierLevel === 1) {
+                fillNode.style.backgroundColor = 'var(--atb-level-1)'; 
+                lblNode.innerHTML = `Tier 1 Ready`;
+                lblNode.style.color = "var(--atb-level-1)";
+            } else if (currentTierLevel === 2) {
+                fillNode.style.backgroundColor = 'var(--atb-level-2)'; 
+                lblNode.innerHTML = `Tier 2 Ready`;
+                lblNode.style.color = "var(--atb-level-2)";
+            } else if (currentTierLevel === 3) {
+                fillNode.style.backgroundColor = 'var(--atb-level-3)'; 
+                trackFrame.classList.add('atb-glow');                 
+                lblNode.innerHTML = `Tier 3 Ready`;
+                lblNode.style.color = "var(--atb-level-3)";
+            }
+        }
+
+        function clickAttackMenuTab() {
+            if(totalAtbChargePoints < 100 || isGridPuzzleExecuting) return; 
+            
+            clearActiveMenuTabs();
+            document.getElementById('attackMenuBtn').classList.add('active-tab');
+            document.getElementById('gridExecutionSubpanel').style.display = 'none';
+            
+            isListActiveView = true;
+            updateMoveSelectabilityState();
+            document.getElementById('movesMenuSubpanel').style.display = 'grid';
+        }
+
+        function clickFinisherMenuTab() {
+            if (totalAtbChargePoints < 300 || currentHypePoints < MAX_HYPE_LIMIT || isGridPuzzleExecuting) return;
+
+            clearActiveMenuTabs();
+            document.getElementById('finisherMenuBtn').classList.add('active-tab');
+            
+            isListActiveView = false;
+            document.getElementById('movesMenuSubpanel').style.display = 'none';
+
+            let specialFinisherMove = {
+                id: 'm_finish',
+                name: 'RUNNING FINISHER',
+                cost: 3,
+                recipe: ['R', 'G', 'B', 'Y', 'R', 'B'], 
+                gridSize: 5
+            };
+
+            isFinisherRunning = true;
+            initializeGridExecution(specialFinisherMove);
+        }
+
+        function clearActiveMenuTabs() {
+            document.getElementById('attackMenuBtn').classList.remove('active-tab');
+            document.getElementById('finisherMenuBtn').classList.remove('active-tab');
+        }
+
+        function buildMovesMatrixOnce() {
+            const container = document.getElementById('movesMenuSubpanel');
+            let innerHTMLStructure = '';
+
+            MOVES_MANIFEST.forEach(move => {
+                let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
+                
+                innerHTMLStructure += `
+                    <div class="action-row-card disabled cost-${move.cost}" id="card-node-${move.id}" onclick="triggerMoveSelection('${move.id}')">
+                        <div>
+                            <div class="move-title-txt">${move.name} <span class="move-cost-sub">[COST ${move.cost}]</span></div>
+                            <div class="recipe-dots">${dotHTML}</div>
+                        </div>
+                        <div class="uses-counter-label" id="uses-node-${move.id}">USES: ${move.currentUses}/${move.maxUses}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = innerHTMLStructure;
+        }
+
+        function updateMoveSelectabilityState() {
+            if (isGridPuzzleExecuting) return; 
+            MOVES_MANIFEST.forEach(move => {
+                const targetPointsCost = move.cost * 100;
+                const atbCostMet = (totalAtbChargePoints >= targetPointsCost);
+                const hasUses = move.currentUses > 0;
+                
+                const cardEl = document.getElementById(`card-node-${move.id}`);
+                if (!cardEl) return;
+
+                if (atbCostMet && hasUses) {
+                    cardEl.classList.remove('disabled');
+                    cardEl.classList.add('selectable');
+                } else {
+                    cardEl.classList.remove('selectable');
+                    cardEl.classList.add('disabled');
+                }
+            });
+        }
+
+        window.triggerMoveSelection = function(moveId) {
+            if (isGridPuzzleExecuting) return; 
+            let move = MOVES_MANIFEST.find(m => m.id === moveId);
+            if (!move) return;
+            
+            const targetPointsCost = move.cost * 100;
+            if (totalAtbChargePoints < targetPointsCost || move.currentUses <= 0) return;
+
+            isFinisherRunning = false;
+            initializeGridExecution(move);
+        };
+
+        function initializeGridExecution(move) {
+            isGridPuzzleExecuting = true; 
+            if (atbIntervalLoop) {
+                clearInterval(atbIntervalLoop);
+                atbIntervalLoop = null;
+            }
+
+            document.getElementById('attackMenuBtn').disabled = true;
+            document.getElementById('finisherMenuBtn').disabled = true;
+
+            isListActiveView = false;
+            selectedMoveInstance = move;
+
+            totalAtbChargePoints -= (move.cost * 100);
+            if (move.id !== 'm_finish') {
+                move.currentUses--;
+                document.getElementById(`uses-node-${move.id}`).innerText = `Uses: ${move.currentUses}/${move.maxUses}`;
+            }
+            updatePlayerAtbVisualBar();
+
+            document.getElementById('movesMenuSubpanel').style.display = 'none';
+            document.getElementById('gridExecutionSubpanel').style.display = 'flex';
+
+            document.getElementById('executionMoveName').innerText = move.name;
+            
+            let trackingDotsHtml = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
+            document.getElementById('executionRecipeTracker').innerHTML = trackingDotsHtml;
+
+            currentChainTrace = [];
+            successfulNodeCoords = [];
+            selectedHandCardIndex = null;
+            playerCoordinates = null;
+
+            generateFreshExecutionHand();
+            constructGridFramework(move.gridSize);
+            updateRecipeChainProgressIcons(); 
+        }
+
+        function abortGridPuzzleExecution() {
+            isGridPuzzleExecuting = false; 
+            
+            if (selectedMoveInstance && selectedMoveInstance.id !== 'm_finish') {
+                selectedMoveInstance.currentUses++; 
+                document.getElementById(`uses-node-${selectedMoveInstance.id}`).innerText = `Uses: ${selectedMoveInstance.currentUses}/${selectedMoveInstance.maxUses}`;
+            }
+
+            isFinisherRunning = false;
+            document.getElementById('gridExecutionSubpanel').style.display = 'none';
+            document.getElementById('movesMenuSubpanel').style.display = 'none';
+            
+            clearActiveMenuTabs();
+            updatePlayerAtbVisualBar();
+            syncHypeMeterDisplay();
+            
+            if (totalAtbChargePoints >= 100) {
+                document.getElementById('attackMenuBtn').classList.add('active-tab');
+                isListActiveView = true;
+                updateMoveSelectabilityState();
+                document.getElementById('movesMenuSubpanel').style.display = 'grid';
+            }
+
+            startAtbCycle();
+        }
+
+        function generateFreshExecutionHand() {
+            executionHand = [];
+            const symbols = ['B', 'R', 'G', 'Y'];
+            for(let i=0; i<5; i++) {
+                executionHand.push(ARCHETYPES[symbols[Math.floor(Math.random() * symbols.length)]]);
+            }
+            renderHandUI();
+        }
+
+        function renderHandUI() {
+            const container = document.getElementById('handContainer');
+            container.innerHTML = '';
+            executionHand.forEach((card, idx) => {
+                let cardEl = document.createElement('div');
+                cardEl.className = `hand-card ${idx === selectedHandCardIndex ? 'selected' : ''}`;
+                cardEl.style.borderColor = card.color;
+                cardEl.style.setProperty('--card-glow', card.color);
+                
+                cardEl.onclick = () => {
+                    selectedHandCardIndex = selectedHandCardIndex === idx ? null : idx;
+                    renderHandUI();
+                    calculateValidGridPlacements();
+                };
+
+                cardEl.innerHTML = `
+                    <div class="hand-card-badge" style="background-color:${card.color}">${card.symbol}</div>
+                    <div class="hand-card-name">${card.name}</div>
+                `;
+                container.appendChild(cardEl);
+            });
+        }
+
+        function constructGridFramework(size) {
+            const board = document.getElementById('gridBoard');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            board.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+            
+            gridMatrix = [];
+            for (let r = 0; r < size; r++) {
+                gridMatrix[r] = [];
+                for (let c = 0; c < size; c++) {
+                    gridMatrix[r][c] = { occupied: false, symbol: null, color: null };
+                    
+                    let space = document.createElement('div');
+                    space.id = `space-${r}-${c}`; space.className = 'grid-space';
+                    space.onclick = () => handleGridSpaceClick(r, c);
+                    board.appendChild(space);
+                }
+            }
+
+            randomStartPos = { r: Math.floor(Math.random() * size), c: Math.floor(Math.random() * size) };
+            let spawnSpace = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
+            let label = document.createElement('div');
+            label.className = 'start-label'; label.id = 'startLabelText'; label.innerText = "START";
+            spawnSpace.appendChild(label);
+            
+            calculateValidGridPlacements();
+        }
+
+        function calculateValidGridPlacements() {
+            let legalMovesCount = 0;
+
+            for(let r=0; r<gridMatrix.length; r++) {
+                for(let c=0; c<gridMatrix[r].length; c++) {
+                    let el = document.getElementById('space-' + r + '-' + c);
+                    if (!el.classList.contains('completed')) {
+                        el.classList.remove('valid-move');
+                        el.style.removeProperty('--active-glow-color');
+                    }
+                }
+            }
+
+            if (playerCoordinates === null) {
+                legalMovesCount = 1;
+                let el = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
+                el.classList.add('valid-move');
+                if (selectedHandCardIndex !== null) {
+                    el.style.setProperty('--active-glow-color', executionHand[selectedHandCardIndex].color);
+                } else {
+                    el.style.setProperty('--active-glow-color', '#ffffff'); 
+                }
+                return;
+            }
+
+            document.getElementById(`space-${playerCoordinates.r}-${playerCoordinates.c}`).classList.add('player-here');
+
+            let potentialMoves = [
+                { r: playerCoordinates.r - 1, c: playerCoordinates.c },
+                { r: playerCoordinates.r + 1, c: playerCoordinates.c },
+                { r: playerCoordinates.r,     c: playerCoordinates.c - 1 },
+                { r: playerCoordinates.r,     c: playerCoordinates.c + 1 }
+            ];
+
+            potentialMoves.forEach(m => {
+                if(m.r >= 0 && m.r < gridMatrix.length && m.c >= 0 && m.c < gridMatrix[m.r].length) {
+                    let targetSpace = gridMatrix[m.r][m.c];
+                    if(!targetSpace.occupied) {
+                        legalMovesCount++;
+                        if (selectedHandCardIndex !== null) {
+                            let el = document.getElementById(`space-${m.r}-${m.c}`);
+                            el.classList.add('valid-move');
+                            el.style.setProperty('--active-glow-color', executionHand[selectedHandCardIndex].color);
+                        }
+                    }
+                }
+            });
+
+            if (legalMovesCount === 0) {
+                terminateExecutionPhase(false);
+            }
+        }
+
+        function handleGridSpaceClick(r, c) {
+            let el = document.getElementById(`space-${r}-${c}`);
+            if(!el.classList.contains('valid-move')) return;
+
+            if (selectedHandCardIndex === null) return;
+
+            let placedCard = executionHand[selectedHandCardIndex];
+            
+            if (playerCoordinates !== null) {
+                document.getElementById(`space-${playerCoordinates.r}-${playerCoordinates.c}`).classList.remove('player-here');
+            } else {
+                let lbl = document.getElementById('startLabelText');
+                if(lbl) lbl.classList.add('start-locked');
+            }
+
+            playerCoordinates = { r: r, c: c };
+            gridMatrix[r][c].occupied = true;
+            gridMatrix[r][c].symbol = placedCard.symbol;
+            gridMatrix[r][c].color = placedCard.color;
+
+            el.classList.add('placed-dim');
+            el.style.setProperty('--match-color', placedCard.color);
+            el.classList.add('player-here');
+
+            currentChainTrace.push({ r: r, c: c, symbol: placedCard.symbol, color: placedCard.color });
+
+            const symbols = ['B', 'R', 'G', 'Y'];
+            executionHand[selectedHandCardIndex] = ARCHETYPES[symbols[Math.floor(Math.random() * symbols.length)]];
+            selectedHandCardIndex = null;
+
+            renderHandUI();
+            updateRecipeChainProgressIcons(); 
+            evaluateComboVerification();
+        }
+
+        function updateRecipeChainProgressIcons() {
+            if (!selectedMoveInstance) return;
+            let recipe = selectedMoveInstance.recipe;
+            let maxMatchLength = 0;
+
+            for (let k = recipe.length; k > 0; k--) {
+                if (currentChainTrace.length >= k) {
+                    let tailSlice = currentChainTrace.slice(-k);
+                    let isSubsetMatched = tailSlice.every((val, idx) => val.symbol === recipe[idx]);
+                    if (isSubsetMatched) {
+                        maxMatchLength = k;
+                        break;
+                    }
+                }
+            }
+
+            let dotElements = document.querySelectorAll('#executionRecipeTracker .mini-dot');
+            dotElements.forEach((dot, idx) => {
+                if (idx < maxMatchLength) {
+                    dot.style.opacity = '1';
+                    dot.style.boxShadow = `0 0 10px ${dot.style.backgroundColor}`;
+                } else {
+                    dot.style.opacity = '0.35';
+                    dot.style.boxShadow = 'none';
+                }
+            });
+        }
+
+        function evaluateComboVerification() {
+            let targetRecipe = selectedMoveInstance.recipe;
+            
+            if (currentChainTrace.length >= targetRecipe.length) {
+                let tailSlice = currentChainTrace.slice(-targetRecipe.length);
+                let isMatch = tailSlice.every((val, index) => val.symbol === targetRecipe[index]);
+
+                if (isMatch) {
+                    successfulNodeCoords = tailSlice;
+                    terminateExecutionPhase(true);
+                    return;
+                }
+            }
+            
+            calculateValidGridPlacements();
+        }
+
+        function calculateUnusedGridSpacesBonus() {
+            let totalUnusedSquares = 0;
+            for (let r = 0; r < gridMatrix.length; r++) {
+                for (let c = 0; c < gridMatrix[r].length; c++) {
+                    if (!gridMatrix[r][c].occupied) {
+                        totalUnusedSquares++;
+                    }
+                }
+            }
+            return totalUnusedSquares * 5; 
+        }
+
+        // Inside your processSuccessfulChainScoring() function:
+function processSuccessfulChainScoring() {
+    let calculatedBatchPoints = 0;
+    let bossArch = BOSS_MANIFEST[currentBossIndex].archetype; 
+    let baseValue = 10;
+    
+    successfulNodeCoords.forEach(node => {
+        // 1. Get the stat bonus for this specific color node
+        let statBonus = PLAYER_STATS[node.symbol] || 0;
+        
+        // 2. Get your tactical multiplier (1.5 for adv, 0.5 for disadv, 1.0 for neutral)
+        let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
+        
+        // 3. Apply your formula: (Base + Stat) * Multiplier
+        calculatedBatchPoints += ((baseValue + statBonus) * multiplier);
+    });
+
+    let extraGridBonusPoints = calculateUnusedGridSpacesBonus();
+    currentHypePoints += (calculatedBatchPoints + extraGridBonusPoints);
+    
+    // Cap and refresh display
+    if (currentHypePoints > MAX_HYPE_LIMIT) currentHypePoints = MAX_HYPE_LIMIT;
+    syncHypeMeterDisplay();
+    
+    return extraGridBonusPoints;
+}
+// Example: Call this after a win
+function allocateStatPoints(archetypeKey, points) {
+    if (PLAYER_STATS.hasOwnProperty(archetypeKey)) {
+        PLAYER_STATS[archetypeKey] += points;
+        
+        // Dynamically look up the name using the ARCHETYPES constant
+        const name = ARCHETYPES[archetypeKey].name;
+        
+        console.log(`${name} (${archetypeKey}) updated! Current total: ${PLAYER_STATS[archetypeKey]}`);
+    }
+}
+
+// Usage: allocateStatPoints('B', 5);
+
+        /* DYNAMIC COMBAT SPRITE ROUTING DISPATCH ENGINE */
+        function animateCombatSprites(isSuccess, moveName) {
+            const wrapper = document.getElementById('playerSpriteWrapper');
+            if (!wrapper) return;
+
+            // Clear legacy residual tracking animations safely
+            wrapper.classList.remove('animate-dropkick', 'animate-damage');
+            void wrapper.offsetWidth; // Force hardware geometry rendering computation reflows safely
+
+            if (isSuccess) {
+                // If it is a Dropkick execution, trigger the multi-phase rotation-dash keyframe chain
+                if (moveName === "DROPKICK") {
+                    wrapper.classList.add('animate-dropkick');
+                } else {
+                    // Fallback attack sequence anchor route options can safely link here
+                    wrapper.classList.add('animate-dropkick');
+                }
+            } else {
+                // Trigger localized hardware failure jitter shake routine
+                wrapper.classList.add('animate-damage');
+            }
+        }
+
+        function terminateExecutionPhase(isSuccess) {
+            isGridPuzzleExecuting = false; 
+            const toast = document.getElementById('combatToast');
+            const title = document.getElementById('toastTitle');
+            const desc = document.getElementById('toastDesc');
+
+            clearActiveMenuTabs();
+            
+            // Route structural graphic vectors
+            animateCombatSprites(isSuccess, selectedMoveInstance ? selectedMoveInstance.name : "");
+
+            if (isSuccess) {
+                if (isFinisherRunning) {
+                    title.innerText = "FINISHER SUCCESSFUL!";
+                    title.style.color = "var(--color-yellow)";
+                    desc.innerText = "ULTIMATE PIN COMBINATION SECURED! MATCH WON!";
+                    toast.style.borderColor = "var(--color-yellow)";
+                    currentHypePoints = MAX_HYPE_LIMIT;
+                } else {
+                    let sideBonusAwarded = processSuccessfulChainScoring();
+                    title.innerText = "HIT SUCCESSFUL!";
+                    title.style.color = "var(--color-green)";
+                    desc.innerText = `${selectedMoveInstance.name} connected perfectly.\nGrid Clear Efficiency Bonus added: +${sideBonusAwarded} Hype.`;
+                    toast.style.borderColor = "var(--color-green)";
+                }
+
+                successfulNodeCoords.forEach(node => {
+                    let cellEl = document.getElementById(`space-${node.r}-${node.c}`);
+                    if(cellEl) {
+                        cellEl.classList.remove('placed-dim', 'player-here');
+                        cellEl.classList.add('completed');
+                        cellEl.style.setProperty('--match-color', node.color);
+                    }
+                });
+            } else {
+                if (isFinisherRunning) {
+                    title.innerText = "FINISHER CRITICAL FAIL!";
+                    title.style.color = "var(--color-red)";
+                    desc.innerText = "Finisher reversed! Hype plummeted back down to 80%.";
+                    toast.style.borderColor = "var(--color-red)";
+                    currentHypePoints = 400; 
+                } else {
+                    title.innerText = "MOVE REVERSED!";
+                    title.style.color = "var(--color-red)";
+                    desc.innerText = "Wrestler got trapped and boxed out of position. Counter damage sustained.";
+                    toast.style.borderColor = "var(--color-red)";
+                }
+                syncHypeMeterDisplay();
+            }
+
+            toast.classList.add('active');
+            isFinisherRunning = false;
+
+            setTimeout(() => {
+                toast.classList.remove('active');
+                
+                document.getElementById('gridExecutionSubpanel').style.display = 'none';
+                document.getElementById('movesMenuSubpanel').style.display = 'none';
+                
+                updatePlayerAtbVisualBar();
+                updateBossAtbVisualBar();
+                syncHypeMeterDisplay();
+                
+                if (totalAtbChargePoints >= 100) {
+                    document.getElementById('attackMenuBtn').classList.add('active-tab');
+                    isListActiveView = true;
+                    updateMoveSelectabilityState();
+                    document.getElementById('movesMenuSubpanel').style.display = 'grid';
+                }
+                
+                startAtbCycle();
+            }, 1800); 
+        }
+    </script>
+</body>
+</html>
