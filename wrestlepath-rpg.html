@@ -308,7 +308,8 @@
 
             <!-- BOSS CARD (RIGHT PANEL) -->
             <div class="boss-card">
-                <div style="font-weight: bold; font-size: 13px;">BINTERMAN</div>
+                <div id="bossNameHeader" style="font-weight: bold; font-size: 13px;">BINTERMAN</div>
+    <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
                 <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
                 
                 <div class="atb-wrapper">
@@ -384,25 +385,34 @@
 
     <script>
         function initUiTextProfiles() {
-    // Sync Boss Panel
+    if (currentBossIndex >= BOSS_MANIFEST.length) return;
+
     const boss = BOSS_MANIFEST[currentBossIndex];
     const bossArch = ARCHETYPES[boss.archetype];
+    
+    // 1. Update the Header Name (The part that was hardcoded)
+    const bossHeader = document.getElementById('bossNameHeader');
+    bossHeader.innerText = boss.name;
+
+    // 2. Update Boss Badge (Archetype Name)
     const bossBadge = document.getElementById('hudBossBadge');
-    
     bossBadge.style.backgroundColor = bossArch.color;
-    bossBadge.innerText = `${bossArch.name.toUpperCase()}`; // Only Name
+    bossBadge.innerText = `${bossArch.name.toUpperCase()}`; 
     
-    // Sync Boss Label below sprite
+    // 3. Update Boss Label below sprite
     const bossLabel = document.getElementById('bossNameLabel');
     bossLabel.innerText = boss.name;
     bossLabel.style.color = bossArch.color;
-    
-    // Sync Player Panel
+
+    // 4. Update the Sprite Image
+    const bossSprite = document.getElementById('bossSprite');
+    bossSprite.src = boss.img; 
+
+    // 5. Sync Player Panel
     const playerArch = ARCHETYPES['B'];
     const playerBadge = document.getElementById('hudPlayerBadge');
-    
     playerBadge.style.backgroundColor = playerArch.color;
-    playerBadge.innerText = `${playerArch.name.toUpperCase()}`; // Only Name
+    playerBadge.innerText = `${playerArch.name.toUpperCase()}`;
 }
         // FIXED REVERSAL MAPPING: R = Hardcore, Y = Brawler
 const ARCHETYPES = {
@@ -426,7 +436,7 @@ const BOSS_MANIFEST = [
         archetype: "Y", 
         img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png",
         basePoints: 10, // Base points per square
-        winThreshold: 500 // Points needed to defeat boss 
+        winThreshold: 10 // Points needed to defeat boss 
     },
     { 
         name: "IRON SHEIK", 
@@ -474,7 +484,7 @@ const MOVES_MANIFEST = [
         let isGridPuzzleExecuting = false; 
 
         let currentHypePoints = 0; 
-        const MAX_HYPE_LIMIT = 500;
+        const MAX_HYPE_LIMIT = 10;
 
         let selectedMoveInstance = null;
         let isFinisherRunning = false; 
@@ -516,12 +526,19 @@ const MOVES_MANIFEST = [
         }
 
         function syncHypeMeterDisplay() {
-            let percent = Math.floor((currentHypePoints / MAX_HYPE_LIMIT) * 100);
-            if (percent > 100) percent = 100;
-            if (percent < 0) percent = 0;
+    // Get the dynamic threshold for the current boss
+    const currentBoss = BOSS_MANIFEST[currentBossIndex];
+    const threshold = currentBoss.winThreshold;
+    
+    // Calculate percentage based on the threshold
+    let percent = Math.floor((currentHypePoints / threshold) * 100);
+    
+    // Cap the visuals at 100%
+    if (percent > 100) percent = 100;
+    if (percent < 0) percent = 0;
 
-            document.getElementById('hypeTxt').innerText = percent + '%';
-            document.getElementById('hypeFill').style.width = percent + '%';
+    document.getElementById('hypeTxt').innerText = percent + '%';
+    document.getElementById('hypeFill').style.width = percent + '%';
 
             const finishBtn = document.getElementById('finisherMenuBtn');
             if (currentHypePoints >= MAX_HYPE_LIMIT) {
@@ -662,13 +679,14 @@ const MOVES_MANIFEST = [
         }
 
         function checkWinCondition() {
-    // Get the current boss object
     const currentBoss = BOSS_MANIFEST[currentBossIndex];
     
-    // Check if player has met the threshold for THIS boss
+    // Check if threshold is met
     if (currentHypePoints >= currentBoss.winThreshold) {
-        console.log(`Defeated ${currentBoss.name}!`);
-        advanceToNextBoss();
+        // Instead of advancing, we just reveal the Finisher
+        const finishBtn = document.getElementById('finisherMenuBtn');
+        finishBtn.style.display = 'block'; 
+        console.log("Threshold met! Finisher is now available.");
     }
 }
 
@@ -1031,20 +1049,23 @@ function processSuccessfulChainScoring() {
     let calculatedBatchPoints = 0;
     let boss = BOSS_MANIFEST[currentBossIndex]; // Get the active boss
     let bossArch = boss.archetype; 
-    let baseValue = boss.basePoints; // Dynamic value from manifest
+    let baseValue = boss.basePoints; 
     
     successfulNodeCoords.forEach(node => {
         let statBonus = PLAYER_STATS[node.symbol] || 0;
         let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
         
-        // Use the boss-specific baseValue
         calculatedBatchPoints += ((baseValue + statBonus) * multiplier);
     });
 
     let extraGridBonusPoints = calculateUnusedGridSpacesBonus();
     currentHypePoints += (calculatedBatchPoints + extraGridBonusPoints);
     
-    if (currentHypePoints > MAX_HYPE_LIMIT) currentHypePoints = MAX_HYPE_LIMIT;
+    // UPDATE THIS LINE: Change currentBoss to boss
+    if (currentHypePoints > boss.winThreshold) { 
+        currentHypePoints = boss.winThreshold;
+    }
+    
     syncHypeMeterDisplay();
     
     return extraGridBonusPoints;
@@ -1098,13 +1119,18 @@ function allocateStatPoints(archetypeKey, points) {
             animateCombatSprites(isSuccess, selectedMoveInstance ? selectedMoveInstance.name : "");
 
             if (isSuccess) {
-                if (isFinisherRunning) {
-                    title.innerText = "FINISHER SUCCESSFUL!";
-                    title.style.color = "var(--color-yellow)";
-                    desc.innerText = "ULTIMATE PIN COMBINATION SECURED! MATCH WON!";
-                    toast.style.borderColor = "var(--color-yellow)";
-                    currentHypePoints = MAX_HYPE_LIMIT;
-                } else {
+        if (isFinisherRunning) {
+            title.innerText = "FINISHER SUCCESSFUL!";
+            title.style.color = "var(--color-yellow)";
+            desc.innerText = "ULTIMATE PIN COMBINATION SECURED! MATCH WON!";
+            toast.style.borderColor = "var(--color-yellow)";
+            
+            // 1. Advance the boss immediately upon successful finisher
+            advanceToNextBoss();
+            
+            // 2. Hide the finisher button for the next match
+            document.getElementById('finisherMenuBtn').style.display = 'none';
+        } else {
                     let sideBonusAwarded = processSuccessfulChainScoring();
                     title.innerText = "HIT SUCCESSFUL!";
                     title.style.color = "var(--color-green)";
