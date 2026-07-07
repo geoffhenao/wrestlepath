@@ -19,7 +19,7 @@
             
             /* ATB Cyclic Tier Colors */
             --atb-level-0: #ffffff; /* White */
-            --atb-level-1: #336699; /* Blue */
+            --atb-level-1: #3388ff; /* Blue */
             --atb-level-2: #008000; /* Green */
             --atb-level-3: #ff3333; /* Red */
 
@@ -424,17 +424,23 @@ const BOSS_MANIFEST = [
     { 
         name: "BINTERMAN", 
         archetype: "Y", 
-        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" 
+        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png",
+        basePoints: 10, // Base points per square
+        winThreshold: 500 // Points needed to defeat boss 
     },
     { 
         name: "IRON SHEIK", 
         archetype: "R", 
-        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-sheik.png" 
+        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-sheik.png",
+        basePoints: 15,
+        winThreshold: 750
     },
     { 
         name: "ULTIMATE WARRIOR", 
         archetype: "G", 
-        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png" 
+        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png",
+        basePoints: 20,
+        winThreshold: 1000 
     }
 ];
 let currentBossIndex = 0; // Increment this when you defeat a boss
@@ -654,6 +660,23 @@ const MOVES_MANIFEST = [
             updateMoveSelectabilityState();
             document.getElementById('movesMenuSubpanel').style.display = 'grid';
         }
+
+        function checkWinCondition() {
+    // Get the current boss object
+    const currentBoss = BOSS_MANIFEST[currentBossIndex];
+    
+    // Check if player has met the threshold for THIS boss
+    if (currentHypePoints >= currentBoss.winThreshold) {
+        console.log(`Defeated ${currentBoss.name}!`);
+        advanceToNextBoss();
+    }
+}
+
+function advanceToNextBoss() {
+    currentBossIndex++;
+    currentHypePoints = 0; // Reset meter for next fight
+    initUiTextProfiles(); // Refresh everything for the new boss
+}
 
         function clickFinisherMenuTab() {
             if (totalAtbChargePoints < 300 || currentHypePoints < MAX_HYPE_LIMIT || isGridPuzzleExecuting) return;
@@ -1006,24 +1029,21 @@ const MOVES_MANIFEST = [
         // Inside your processSuccessfulChainScoring() function:
 function processSuccessfulChainScoring() {
     let calculatedBatchPoints = 0;
-    let bossArch = BOSS_MANIFEST[currentBossIndex].archetype; 
-    let baseValue = 10;
+    let boss = BOSS_MANIFEST[currentBossIndex]; // Get the active boss
+    let bossArch = boss.archetype; 
+    let baseValue = boss.basePoints; // Dynamic value from manifest
     
     successfulNodeCoords.forEach(node => {
-        // 1. Get the stat bonus for this specific color node
         let statBonus = PLAYER_STATS[node.symbol] || 0;
-        
-        // 2. Get your tactical multiplier (1.5 for adv, 0.5 for disadv, 1.0 for neutral)
         let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
         
-        // 3. Apply your formula: (Base + Stat) * Multiplier
+        // Use the boss-specific baseValue
         calculatedBatchPoints += ((baseValue + statBonus) * multiplier);
     });
 
     let extraGridBonusPoints = calculateUnusedGridSpacesBonus();
     currentHypePoints += (calculatedBatchPoints + extraGridBonusPoints);
     
-    // Cap and refresh display
     if (currentHypePoints > MAX_HYPE_LIMIT) currentHypePoints = MAX_HYPE_LIMIT;
     syncHypeMeterDisplay();
     
