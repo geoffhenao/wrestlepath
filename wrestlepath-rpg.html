@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-7VTBFP1ZC2');
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>WrestlePath: RPG Battle System v1</title>
@@ -18,16 +12,17 @@
             --panel-bg: #0c0c10;
             
             /* ATB Cyclic Tier Colors */
-            --atb-level-0: #ffffff; /* White */
-            --atb-level-1: #3388ff; /* Blue */
-            --atb-level-2: #008000; /* Green */
-            --atb-level-3: #ff3333; /* Red */
+            --atb-level-0: #ffffff; 
+            --atb-level-1: #3388ff; 
+            --atb-level-2: #008000; 
+            --atb-level-3: #ff3333; 
 
             /* Style Archetype Definitions */
             --color-blue: #336699;
             --color-red: #ff0000;
             --color-green: #008000;
             --color-yellow: #f1c40f;
+            --color-white: #ffffff;
         }
 
         /* STRICT GLOBAL FONT PARITY ENFORCEMENT */
@@ -46,14 +41,14 @@
 
         /* RESPONSIVE LAYOUT MATRIX CONTROLLERS */
         .top-arena {
-            height: 75vh; width: 100vw;
+            height: 72vh; width: 100vw;
             border-bottom: 4px solid #222;
             position: relative; background: linear-gradient(180deg, #050508 0%, #15151f 100%);
             padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
         }
 
         .bottom-command {
-            height: 25vh; width: 100vw;
+            height: 28vh; width: 100vw;
             background-color: var(--panel-bg);
             position: relative; padding: 6px;
             display: flex; gap: 12px;
@@ -97,19 +92,9 @@
             border-radius: 6px;
             border: 1px solid #333;
         }
-        .hype-header, .momentum-header { display: flex; justify-content: center; font-size: 13px; font-weight: bold; margin-bottom: 4px; letter-spacing: 1px; }
-        .hype-track, .momentum-track { border: 2px solid #444; height: 26px; border-radius: 13px; overflow: hidden; position: relative; background: #111; }
+        .hype-header { display: flex; justify-content: center; font-size: 14px; font-weight: bold; margin-bottom: 4px; letter-spacing: 2px; color: #fff; }
+        .hype-track { border: 2px solid #444; height: 26px; border-radius: 13px; overflow: hidden; position: relative; background: #111; }
         .hype-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff0000, #f1c40f, #00ff00); transition: width 0.3s ease; }
-        
-        /* Bidirectional Custom Fill Setup */
-        .momentum-fill { 
-            position: absolute;
-            top: 0;
-            height: 100%; 
-            width: 0%;
-            transition: left 0.15s ease, width 0.15s ease, background-color 0.3s ease;
-        }
-        .momentum-center-notch { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #fff; opacity: 0.4; transform: translateX(-50%); z-index: 5; }
 
         /* ATB METER BARS WITH CENTERED TEXT LABELS */
         .atb-wrapper { margin-top: 8px; width: 100%; }
@@ -129,7 +114,6 @@
         .sprite-container { 
             position: absolute; width: 22vw; height: 35vh; max-width: 220px; max-height: 260px; 
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
-            /* Clean transitions for center pin dive mechanism */
             transition: top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
@@ -209,10 +193,10 @@
         }
 
         /* WIN AND PINFALL CINEMATIC OVERLAYS */
-                .pin-count-overlay {
+        .pin-count-overlay {
             position: absolute;
             top: 40%;
-            left: 25%; /* Shifted to the left side */
+            left: 25%;
             transform: translate(-50%, -50%) scale(0.1);
             font-size: 110px;
             font-weight: 900;
@@ -252,12 +236,18 @@
             position: absolute;
             font-size: 24px;
             font-weight: 900;
-            color: #ff3333;
             text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 4px 8px rgba(0,0,0,0.8);
             pointer-events: none;
             z-index: 1000;
             animation: damageFloatUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
+
+        .damage-base { color: #ff3333; line-height: 1; }
+        .damage-bonus { color: #3388ff; font-size: 18px; margin-top: -2px; line-height: 1; }
 
         @keyframes damageFloatUp {
             0% { opacity: 0; transform: translateY(0) scale(0.6); }
@@ -298,7 +288,7 @@
         .animate-damage { animation: damageShakeSequence 0.6s linear forwards; }
         .animate-damage-delayed { animation: damageShakeSequence 0.6s linear 0.5s forwards; }
 
-                /* CENTER PINFALL POSITION OVERRIDE CLASSES */
+        /* CENTER PINFALL POSITION OVERRIDE CLASSES */
         .player-center-pin {
             bottom: 35% !important; left: 50% !important; top: auto !important; right: auto !important;
             transform: translate(-50%, 0) !important;
@@ -326,7 +316,7 @@
         /* DYNAMIC CONTENT WRAPPER CONTAINER */
         .submenu-wrapper { flex: 1; height: 100%; position: relative; overflow: hidden; }
 
-        /* MOVES MATRIX WORKSPACE GRID - Perfectly Aligned via Grid Columns */
+        /* MOVES MATRIX WORKSPACE GRID */
         .moves-grid-matrix {
             display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr);
             gap: 2px 4px; height: 100%; width: 100%; padding: 2px 0;
@@ -368,44 +358,42 @@
         /* PUZZLE GRID EXECUTION OVERLAY LAYOUT */
         .grid-panel-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; height: 100%; width: 100%; padding: 2px 0; }
         
-        /* Dynamic Matrix Area Switching Vectors */
         .layout-left-selected .exec-tools-area { grid-column: 1; grid-row: 1; }
         .layout-left-selected .exec-board-area { grid-column: 2; grid-row: 1; }
         .layout-right-selected .exec-tools-area { grid-column: 2; grid-row: 1; }
         .layout-right-selected .exec-board-area { grid-column: 1; grid-row: 1; }
 
-        /* Execution Tool Blocks Consolidated Container */
         .exec-tools-area { display: flex; flex-direction: column; gap: 4px; height: 100%; min-height: 0; }
         
-        /* Unified Info Top Panel */
+        /* Execution Unified Card Redesign */
         .execution-unified-card {
             background-color: #13131a;
             border-radius: 4px;
-            padding: 10px 14px;
+            padding: 8px 12px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            height: 45%;
+            flex-shrink: 0; /* Prevents overlap crushing */
         }
-        .unified-header { display: flex; justify-content: space-between; align-items: center; }
-        .unified-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: bold; color: #fff; text-transform: uppercase; }
-        .unified-cost { font-size: 13px; color: #888; }
+        .unified-header { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .unified-title { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 24px; font-weight: bold; color: #fff; text-transform: uppercase; text-align: center; line-height: 1; }
+        .unified-cost { font-size: 14px; color: #888; }
         
-        .large-recipe { display: flex; justify-content: center; gap: 8px; width: 100%; }
+        .large-recipe { display: flex; justify-content: center; gap: 10px; width: 100%; margin: 6px 0; }
         .large-recipe .mini-dot {
-            width: 32px; height: 32px; line-height: 32px; font-size: 14px; border-radius: 4px;
+            width: 50px; height: 50px; line-height: 50px; font-size: 20px; border-radius: 6px;
             opacity: 0.35; transition: opacity 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 11px; padding: 4px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; transition: all 0.2s; }
+        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 14px; padding: 6px 16px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: all 0.2s; margin-top: 4px; }
         .rethink-action-btn:hover:not(:disabled) { background: #551111; color: #fff; }
         .rethink-action-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; color: #555; }
 
-        /* Vertical Reflex Cards Container */
         .hand-rack-container { 
             display: flex; flex-direction: column; background-color: rgba(0, 128, 0, 0.08); border: 1px solid rgba(0, 128, 0, 0.4);
-            box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.15); border-radius: 4px; padding: 6px 12px 10px 12px; gap: 6px; flex: 1; height: 55%;
+            box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.15); border-radius: 4px; padding: 4px 8px 6px 8px; gap: 4px; flex: 1; min-height: 0;
         }
         .hand-label-txt { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; text-align: center; }
         
@@ -420,7 +408,6 @@
         .hand-card-badge { width: 24px; height: 24px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; color:#fff; flex-shrink: 0; }
         .hand-card-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #eee; font-weight: bold; text-align: center; line-height: 1.2; word-wrap: break-word; }
 
-        /* Puzzle Board Retains Intense Original Aesthetic Glows */
         .exec-board-area { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
         .grid-board {
             display: grid; background-color: #050508; padding: 4px; border: 3px solid var(--yellow-jeopardy); border-radius: 6px;
@@ -509,7 +496,6 @@
         }
         .envelope-section-heading { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: #555; margin: 10px 0 5px 0; font-weight: bold; }
         
-        /* Updated Highlight Row Alignment */
         .envelope-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 16px; margin: 6px 0; }
         .envelope-stat-label { font-weight: bold; flex-shrink: 0; }
         .envelope-stat-row span:last-child { display: flex; flex-direction: column; align-items: flex-end; text-align: right; max-width: 60%; word-wrap: break-word; }
@@ -525,15 +511,12 @@
         
         .envelope-signature-area { margin-top: 25px; min-height: 55px; display: flex; justify-content: center; align-items: center; }
         
-        /* Signature Line Button Styling */
         .envelope-cash-out-btn {
             display: block; width: 80%; background: none; border: none; border-bottom: 2px dashed #777;
             font-size: 16px; font-weight: bold; color: #777; padding: 10px; margin: 0 auto; cursor: pointer; text-align: center;
             transition: color 0.2s, border-bottom-color 0.2s;
         }
-        .envelope-cash-out-btn:hover {
-            color: #111; border-bottom-color: #111;
-        }
+        .envelope-cash-out-btn:hover { color: #111; border-bottom-color: #111; }
 
         .envelope-player-signature {
             font-size: 24px; font-weight: bold; color: #003366;
@@ -555,7 +538,7 @@
             <div class="flyer-matchup">
                 <div class="wrestler-card player-side">
                     <h2>GEOFF</h2>
-                    <p id="flyerPlayerSubtitle">The High-Flying Tech Prodigy</p>
+                    <p id="flyerPlayerSubtitle">The Blank Slate</p>
                 </div>
                 
                 <div class="vs-text">VS</div>
@@ -612,12 +595,11 @@
                 <div class="envelope-payout-amount" id="envPayoutCashDisplay">PAYDAY: $0.00</div>
             </div>
 
-                        <div class="envelope-signature-area" id="envelopeSigArea" style="flex-direction: column; justify-content: center; gap: 10px;">
+            <div class="envelope-signature-area" id="envelopeSigArea" style="flex-direction: column; justify-content: center; gap: 10px;">
                 <button class="envelope-cash-out-btn" onclick="executePlayerSignatureSignOff()">
                     [ SIGN PAYDAY SLIP ]
                 </button>
                 <div style="border-bottom: 2px dashed #777; width: 80%; height: 10px;"></div>
-            </div>
             </div>
         </div>
     </div>
@@ -628,7 +610,7 @@
         <div class="hud-row">
             <div class="player-card">
                 <div style="font-weight: bold; font-size: 13px;">GEOFF</div>
-                <span id="hudPlayerBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-blue); color:#fff;"></span>
+                <span id="hudPlayerBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-white); color:#000;">WILDCARD</span>
                 
                 <div class="atb-wrapper">
                     <div class="atb-label-row">
@@ -641,22 +623,13 @@
             </div>
 
             <div class="hype-container">
-                <div>
-                    <div class="hype-header"><span>HYPE</span></div>
-                    <div class="hype-track"><div id="hypeFill" class="hype-fill"></div></div>
-                </div>
-                <div>
-                    <div class="momentum-header"><span>MOMENTUM</span></div>
-                    <div class="momentum-track">
-                        <div class="momentum-center-notch"></div>
-                        <div id="momentumFill" class="momentum-fill"></div>
-                    </div>
-                </div>
+                <div class="hype-header"><span>HYPE METER</span></div>
+                <div class="hype-track"><div id="hypeFill" class="hype-fill"></div></div>
             </div>
 
             <div class="boss-card">
                 <div id="bossNameHeader" style="font-weight: bold; font-size: 13px;">BINTERMAN</div>
-                <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
+                <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#000;"></span>
                 
                 <div class="atb-wrapper">
                     <div class="atb-label-row">
@@ -723,7 +696,6 @@
             uniqueMovesUsed: new Set(),
             moveExecutionCounter: {},
             totalPointsScored: 0,
-            highMomentumTicks: 0,
             totalTicks: 0
         };
 
@@ -731,7 +703,8 @@
             'R': { symbol: 'R', name: 'Hardcore', color: 'var(--color-red)', glowRaw: "rgba(255, 0, 0, 0.8)" },
             'B': { symbol: 'B', name: 'Flyer', color: 'var(--color-blue)', glowRaw: "rgba(51, 102, 153, 0.8)" },
             'G': { symbol: 'G', name: 'Technician', color: 'var(--color-green)', glowRaw: "rgba(0, 128, 0, 0.8)" },
-            'Y': { symbol: 'Y', name: 'Brawler', color: 'var(--color-yellow)', glowRaw: "rgba(241, 196, 15, 0.8)" } 
+            'Y': { symbol: 'Y', name: 'Brawler', color: 'var(--color-yellow)', glowRaw: "rgba(241, 196, 15, 0.8)" },
+            'W': { symbol: 'W', name: 'Wildcard', color: 'var(--color-white)', glowRaw: "rgba(255, 255, 255, 0.8)" }
         };
 
         const STRENGTH_CYCLE = {
@@ -744,64 +717,61 @@
                 archetype: "Y", 
                 img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png",
                 basePoints: 10, 
-                winThreshold: 10 
+                winThreshold: 500
             },
             { 
                 name: "GEOFF (AND A GAGGLE OF GIRLS)", 
                 archetype: "R", 
                 img: "https://geoffhenao.github.io/wrestlepath/images/geoff-by-isamar-2018.png",
                 basePoints: 15,
-                winThreshold: 750
+                winThreshold: 1000
             },
             { 
                 name: "ULTIMATE WARRIOR", 
                 archetype: "G", 
                 img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png",
                 basePoints: 20,
-                winThreshold: 1000 
+                winThreshold: 1500 
             }
         ];
 
         const MOVES_MANIFEST = [
             { id: 'm1', name: 'DROPKICK', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','G','Y'], gridSize: 3 },
             { id: 'm2', name: 'GERMAN SUPLEX', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','G','R'], gridSize: 3 },
-            { id: 'm3', name: 'CHOP SERIES', cost: 1, maxUses: 5, currentUses: 5, recipe: ['R','R','Y'], gridSize: 3 },
-            { id: 'm4', name: 'ARMBAR HOLD', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','B','G'], gridSize: 3 },
-            { id: 'm5', name: 'HURRICANRANA', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','B','G'], gridSize: 3 },
-            { id: 'm6', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','Y','G','R'], gridSize: 4 },
-            { id: 'm7', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, recipe: ['B','R','B','Y'], gridSize: 4 },
-            { id: 'm8', name: 'FIGURE-4 LEGLOCK', cost: 2, maxUses: 3, currentUses: 3, recipe: ['G','Y','G','B'], gridSize: 4 },
-            { id: 'm9', name: 'CHOKESLAM', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','R','Y','Y'], gridSize: 4 },
-            { id: 'm10', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, recipe: ['R','G','B','Y','R'], gridSize: 5 }
+            { id: 'm3', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','Y','G','R'], gridSize: 4 },
+            { id: 'm4', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, recipe: ['B','R','B','Y'], gridSize: 4 },
+            { id: 'm5', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, recipe: ['R','G','B','Y','R'], gridSize: 5 }
         ];
 
         const ARCHETYPE_NICKNAMES = {
             'R': ["The Hardcore Icon", "The Sultan of Scars", "The Deathmatch Legend", "The Unhinged Anarchist"],
             'B': ["The High-Flying Prodigy", "The Aerial Assassin", "The Daredevil Sensation", "The Gravity Defier"],
             'G': ["The Technical Wizard", "The Submission Master", "The Ring General", "The Master Tactician"],
-            'Y': ["The Unstoppable Bruiser", "The King of the Brawl", "The Concrete Heavyweight", "The Powerhouse Striker"]
+            'Y': ["The Unstoppable Bruiser", "The King of the Brawl", "The Concrete Heavyweight", "The Powerhouse Striker"],
+            'W': ["The Blank Slate", "The Unpredictable Enigma", "The Maverick", "The Rogue Element"]
         };
 
         const BOSS_ATTACKS_MANIFEST = {
             1: [
-                { name: "CLUBBING FOREARM", hypePen: 0.05, momPen: 5, dmg: 10 },
-                { name: "CHOP SERIES", hypePen: 0.05, momPen: 5, dmg: 12 },
-                { name: "BIG BOOT", hypePen: 0.05, momPen: 5, dmg: 15 }
+                { name: "CLUBBING FOREARM", dmgPct: 0.02 },
+                { name: "CHOP SERIES", dmgPct: 0.025 },
+                { name: "BIG BOOT", dmgPct: 0.03 }
             ],
             2: [
-                { name: "BRUISER LARIAT", hypePen: 0.10, momPen: 10, dmg: 25 },
-                { name: "BACKBREAKER", hypePen: 0.10, momPen: 10, dmg: 28 },
-                { name: "GERMAN SUPLEX", hypePen: 0.10, momPen: 10, dmg: 30 }
+                { name: "BRUISER LARIAT", dmgPct: 0.05 },
+                { name: "BACKBREAKER", dmgPct: 0.055 },
+                { name: "GERMAN SUPLEX", dmgPct: 0.06 }
             ],
             3: [
-                { name: "MEGA POWERBOMB", hypePen: 0.15, momPen: 15, dmg: 45 },
-                { name: "CHOKESLAM TO HELL", hypePen: 0.15, momPen: 15, dmg: 50 },
-                { name: "SPIKE PILEDRIVER", hypePen: 0.15, momPen: 15, dmg: 55 }
+                { name: "MEGA POWERBOMB", dmgPct: 0.09 },
+                { name: "CHOKESLAM TO HELL", dmgPct: 0.10 },
+                { name: "SPIKE PILEDRIVER", dmgPct: 0.11 }
             ]
         };
 
         let currentBossIndex = 0; 
-        let PLAYER_STATS = { 'B': 0, 'R': 0, 'G': 0, 'Y': 0 };
+        let PLAYER_STATS = { 'B': 0, 'R': 0, 'G': 0, 'Y': 0, 'W': 0 };
+        let currentPlayerArchetype = 'W';
 
         let totalAtbChargePoints = 0.0; 
         let bossAtbChargePoints = 0.0; 
@@ -814,7 +784,6 @@
         let isFinisherPinnedVictory = false; 
 
         let currentHypePoints = 0; 
-        let currentMomentum = 50.0; 
 
         let selectedMoveInstance = null;
         let isFinisherRunning = false; 
@@ -833,11 +802,10 @@
             applyDynamicCharacterPngGlow();
             buildMovesMatrixOnce(); 
             syncHypeMeterDisplay();
-            syncMomentumBar();
         };
 
         function getDynamicClassNickname(archetypeKey) {
-            const pool = ARCHETYPE_NICKNAMES[archetypeKey] || ARCHETYPE_NICKNAMES['Y'];
+            const pool = ARCHETYPE_NICKNAMES[archetypeKey] || ARCHETYPE_NICKNAMES['W'];
             return pool[Math.floor(Math.random() * pool.length)];
         }
 
@@ -852,14 +820,16 @@
 
             const bossBadge = document.getElementById('hudBossBadge');
             bossBadge.style.backgroundColor = bossArch.color;
+            bossBadge.style.color = '#000';
             bossBadge.innerText = `${bossArch.name.toUpperCase()}`; 
             
             const bossSprite = document.getElementById('bossSprite');
             bossSprite.src = boss.img; 
 
-            const playerArch = ARCHETYPES['B'];
+            const playerArch = ARCHETYPES[currentPlayerArchetype];
             const playerBadge = document.getElementById('hudPlayerBadge');
             playerBadge.style.backgroundColor = playerArch.color;
+            playerBadge.style.color = currentPlayerArchetype === 'W' ? '#000' : '#fff';
             playerBadge.innerText = `${playerArch.name.toUpperCase()}`;
 
             const venueBg = document.getElementById('venueBackgroundLayer');
@@ -874,7 +844,7 @@
                 document.getElementById('flyerVenueNode').innerText = "LIVE FROM THE AMERICAN LEGION POST #12";
             }
 
-            document.getElementById('flyerPlayerSubtitle').innerText = getDynamicClassNickname('B');
+            document.getElementById('flyerPlayerSubtitle').innerText = getDynamicClassNickname('W');
             document.getElementById('flyerOpponentSubtitle').innerText = getDynamicClassNickname(boss.archetype);
             document.getElementById('flyerOpponentName').innerText = boss.name;
         }
@@ -901,9 +871,8 @@
             MATCH_TRACKER.uniqueMovesUsed.clear();
             MATCH_TRACKER.moveExecutionCounter = {};
             MATCH_TRACKER.totalPointsScored = 0;
-            MATCH_TRACKER.highMomentumTicks = 0;
             MATCH_TRACKER.totalTicks = 0;
-            currentMomentum = 50.0;
+            
             isFinisherPinnedVictory = false;
             isPlayerExecuting = false;
             isBossExecuting = false;
@@ -918,7 +887,7 @@
         }
 
         function applyDynamicCharacterPngGlow() {
-            document.getElementById('playerSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES.B.glowRaw})`;
+            document.getElementById('playerSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES[currentPlayerArchetype].glowRaw})`;
             const currentBoss = BOSS_MANIFEST[currentBossIndex];
             const bossArch = ARCHETYPES[currentBoss.archetype];
             document.getElementById('bossSprite').style.filter = `drop-shadow(0 0 16px ${bossArch.glowRaw})`; 
@@ -943,24 +912,7 @@
             }
         }
 
-        function syncMomentumBar() {
-            if (currentMomentum > 100) currentMomentum = 100;
-            if (currentMomentum < 0) currentMomentum = 0;
-
-            const mFill = document.getElementById('momentumFill');
-
-            if (currentMomentum >= 50) {
-                mFill.style.left = "50%";
-                mFill.style.width = (currentMomentum - 50) + "%";
-                mFill.style.backgroundColor = "#00ff00"; 
-            } else {
-                mFill.style.left = currentMomentum + "%";
-                mFill.style.width = (50 - currentMomentum) + "%";
-                mFill.style.backgroundColor = "#ff3333"; 
-            }
-        }
-
-        function triggerKineticDamagePop(amount, targetElementId, delayMs = 0) {
+        function triggerKineticDamagePop(amountData, targetElementId, delayMs = 0) {
             if (isFinisherPinnedVictory) return;
             setTimeout(() => {
                 const container = document.getElementById(targetElementId);
@@ -968,7 +920,16 @@
 
                 const pop = document.createElement('div');
                 pop.className = 'damage-pop';
-                pop.innerText = Math.floor(amount);
+                
+                if (typeof amountData === 'object') {
+                    let innerHTML = `<div class="damage-base">${amountData.base}</div>`;
+                    if (amountData.bonus > 0) {
+                        innerHTML += `<div class="damage-bonus">+${amountData.bonus}</div>`;
+                    }
+                    pop.innerHTML = innerHTML;
+                } else {
+                    pop.innerHTML = `<div class="damage-base">${Math.floor(amountData)}</div>`;
+                }
                 
                 pop.style.left = '50%';
                 pop.style.top = '40%';
@@ -977,22 +938,6 @@
                 container.appendChild(pop);
                 setTimeout(() => pop.remove(), 1200);
             }, delayMs);
-        }
-
-        function getPlayerMomentumMultiplier() {
-            if (currentMomentum >= 50) {
-                if (currentMomentum >= 90) return 2.00;
-                if (currentMomentum >= 80) return 1.75;
-                if (currentMomentum >= 70) return 1.50;
-                if (currentMomentum >= 60) return 1.25;
-                return 1.00;
-            } else {
-                if (currentMomentum <= 10) return 0.10;
-                if (currentMomentum <= 20) return 0.15;
-                if (currentMomentum <= 30) return 0.50;
-                if (currentMomentum <= 40) return 0.75;
-                return 1.00;
-            }
         }
 
         function startAtbCycle() {
@@ -1004,26 +949,17 @@
                     return;
                 }
                 MATCH_TRACKER.totalTicks++;
-                const currentBoss = BOSS_MANIFEST[currentBossIndex];
-                if (currentHypePoints >= (currentBoss.winThreshold * 0.5)) {
-                    MATCH_TRACKER.highMomentumTicks++;
-                }
 
                 if (!isGridPuzzleExecuting && !isBossExecuting && !isPlayerExecuting) {
-                    if (currentMomentum > 50) currentMomentum -= 0.1;
-                    if (currentMomentum < 50) currentMomentum += 0.1;
-                    syncMomentumBar();
-
+                    
                     if (totalAtbChargePoints < MAX_ATB_CAPACITY) {
-                        const playerMomentumBonus = getPlayerMomentumMultiplier();
-                        totalAtbChargePoints += 1.5 * playerMomentumBonus; 
+                        totalAtbChargePoints += 1.5; 
                         if (totalAtbChargePoints > MAX_ATB_CAPACITY) totalAtbChargePoints = MAX_ATB_CAPACITY;
                         updatePlayerAtbVisualBar();
                     }
                     
                     if (bossAtbChargePoints < MAX_ATB_CAPACITY) {
-                        const bossMomentumBonus = 1.0 + ((50 - currentMomentum) / 50) * 0.5;
-                        bossAtbChargePoints += 1.5 * bossMomentumBonus;
+                        bossAtbChargePoints += 1.5;
                         if (bossAtbChargePoints > MAX_ATB_CAPACITY) bossAtbChargePoints = MAX_ATB_CAPACITY;
                         updateBossAtbVisualBar();
                     }
@@ -1068,16 +1004,15 @@
             animateCombatSprites('boss', true);
 
             const currentBoss = BOSS_MANIFEST[currentBossIndex];
-            const hypeLossTally = Math.floor(currentBoss.winThreshold * chosenMove.hypePen);
+            
+            // Damage scales directly from Boss Threshold Requirements
+            const hypeLossTally = Math.floor(currentBoss.winThreshold * chosenMove.dmgPct);
             
             currentHypePoints -= hypeLossTally;
             if (currentHypePoints < 0) currentHypePoints = 0;
-
-            currentMomentum -= chosenMove.momPen; 
             
             syncHypeMeterDisplay();
-            syncMomentumBar();
-            triggerKineticDamagePop(chosenMove.dmg, 'playerSpriteWrapper', 500);
+            triggerKineticDamagePop(hypeLossTally, 'playerSpriteWrapper', 500);
 
             setTimeout(() => {
                 bossBanner.classList.remove('active');
@@ -1220,7 +1155,7 @@
             };
 
             isFinisherRunning = true;
-            initializeGridExecution(specialFinisherMove);
+            initializeGridExecution(specialFinisherMove, true); // Always left-aligned for finisher
         }
 
         function clearActiveMenuTabs() {
@@ -1231,9 +1166,11 @@
         function buildMovesMatrixOnce() {
             const container = document.getElementById('movesMenuSubpanel');
             let innerHTMLStructure = '';
+            
+            const lockLevels = [10, 15, 20, 25, 30];
 
-            MOVES_MANIFEST.forEach(move => {
-                let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
+            MOVES_MANIFEST.forEach((move, i) => {
+                let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}; color:${sym === 'W' ? '#000' : '#fff'}">${sym}</div>`).join('');
                 
                 innerHTMLStructure += `
                     <div class="action-row-card disabled cost-${move.cost}" id="card-node-${move.id}" onclick="triggerMoveSelection('${move.id}')">
@@ -1243,6 +1180,15 @@
                         </div>
                         <div class="recipe-dots">${dotHTML}</div>
                         <div class="uses-counter-label" id="uses-node-${move.id}">${move.currentUses}/${move.maxUses}</div>
+                    </div>
+                `;
+
+                innerHTMLStructure += `
+                    <div class="action-row-card disabled" style="opacity: 0.15 !important; justify-content: center;">
+                        <div style="overflow: hidden; white-space: nowrap; text-align: center; width: 100%;">
+                            <div class="move-title-txt" style="color: #888;">LOCKED SLOT</div>
+                            <div class="move-cost-sub">UNLOCK AT LVL ${lockLevels[i]}</div>
+                        </div>
                     </div>
                 `;
             });
@@ -1279,10 +1225,19 @@
             if (totalAtbChargePoints < targetPointsCost || move.currentUses <= 0) return;
 
             isFinisherRunning = false;
-            initializeGridExecution(move);
+            
+            let cardEl = document.getElementById(`card-node-${moveId}`);
+            let isLeft = true;
+            if (cardEl && cardEl.parentElement) {
+                // Dynamically check the column index (0, 2, 4 are left; 1, 3, 5 are right)
+                let index = Array.from(cardEl.parentElement.children).indexOf(cardEl);
+                isLeft = (index % 2 === 0);
+            }
+            
+            initializeGridExecution(move, isLeft);
         };
 
-        function initializeGridExecution(move) {
+        function initializeGridExecution(move, isLeft = true) {
             isGridPuzzleExecuting = true; 
 
             document.getElementById('attackMenuBtn').disabled = true;
@@ -1292,15 +1247,12 @@
 
             totalAtbChargePoints -= (move.cost * 100);
             
-            // Dynamic UI Re-Alignment for Unified Execution Cards
-            let moveIndex = MOVES_MANIFEST.findIndex(m => m.id === move.id);
-            let isLeft = (moveIndex % 2 === 0);
             if (move.id === 'm_finish') isLeft = true;
 
             let panel = document.getElementById('gridExecutionSubpanel');
             panel.className = 'grid-panel-layout ' + (isLeft ? 'layout-left-selected' : 'layout-right-selected');
 
-            let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
+            let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}; color:${sym === 'W' ? '#000' : '#fff'}">${sym}</div>`).join('');
             
             document.getElementById('execUnifiedCard').className = `execution-unified-card cost-${move.cost}`;
             document.getElementById('execUnifiedCard').innerHTML = `
@@ -1309,11 +1261,11 @@
                         <span>${move.name}</span>
                         <span class="unified-cost">[COST ${move.cost}]</span>
                     </div>
-                    <button id="rethinkActionBtn" class="rethink-action-btn" onclick="abortGridPuzzleExecution()">RE-THINK</button>
                 </div>
                 <div class="recipe-dots large-recipe" id="executionRecipeTracker">
                     ${dotHTML}
                 </div>
+                <button id="rethinkActionBtn" class="rethink-action-btn" onclick="abortGridPuzzleExecution()">ABANDON MOVE</button>
             `;
 
             if (move.id !== 'm_finish') {
@@ -1353,7 +1305,6 @@
 
             isFinisherRunning = false;
             
-            // Instantly transition visuals back to standard default menu state
             document.getElementById('gridExecutionSubpanel').style.display = 'none';
             document.getElementById('movesMenuSubpanel').style.display = 'none';
             clearActiveMenuTabs();
@@ -1370,21 +1321,26 @@
             }
         }
 
-        function getRandomCardForHand(currentHand) {
-            const symbols = ['B', 'R', 'G', 'Y'];
+        function getRandomCardForHand(currentHand, maxW) {
+            const symbols = ['B', 'R', 'G', 'Y', 'W'];
+            let currentWCount = currentHand.filter(c => c.symbol === 'W').length;
+            
             let available = symbols.filter(sym => {
                 let count = currentHand.filter(c => c.symbol === sym).length;
+                if (sym === 'W') return currentWCount < maxW;
                 return count < 3;
             });
-            if (available.length === 0) available = symbols;
+            
+            if (available.length === 0) available = ['B', 'R', 'G', 'Y'];
             let picked = available[Math.floor(Math.random() * available.length)];
             return ARCHETYPES[picked];
         }
 
         function generateFreshExecutionHand() {
             executionHand = [];
+            const maxW = selectedMoveInstance.cost >= 3 ? 2 : 1;
             for(let i=0; i<5; i++) {
-                executionHand.push(getRandomCardForHand(executionHand));
+                executionHand.push(getRandomCardForHand(executionHand, maxW));
             }
             renderHandUI();
         }
@@ -1404,15 +1360,16 @@
                     calculateValidGridPlacements();
                 };
 
+                let fontColor = card.symbol === 'W' ? '#000' : '#fff';
                 cardEl.innerHTML = `
-                    <div class="hand-card-badge" style="background-color:${card.color}">${card.symbol}</div>
+                    <div class="hand-card-badge" style="background-color:${card.color}; color:${fontColor}">${card.symbol}</div>
                     <div class="hand-card-name">${card.name}</div>
                 `;
                 container.appendChild(cardEl);
             });
         }
 
-                function constructGridFramework(size, cost) {
+        function constructGridFramework(size, cost) {
             const board = document.getElementById('gridBoard');
             board.innerHTML = '';
             board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
@@ -1441,11 +1398,10 @@
             availableSpaces.sort(() => Math.random() - 0.5);
             let selectedSpots = availableSpaces.slice(0, highSpotCount);
             
-            const symbols = ['B', 'R', 'G', 'Y'];
+            const symbols = ['B', 'R', 'G', 'Y', 'W'];
             let availableSymbols = [...symbols].sort(() => Math.random() - 0.5);
             
             selectedSpots.forEach((spot, idx) => {
-                // Guarantee unique color per high spot space by referencing index
                 let sym = availableSymbols[idx % availableSymbols.length];
                 let arch = ARCHETYPES[sym];
                 gridMatrix[spot.r][spot.c].highSpot = { symbol: sym, color: arch.color };
@@ -1513,7 +1469,6 @@
                 }
             });
 
-            // Mathematical Trapped Grid Validation
             let totalEmpty = 0;
             for(let r=0; r<gridMatrix.length; r++) {
                 for(let c=0; c<gridMatrix[r].length; c++) {
@@ -1557,9 +1512,9 @@
                 document.getElementById('rethinkActionBtn').disabled = true;
             }
 
-            // Shuffle in functionality execution via array splicing
             executionHand.splice(selectedHandCardIndex, 1);
-            executionHand.push(getRandomCardForHand(executionHand));
+            const maxW = selectedMoveInstance.cost >= 3 ? 2 : 1;
+            executionHand.push(getRandomCardForHand(executionHand, maxW));
             selectedHandCardIndex = null;
 
             renderHandUI();
@@ -1575,7 +1530,7 @@
             for (let k = recipe.length; k > 0; k--) {
                 if (currentChainTrace.length >= k) {
                     let tailSlice = currentChainTrace.slice(-k);
-                    let isSubsetMatched = tailSlice.every((val, idx) => val.symbol === recipe[idx]);
+                    let isSubsetMatched = tailSlice.every((val, idx) => val.symbol === recipe[idx] || val.symbol === 'W');
                     if (isSubsetMatched) {
                         maxMatchLength = k;
                         break;
@@ -1600,7 +1555,7 @@
             
             if (currentChainTrace.length >= targetRecipe.length) {
                 let tailSlice = currentChainTrace.slice(-targetRecipe.length);
-                let isMatch = tailSlice.every((val, index) => val.symbol === targetRecipe[index]);
+                let isMatch = tailSlice.every((val, index) => val.symbol === targetRecipe[index] || val.symbol === 'W');
 
                 if (isMatch) {
                     successfulNodeCoords = tailSlice;
@@ -1631,30 +1586,51 @@
             let baseValue = boss.basePoints; 
             
             window.lastHighSpotsMatched = 0;
+            
             successfulNodeCoords.forEach(node => {
                 let cell = gridMatrix[node.r][node.c];
-                if (cell.highSpot && cell.highSpot.symbol === node.symbol) {
+                
+                if (cell.highSpot && (cell.highSpot.symbol === node.symbol)) {
                     window.lastHighSpotsMatched++;
                 }
 
-                let statBonus = PLAYER_STATS[node.symbol] || 0;
-                let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
+                let tileScore = 0;
+
+                if (node.symbol === 'W') { 
+                    if (currentPlayerArchetype === 'W') {
+                        tileScore = baseValue + (PLAYER_STATS['W'] || 0);
+                    } else {
+                        tileScore = 0;
+                    }
+                } else {
+                    let statBonus = PLAYER_STATS[node.symbol] || 0;
+                    tileScore = baseValue + statBonus;
+                    
+                    if (currentPlayerArchetype !== 'W') {
+                        if (node.symbol === currentPlayerArchetype) {
+                            let multiplier = getArchetypeMultiplier(currentPlayerArchetype, bossArch);
+                            tileScore *= multiplier;
+                        }
+                    }
+                }
                 
-                calculatedBatchPoints += ((baseValue + statBonus) * multiplier);
+                calculatedBatchPoints += tileScore;
             });
 
             let extraGridBonusPoints = calculateUnusedGridSpacesBonus();
-            let addedTotal = calculatedBatchPoints + extraGridBonusPoints;
             
-            const scaleMultiplier = getPlayerMomentumMultiplier();
-            let absoluteFinalScore = Math.floor(addedTotal * scaleMultiplier);
+            let scaledBase = Math.floor(calculatedBatchPoints);
+            let scaledBonus = Math.floor(extraGridBonusPoints);
             
             if (window.lastHighSpotsMatched > 0) {
-                absoluteFinalScore *= Math.pow(2, window.lastHighSpotsMatched);
+                let spotMult = Math.pow(2, window.lastHighSpotsMatched);
+                scaledBase *= spotMult;
+                scaledBonus *= spotMult;
             }
             
+            let absoluteFinalScore = scaledBase + scaledBonus;
+            
             currentHypePoints += absoluteFinalScore;
-            currentMomentum += 15.0; 
             
             MATCH_TRACKER.successfulHitsCount++;
             MATCH_TRACKER.totalPointsScored += absoluteFinalScore;
@@ -1664,15 +1640,13 @@
             }
             
             syncHypeMeterDisplay();
-            syncMomentumBar();
-            return absoluteFinalScore;
+            
+            return { base: scaledBase, bonus: scaledBonus, total: absoluteFinalScore };
         }
 
         function allocateStatPoints(archetypeKey, points) {
             if (PLAYER_STATS.hasOwnProperty(archetypeKey)) {
                 PLAYER_STATS[archetypeKey] += points;
-                const name = ARCHETYPES[archetypeKey].name;
-                console.log(`${name} (${archetypeKey}) updated! Current total: ${PLAYER_STATS[archetypeKey]}`);
             }
         }
 
@@ -1703,7 +1677,7 @@
             }
         }
 
-                function runCinematicThreePinfallSequence() {
+        function runCinematicThreePinfallSequence() {
             const playerWrapper = document.getElementById('playerSpriteWrapper');
             const bossWrapper = document.getElementById('bossSpriteWrapper');
             const countOverlay = document.getElementById('pinCountNode');
@@ -1711,11 +1685,9 @@
 
             if (!playerWrapper || !bossWrapper) return;
 
-            // Strip attack animations FIRST
             playerWrapper.classList.remove('animate-dropkick', 'animate-damage', 'animate-damage-delayed');
             bossWrapper.classList.remove('animate-boss-dropkick', 'animate-damage', 'animate-damage-delayed');
             
-            // Force browser to recalculate styles so transitions can fire
             void playerWrapper.offsetWidth; 
             void bossWrapper.offsetWidth;
             
@@ -1778,10 +1750,6 @@
             else if (MATCH_TRACKER.highestSinglePop >= (threshold * 0.1)) perfScore += 0.125;
             bonuses += Math.min(0.5, perfScore);
             
-            let engagementRatio = MATCH_TRACKER.totalTicks > 0 ? (MATCH_TRACKER.highMomentumTicks / MATCH_TRACKER.totalTicks) : 0;
-            if (engagementRatio > 0.5) bonuses += 0.5;
-            else if (engagementRatio > 0.25) bonuses += 0.25;
-            
             let allowedBotchLimit = 2 + Math.floor((currentBossIndex) / 4);
             if (MATCH_TRACKER.botchesCount <= 1) bonuses += 0.5;
             else if (MATCH_TRACKER.botchesCount <= allowedBotchLimit) bonuses += 0.25;
@@ -1840,8 +1808,7 @@
             document.getElementById('paydayEnvelopeModal').style.display = 'flex';
         }
 
-                function executePlayerSignatureSignOff() {
-            // Replaces button with signature resting directly on the dashed line
+        function executePlayerSignatureSignOff() {
             document.getElementById('envelopeSigArea').innerHTML = `
                 <div style="width: 80%; border-bottom: 2px dashed #777; text-align: center; margin: 0 auto; padding: 10px;">
                     <span class="envelope-player-signature">GEOFF</span>
@@ -1865,8 +1832,6 @@
                 initUiTextProfiles();
                 applyDynamicCharacterPngGlow();
                 syncHypeMeterDisplay();
-                currentMomentum = 50.0;
-                syncMomentumBar();
 
                 document.getElementById('eventFlyerModal').style.display = 'flex';
             }, 2000);
@@ -1913,8 +1878,8 @@
                     }, 1200);
                     return;
                 } else {
-                    let sideBonusAwarded = processSuccessfulChainScoring();
-                    triggerKineticDamagePop(sideBonusAwarded, 'bossSpriteWrapper', 500);
+                    let scoringData = processSuccessfulChainScoring();
+                    triggerKineticDamagePop(scoringData, 'bossSpriteWrapper', 500);
                     animateCombatSprites('player', isSuccess);
                 }
 
@@ -1935,13 +1900,17 @@
                 moveBanner.classList.add('active');
             } else {
                 MATCH_TRACKER.botchesCount++; 
-                currentMomentum -= 15.0; 
+                
+                let botchPenalty = Math.floor(BOSS_MANIFEST[currentBossIndex].winThreshold * 0.05);
+                currentHypePoints -= botchPenalty;
+                
+                if (currentHypePoints < 0) currentHypePoints = 0; 
                 if (isFinisherRunning) {
                     currentHypePoints = 0; 
                 }
+                
                 syncHypeMeterDisplay();
-                syncMomentumBar();
-                triggerKineticDamagePop(10, 'playerSpriteWrapper', 0);
+                triggerKineticDamagePop(botchPenalty, 'playerSpriteWrapper', 0);
                 animateCombatSprites('player', isSuccess);
                 
                 const botchTerms = ["REVERSED!", "COUNTERED!", "BOTCHED!"];
