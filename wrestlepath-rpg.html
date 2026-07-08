@@ -125,9 +125,16 @@
 
         /* SPRITE PERSPECTIVE AND COMBAT ANIMATION MATRIX */
         .stage-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        .sprite-container { position: absolute; width: 22vw; height: 35vh; max-width: 220px; max-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; transition: all 0.5s ease-in-out; }
-        .opponent-placement { top: 18%; right: 15%; }
-        .player-placement { bottom: 8%; left: 15%; }
+        
+        .sprite-container { 
+            position: absolute; width: 22vw; height: 35vh; max-width: 220px; max-height: 260px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
+            /* Clean transitions for center pin dive mechanism */
+            transition: top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), bottom 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .opponent-placement { top: 18%; right: 15%; bottom: auto; left: auto; transform: none; }
+        .player-placement { bottom: 8%; left: 15%; top: auto; right: auto; transform: none; }
         
         .wrestler-png { 
             width: 100%; height: auto; max-height: 100%; object-fit: contain;
@@ -145,18 +152,32 @@
             font-weight: bold;
             letter-spacing: 1px;
             text-transform: uppercase;
+            text-align: center;
             white-space: nowrap;
             opacity: 0;
             z-index: 500;
             box-shadow: 0 4px 12px rgba(0,0,0,0.6);
             transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            color: #fff !important; 
         }
+        
+        .high-spot-tag {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 0 0 10px #fff, 0 0 20px #fff;
+            text-align: center;
+            line-height: 1.1;
+            pointer-events: none;
+        }
+
         .player-move-banner {
             bottom: 46vh;
             left: 26vw;
             transform: translate(-50%, 15px) scale(0.9);
-            border-color: var(--color-blue);
-            color: #fff;
         }
         .player-move-banner.active {
             opacity: 1;
@@ -174,11 +195,24 @@
             transform: translate(50%, 0) scale(1);
         }
 
+        /* BOTCHED "SHATTER" BANNER EFFECT */
+        .broken-banner {
+            border-color: #ff3333 !important;
+            background: rgba(20, 5, 5, 0.95) !important;
+            animation: shatterShake 0.4s ease-out forwards !important;
+        }
+        @keyframes shatterShake {
+            0% { transform: translate(-50%, 0) rotate(0deg) scale(1); opacity: 1; }
+            20% { transform: translate(-50%, -10px) rotate(-3deg) scale(1.05); }
+            40% { transform: translate(-50%, 5px) rotate(3deg) scale(1); }
+            100% { transform: translate(-50%, 0) rotate(-1deg) scale(0.95); opacity: 1; }
+        }
+
         /* WIN AND PINFALL CINEMATIC OVERLAYS */
-        .pin-count-overlay {
+                .pin-count-overlay {
             position: absolute;
             top: 40%;
-            left: 66%;
+            left: 25%; /* Shifted to the left side */
             transform: translate(-50%, -50%) scale(0.1);
             font-size: 110px;
             font-weight: 900;
@@ -192,10 +226,10 @@
 
         .victory-banner {
             position: absolute;
-            bottom: 42%;
-            left: 26%;
-            transform: translate(-50%, -50%);
-            font-size: 42px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            font-size: 46px;
             font-weight: 900;
             color: #00ff00;
             text-shadow: 0 0 15px #000, 0 0 30px #00ff00;
@@ -262,13 +296,22 @@
             90% { transform: translate(6px, 0); }
         }
         .animate-damage { animation: damageShakeSequence 0.6s linear forwards; }
+        .animate-damage-delayed { animation: damageShakeSequence 0.6s linear 0.5s forwards; }
 
-        /* Dynamic Pinfall Physical Movement Override Keyframe */
-        @keyframes pinfallSpans {
-            0% { bottom: 8%; left: 15%; transform: rotate(0deg); }
-            100% { bottom: 44%; left: 66%; transform: rotate(90deg) scaleY(-1); }
+                /* CENTER PINFALL POSITION OVERRIDE CLASSES */
+        .player-center-pin {
+            bottom: 35% !important; left: 50% !important; top: auto !important; right: auto !important;
+            transform: translate(-50%, 0) !important;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+            z-index: 2;
         }
-        .animate-pinfall-dive { animation: pinfallSpans 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        .boss-center-pinned {
+            bottom: 30% !important; left: 50% !important; top: auto !important; right: auto !important;
+            transform: translate(-50%, 0) scaleY(0.25) scaleX(1.1) !important;
+            filter: brightness(0.5) !important;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+            z-index: 1;
+        }
 
         /* === PERSISTENT LEFT MENU SELECTION PANEL === */
         .menu-column { width: 180px; border-right: 2px solid #2a2a2a; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; height: 100%; }
@@ -286,7 +329,7 @@
         /* MOVES MATRIX WORKSPACE GRID - Perfectly Aligned via Grid Columns */
         .moves-grid-matrix {
             display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr);
-            gap: 2px 4px; height: 100%; width: 100%;
+            gap: 2px 4px; height: 100%; width: 100%; padding: 2px 0;
         }
         
         .action-row-card { 
@@ -323,13 +366,67 @@
         .uses-counter-label { font-size: 12px; color: #bbb; font-weight: bold; white-space: nowrap; justify-self: end; }
 
         /* PUZZLE GRID EXECUTION OVERLAY LAYOUT */
-        .grid-panel-layout { display: flex; gap: 12px; height: 100%; width: 100%; }
-        .grid-left-side { flex: 0 0 auto; height: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; }
-        .grid-board {
-            display: grid; background-color: #050508; padding: 4px;
-            border: 3px solid var(--yellow-jeopardy); border-radius: 6px;
-            height: 100%; width: 100%; gap: 3px;
+        .grid-panel-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; height: 100%; width: 100%; padding: 2px 0; }
+        
+        /* Dynamic Matrix Area Switching Vectors */
+        .layout-left-selected .exec-tools-area { grid-column: 1; grid-row: 1; }
+        .layout-left-selected .exec-board-area { grid-column: 2; grid-row: 1; }
+        .layout-right-selected .exec-tools-area { grid-column: 2; grid-row: 1; }
+        .layout-right-selected .exec-board-area { grid-column: 1; grid-row: 1; }
+
+        /* Execution Tool Blocks Consolidated Container */
+        .exec-tools-area { display: flex; flex-direction: column; gap: 4px; height: 100%; min-height: 0; }
+        
+        /* Unified Info Top Panel */
+        .execution-unified-card {
+            background-color: #13131a;
+            border-radius: 4px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            height: 45%;
         }
+        .unified-header { display: flex; justify-content: space-between; align-items: center; }
+        .unified-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .unified-cost { font-size: 13px; color: #888; }
+        
+        .large-recipe { display: flex; justify-content: center; gap: 8px; width: 100%; }
+        .large-recipe .mini-dot {
+            width: 32px; height: 32px; line-height: 32px; font-size: 14px; border-radius: 4px;
+            opacity: 0.35; transition: opacity 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 11px; padding: 4px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; transition: all 0.2s; }
+        .rethink-action-btn:hover:not(:disabled) { background: #551111; color: #fff; }
+        .rethink-action-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; color: #555; }
+
+        /* Vertical Reflex Cards Container */
+        .hand-rack-container { 
+            display: flex; flex-direction: column; background-color: rgba(0, 128, 0, 0.08); border: 1px solid rgba(0, 128, 0, 0.4);
+            box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.15); border-radius: 4px; padding: 6px 12px 10px 12px; gap: 6px; flex: 1; height: 55%;
+        }
+        .hand-label-txt { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; text-align: center; }
+        
+        .hand-rack { display: flex; flex-direction: row; gap: 6px; width: 100%; height: 100%; justify-content: space-between; }
+        .hand-card {
+            background: linear-gradient(180deg, #161622, #0c0c14); border: 2px solid #333; border-radius: 6px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; 
+            flex: 1; padding: 4px; cursor: pointer; transition: transform 0.15s ease, border-color 0.1s; box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .hand-card:hover { transform: translateY(-4px); }
+        .hand-card.selected { border-color: #fff !important; box-shadow: 0 0 8px var(--card-glow), 0 4px 6px rgba(0,0,0,0.5); background: #161622; }
+        .hand-card-badge { width: 24px; height: 24px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; color:#fff; flex-shrink: 0; }
+        .hand-card-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #eee; font-weight: bold; text-align: center; line-height: 1.2; word-wrap: break-word; }
+
+        /* Puzzle Board Retains Intense Original Aesthetic Glows */
+        .exec-board-area { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
+        .grid-board {
+            display: grid; background-color: #050508; padding: 4px; border: 3px solid var(--yellow-jeopardy); border-radius: 6px;
+            aspect-ratio: 1/1; height: 100%; max-width: 100%; gap: 3px;
+        }
+
         .grid-space {
             background-color: #15151c; border: 1px solid #2d2d3a; border-radius: 3px;
             position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -341,65 +438,30 @@
         }
         
         .grid-space.player-here { box-shadow: inset 0 0 12px #fff !important; z-index: 2; }
+        
         .grid-space.placed-dim { 
             opacity: 1; 
             box-shadow: inset 0 0 14px var(--match-color) !important; 
+            background-color: transparent !important;
         }
         
         .grid-space.completed { 
             border: 3px solid var(--match-color) !important; 
             box-shadow: inset 0 0 25px var(--match-color), 0 0 10px var(--match-color) !important;
             opacity: 1 !important;
+            background-color: transparent !important;
         }
 
-        .start-label {
-            position: absolute; font-size: 8px; font-weight: bold; color: #fff;
-            text-shadow: 0 0 4px #000; z-index: 5; pointer-events: none;
-        }
-
-        .grid-right-side { flex: 1; display: flex; flex-direction: column; gap: 6px; height: 100%; overflow: hidden; }
+        .start-label { position: absolute; font-size: 14px; font-weight: bold; color: #fff; text-shadow: 0 0 4px #000; z-index: 5; pointer-events: none; transition: opacity 0.2s; }
+        .high-spot-label { position: absolute; font-size: 13px; font-weight: bold; color: #fff; text-shadow: 0 0 4px #000; z-index: 5; pointer-events: none; text-align: center; line-height: 1.1; transition: opacity 0.2s; }
         
-        /* Retooled State B Cards to aesthetically mirror State A row components */
-        .execution-tracker-box { 
-            display: flex; flex-direction: column; justify-content: center; align-items: stretch;
-            background-color: rgba(51, 136, 255, 0.08); border: 1px solid rgba(51, 136, 255, 0.4);
-            box-shadow: inset 0 0 10px rgba(51, 136, 255, 0.15);
-            border-radius: 4px; padding: 6px 12px; height: 45%; gap: 8px; width: 100%;
+        .grid-space.placed-dim .start-label,
+        .grid-space.completed .start-label,
+        .grid-space.placed-dim .high-spot-label,
+        .grid-space.completed .high-spot-label {
+            opacity: 0.3 !important;
+            text-shadow: none !important;
         }
-        .execution-header { display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
-        
-        .move-name-display { font-size: 14px; font-weight: bold; color: #fff; text-transform: uppercase; }
-        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 11px; padding: 4px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; transition: all 0.2s; }
-        .rethink-action-btn:hover:not(:disabled) { background: #551111; color: #fff; }
-        .rethink-action-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; color: #555; }
-
-        .execution-tracker-box .mini-dot {
-            width: 20px;
-            height: 20px;
-            line-height: 20px;
-            font-size: 11px;
-            border-radius: 3px;
-            opacity: 0.35; 
-            transition: opacity 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .hand-rack-container { 
-            display: flex; flex-direction: column; align-items: stretch; justify-content: center; 
-            background-color: rgba(0, 128, 0, 0.08); border: 1px solid rgba(0, 128, 0, 0.4);
-            box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.15);
-            border-radius: 4px; padding: 8px 12px; height: 55%; width: 100%; gap: 6px;
-        }
-        .hand-label-txt { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; text-align: center; }
-        
-        .hand-rack { display: flex; flex-direction: row; gap: 6px; flex: 1; height: 100%; justify-content: space-between; }
-        .hand-card {
-            background: #111; border: 1px solid #333; border-radius: 4px;
-            padding: 4px; width: 100%; flex: 1; cursor: pointer; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: border-color 0.1s;
-        }
-        .hand-card.selected { border-color: #fff !important; box-shadow: 0 0 6px var(--card-glow); background: #161622; }
-        .hand-card-badge { width: 24px; height: 24px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; color:#fff; flex-shrink: 0; }
-        .hand-card-name { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #eee; white-space: nowrap; font-weight: bold; text-align: center; }
 
         /* THEMATIC MODAL SEQUENCES */
         .flyer-overlay {
@@ -446,8 +508,12 @@
             margin-bottom: 15px; border-bottom: 2px dashed #555; padding-bottom: 5px; text-transform: uppercase;
         }
         .envelope-section-heading { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: #555; margin: 10px 0 5px 0; font-weight: bold; }
-        .envelope-stat-row { display: flex; justify-content: space-between; font-size: 16px; margin: 6px 0; }
-        .envelope-stat-label { font-weight: bold; }
+        
+        /* Updated Highlight Row Alignment */
+        .envelope-stat-row { display: flex; justify-content: space-between; align-items: center; font-size: 16px; margin: 6px 0; }
+        .envelope-stat-label { font-weight: bold; flex-shrink: 0; }
+        .envelope-stat-row span:last-child { display: flex; flex-direction: column; align-items: flex-end; text-align: right; max-width: 60%; word-wrap: break-word; }
+
         .envelope-divider { border-bottom: 1px dashed #777; margin: 15px 0; }
         
         .envelope-rating-box { text-align: center; margin: 15px 0 20px 0; }
@@ -458,10 +524,17 @@
         .envelope-payout-amount { font-size: 32px; font-weight: bold; color: #27ae60; line-height: 1; }
         
         .envelope-signature-area { margin-top: 25px; min-height: 55px; display: flex; justify-content: center; align-items: center; }
+        
+        /* Signature Line Button Styling */
         .envelope-cash-out-btn {
-            display: block; width: 100%; background: none; border: 2px solid #1a1a1a;
-            font-size: 16px; font-weight: bold; color: #1a1a1a; padding: 10px; cursor: pointer; text-align: center;
+            display: block; width: 80%; background: none; border: none; border-bottom: 2px dashed #777;
+            font-size: 16px; font-weight: bold; color: #777; padding: 10px; margin: 0 auto; cursor: pointer; text-align: center;
+            transition: color 0.2s, border-bottom-color 0.2s;
         }
+        .envelope-cash-out-btn:hover {
+            color: #111; border-bottom-color: #111;
+        }
+
         .envelope-player-signature {
             font-size: 24px; font-weight: bold; color: #003366;
             transform: skewX(-10deg) rotate(-2deg); animation: inkSpread 0.3s ease-out;
@@ -474,10 +547,9 @@
 </head>
 <body>
 
-    <!-- PRE-MATCH INTERACTIVE FLYER MODAL -->
     <div class="flyer-overlay" id="eventFlyerModal">
         <div class="indie-flyer">
-            <div class="flyer-header">INDIE WRESTLING TONIGHT !!!</div>
+            <div class="flyer-header">INDIE WRESTLING TONIGHT!</div><br>
             <div class="flyer-venue" id="flyerVenueNode">LIVE FROM THE LOGAN SQUARE AUDITORIUM</div>
             
             <div class="flyer-matchup">
@@ -495,7 +567,7 @@
             </div>
 
             <div class="flyer-footer">
-                <p>DOORS AT 7PM | TICKETS $15 | NO REFUNDS</p>
+                <p>DOORS AT 7PM | TICKETS $15 | 18+</p>
                 <button class="ring-bell-btn" onclick="dismissFlyerAndStartMatch()">
                     [STEP INTO THE RING]
                 </button>
@@ -503,12 +575,10 @@
         </div>
     </div>
 
-    <!-- POST-MATCH MANILA PAYDAY ENVELOPE MODAL (HIDDEN BY DEFAULT) -->
     <div class="payday-overlay" id="paydayEnvelopeModal" style="display: none;">
         <div class="payday-envelope">
             <div class="envelope-title" id="envelopeTitleNode">Show Results</div>
             
-            <!-- MATCH HIGHLIGHTS PERFORMANCE SECTION -->
             <div class="envelope-section-heading">Match Highlights</div>
             <div class="envelope-stat-row">
                 <span class="envelope-stat-label">Total Hype Generated:</span>
@@ -522,9 +592,9 @@
                 <span class="envelope-stat-label">Crowd Favorite Move:</span>
                 <span id="envHighlightFavorite">None</span>
             </div>
-            <div class="envelope-stat-row">
-                <span class="envelope-stat-label">Highest Single Pop:</span>
-                <span id="envHighlightHighest">0 Hype</span>
+            <div class="envelope-stat-row" style="align-items: flex-start;">
+                <span class="envelope-stat-label">Biggest Pop:</span>
+                <span id="envHighlightHighest" style="text-align: right; line-height: 1.3;"></span>
             </div>
             <div class="envelope-stat-row">
                 <span class="envelope-stat-label">Total Match Time:</span>
@@ -533,33 +603,29 @@
 
             <div class="envelope-divider"></div>
 
-            <!-- CRITIC DAVE VERDICT RATING BOX -->
             <div class="envelope-rating-box">
                 <div class="envelope-rating-label">Dave's Verdict</div>
                 <div class="envelope-rating-stars" id="envRatingStarsDisplay">★★★★.25</div>
             </div>
 
-            <!-- CLEAN REWARD DISPLAY -->
             <div class="envelope-payout-box">
                 <div class="envelope-payout-amount" id="envPayoutCashDisplay">PAYDAY: $0.00</div>
             </div>
 
-            <!-- INTERACTIVE AUTOGRAPH SIGN-OFF CONTAINER -->
-            <div class="envelope-signature-area" id="envelopeSigArea">
+                        <div class="envelope-signature-area" id="envelopeSigArea" style="flex-direction: column; justify-content: center; gap: 10px;">
                 <button class="envelope-cash-out-btn" onclick="executePlayerSignatureSignOff()">
                     [ SIGN PAYDAY SLIP ]
                 </button>
+                <div style="border-bottom: 2px dashed #777; width: 80%; height: 10px;"></div>
+            </div>
             </div>
         </div>
     </div>
 
-    <!-- TOP ARENA PANEL (75%) -->
     <div class="top-arena" id="topArenaCanvas">
-        <!-- FIXED VENUE BACKGROUND MATRIX SLOT -->
         <div id="venueBackgroundLayer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: background-image 0.5s ease;"></div>
 
         <div class="hud-row">
-            <!-- PLAYER CARD (LEFT PANEL) -->
             <div class="player-card">
                 <div style="font-weight: bold; font-size: 13px;">GEOFF</div>
                 <span id="hudPlayerBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-blue); color:#fff;"></span>
@@ -574,7 +640,6 @@
                 </div>
             </div>
 
-            <!-- CENTERED MATCH HYPE & MATCH MOMENTUM TRACKERS -->
             <div class="hype-container">
                 <div>
                     <div class="hype-header"><span>HYPE</span></div>
@@ -589,7 +654,6 @@
                 </div>
             </div>
 
-            <!-- BOSS CARD (RIGHT PANEL) -->
             <div class="boss-card">
                 <div id="bossNameHeader" style="font-weight: bold; font-size: 13px;">BINTERMAN</div>
                 <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
@@ -605,31 +669,24 @@
             </div>
         </div>
 
-        <!-- STAGE CANVAS PLATFORM WITH ISOLATED FIXED POSITION ANNOUNCEMENT VIEWPORTS -->
         <div class="stage-view">
             <div id="playerMoveBanner" class="move-banner player-move-banner">MOVE NAME</div>
             <div id="bossMoveBanner" class="move-banner boss-move-banner">MOVE NAME</div>
             
-            <!-- Dynamic Pinfall Count Elements -->
             <div id="pinCountNode" class="pin-count-overlay">1</div>
             <div id="victoryMarqueeNode" class="victory-banner">YOU WIN!!</div>
 
-            <!-- Boss Container -->
             <div class="sprite-container opponent-placement" id="bossSpriteWrapper">
                 <img src="https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" class="wrestler-png" id="bossSprite">
             </div>
 
-            <!-- Player Container -->
             <div class="sprite-container player-placement" id="playerSpriteWrapper">
                 <img src="https://geoffhenao.github.io/wrestlepath/images/geoff-by-profbanzi-ryo.PNG" class="wrestler-png" id="playerSprite">
             </div>
         </div>
     </div>
 
-    <!-- BOTTOM COMMAND CONSOLE CONTAINER (25%) -->
     <div class="bottom-command">
-        
-        <!-- Persistent Left Menu Selection Panel -->
         <div class="menu-column" id="persistentMenuSidebar">
             <button class="menu-btn" id="attackMenuBtn" onclick="clickAttackMenuTab()">&gt; ATTACK</button>
             <button class="menu-btn" id="finisherMenuBtn" style="display: none;" onclick="clickFinisherMenuTab()">&gt; FINISHER</button>
@@ -637,44 +694,31 @@
             <button class="menu-btn" id="itemMenuBtn" disabled>&gt; ITEM</button>
         </div>
 
-        <!-- Dynamic Context Workspace Switcher Panel -->
         <div class="submenu-wrapper">
-            
-            <!-- SUBMENU STATE A: 10 Moves Matrix Grid Panel Layout -->
             <div id="movesMenuSubpanel" class="moves-grid-matrix" style="display: none;"></div>
 
-            <!-- SUBMENU STATE B: WrestlePath Execution Framework Grid Layout -->
-            <div id="gridExecutionSubpanel" class="grid-panel-layout" style="display: none;">
-                <div class="grid-left-side">
-                    <div id="gridBoard" class="grid-board"></div>
-                </div>
-                
-                <div class="grid-right-side">
-                    <div class="execution-tracker-box">
-                        <div class="execution-header">
-                            <div id="executionMoveName" class="move-name-display">MOVE</div>
-                            <button id="rethinkActionBtn" class="rethink-action-btn" onclick="abortGridPuzzleExecution()">RE-THINK</button>
-                        </div>
-                        <div class="recipe-dots" id="executionRecipeTracker"></div>
-                    </div>
-
+            <div id="gridExecutionSubpanel" style="display: none;">
+                <div class="exec-tools-area">
+                    <div class="execution-unified-card" id="execUnifiedCard"></div>
                     <div class="hand-rack-container">
-                        <div class="hand-label-txt">REFLEX HAND</div>
+                        <div class="hand-label-txt">REFLEX SHUFFLE</div>
                         <div class="hand-rack" id="handContainer"></div>
                     </div>
                 </div>
+                <div class="exec-board-area">
+                    <div id="gridBoard" class="grid-board"></div>
+                </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // MATCH REAL-TIME METRIC TRACKER REGISTRY Object
         let MATCH_TRACKER = {
             startTime: null,
             endTime: null,
             successfulHitsCount: 0,
             highestSinglePop: 0,
+            highestPopMove: "None",
             botchesCount: 0,
             uniqueMovesUsed: new Set(),
             moveExecutionCounter: {},
@@ -738,7 +782,6 @@
             'Y': ["The Unstoppable Bruiser", "The King of the Brawl", "The Concrete Heavyweight", "The Powerhouse Striker"]
         };
 
-        // STEP 4 IMPLEMENTATION: GENTLER LINEAR SCALING baseline matrices
         const BOSS_ATTACKS_MANIFEST = {
             1: [
                 { name: "CLUBBING FOREARM", hypePen: 0.05, momPen: 5, dmg: 10 },
@@ -766,6 +809,7 @@
         let atbIntervalLoop = null;
         let isListActiveView = false; 
         let isGridPuzzleExecuting = false; 
+        let isPlayerExecuting = false;
         let isBossExecuting = false; 
         let isFinisherPinnedVictory = false; 
 
@@ -782,6 +826,7 @@
         let successfulNodeCoords = [];  
         let executionHand = [];
         let selectedHandCardIndex = null;
+        window.lastHighSpotsMatched = 0;
 
         window.onload = function() {
             initUiTextProfiles();
@@ -841,12 +886,17 @@
             if (playerWrapper) {
                 playerWrapper.className = "sprite-container player-placement";
             }
+            const bossWrapper = document.getElementById('bossSpriteWrapper');
+            if (bossWrapper) {
+                bossWrapper.className = "sprite-container opponent-placement";
+            }
             document.getElementById('victoryMarqueeNode').classList.remove('active');
 
             MATCH_TRACKER.startTime = Date.now();
             MATCH_TRACKER.endTime = null;
             MATCH_TRACKER.successfulHitsCount = 0;
             MATCH_TRACKER.highestSinglePop = 0;
+            MATCH_TRACKER.highestPopMove = "None";
             MATCH_TRACKER.botchesCount = 0;
             MATCH_TRACKER.uniqueMovesUsed.clear();
             MATCH_TRACKER.moveExecutionCounter = {};
@@ -855,6 +905,8 @@
             MATCH_TRACKER.totalTicks = 0;
             currentMomentum = 50.0;
             isFinisherPinnedVictory = false;
+            isPlayerExecuting = false;
+            isBossExecuting = false;
 
             startAtbCycle();
         }
@@ -908,21 +960,23 @@
             }
         }
 
-        function triggerKineticDamagePop(amount, targetElementId) {
+        function triggerKineticDamagePop(amount, targetElementId, delayMs = 0) {
             if (isFinisherPinnedVictory) return;
-            const container = document.getElementById(targetElementId);
-            if (!container) return;
+            setTimeout(() => {
+                const container = document.getElementById(targetElementId);
+                if (!container) return;
 
-            const pop = document.createElement('div');
-            pop.className = 'damage-pop';
-            pop.innerText = `+${Math.floor(amount)}`;
-            
-            pop.style.left = '50%';
-            pop.style.top = '40%';
-            pop.style.transform = 'translate(-50%, -50%)';
+                const pop = document.createElement('div');
+                pop.className = 'damage-pop';
+                pop.innerText = Math.floor(amount);
+                
+                pop.style.left = '50%';
+                pop.style.top = '40%';
+                pop.style.transform = 'translate(-50%, -50%)';
 
-            container.appendChild(pop);
-            setTimeout(() => pop.remove(), 1200);
+                container.appendChild(pop);
+                setTimeout(() => pop.remove(), 1200);
+            }, delayMs);
         }
 
         function getPlayerMomentumMultiplier() {
@@ -955,29 +1009,25 @@
                     MATCH_TRACKER.highMomentumTicks++;
                 }
 
-                if (currentMomentum > 50) currentMomentum -= 0.1;
-                if (currentMomentum < 50) currentMomentum += 0.1;
-                syncMomentumBar();
+                if (!isGridPuzzleExecuting && !isBossExecuting && !isPlayerExecuting) {
+                    if (currentMomentum > 50) currentMomentum -= 0.1;
+                    if (currentMomentum < 50) currentMomentum += 0.1;
+                    syncMomentumBar();
 
-                if (!isGridPuzzleExecuting && !isBossExecuting) {
                     if (totalAtbChargePoints < MAX_ATB_CAPACITY) {
                         const playerMomentumBonus = getPlayerMomentumMultiplier();
                         totalAtbChargePoints += 1.5 * playerMomentumBonus; 
                         if (totalAtbChargePoints > MAX_ATB_CAPACITY) totalAtbChargePoints = MAX_ATB_CAPACITY;
                         updatePlayerAtbVisualBar();
                     }
-                }
-                
-                if (!isBossExecuting) {
+                    
                     if (bossAtbChargePoints < MAX_ATB_CAPACITY) {
                         const bossMomentumBonus = 1.0 + ((50 - currentMomentum) / 50) * 0.5;
                         bossAtbChargePoints += 1.5 * bossMomentumBonus;
                         if (bossAtbChargePoints > MAX_ATB_CAPACITY) bossAtbChargePoints = MAX_ATB_CAPACITY;
                         updateBossAtbVisualBar();
                     }
-                }
 
-                if (!isBossExecuting && !isGridPuzzleExecuting) {
                     evaluateBossActionTrigger();
                 }
 
@@ -1011,6 +1061,8 @@
 
             const bossBanner = document.getElementById('bossMoveBanner');
             bossBanner.innerText = chosenMove.name;
+            bossBanner.style.borderColor = 'var(--color-red)';
+            bossBanner.style.color = '#fff';
             bossBanner.classList.add('active');
             
             animateCombatSprites('boss', true);
@@ -1025,15 +1077,15 @@
             
             syncHypeMeterDisplay();
             syncMomentumBar();
-            triggerKineticDamagePop(chosenMove.dmg, 'playerSpriteWrapper');
+            triggerKineticDamagePop(chosenMove.dmg, 'playerSpriteWrapper', 500);
 
             setTimeout(() => {
                 bossBanner.classList.remove('active');
                 
                 const playerWrapper = document.getElementById('playerSpriteWrapper');
                 const bossWrapper = document.getElementById('bossSpriteWrapper');
-                if (playerWrapper) playerWrapper.classList.remove('animate-damage');
-                if (bossWrapper) bossWrapper.classList.remove('animate-boss-dropkick');
+                if (playerWrapper) playerWrapper.classList.remove('animate-damage-delayed', 'animate-damage', 'animate-dropkick');
+                if (bossWrapper) bossWrapper.classList.remove('animate-boss-dropkick', 'animate-damage', 'animate-damage-delayed');
                 
                 isBossExecuting = false;
             }, 1200);
@@ -1235,11 +1287,35 @@
 
             document.getElementById('attackMenuBtn').disabled = true;
             document.getElementById('finisherMenuBtn').disabled = true;
-
             isListActiveView = false;
             selectedMoveInstance = move;
 
             totalAtbChargePoints -= (move.cost * 100);
+            
+            // Dynamic UI Re-Alignment for Unified Execution Cards
+            let moveIndex = MOVES_MANIFEST.findIndex(m => m.id === move.id);
+            let isLeft = (moveIndex % 2 === 0);
+            if (move.id === 'm_finish') isLeft = true;
+
+            let panel = document.getElementById('gridExecutionSubpanel');
+            panel.className = 'grid-panel-layout ' + (isLeft ? 'layout-left-selected' : 'layout-right-selected');
+
+            let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
+            
+            document.getElementById('execUnifiedCard').className = `execution-unified-card cost-${move.cost}`;
+            document.getElementById('execUnifiedCard').innerHTML = `
+                <div class="unified-header">
+                    <div class="unified-title">
+                        <span>${move.name}</span>
+                        <span class="unified-cost">[COST ${move.cost}]</span>
+                    </div>
+                    <button id="rethinkActionBtn" class="rethink-action-btn" onclick="abortGridPuzzleExecution()">RE-THINK</button>
+                </div>
+                <div class="recipe-dots large-recipe" id="executionRecipeTracker">
+                    ${dotHTML}
+                </div>
+            `;
+
             if (move.id !== 'm_finish') {
                 move.currentUses--;
                 document.getElementById(`uses-node-${move.id}`).innerText = `${move.currentUses}/${move.maxUses}`;
@@ -1253,22 +1329,16 @@
             updatePlayerAtbVisualBar();
 
             document.getElementById('movesMenuSubpanel').style.display = 'none';
-            document.getElementById('gridExecutionSubpanel').style.display = 'flex';
-
-            document.getElementById('executionMoveName').innerText = move.name;
-            
-            let trackingDotsHtml = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
-            document.getElementById('executionRecipeTracker').innerHTML = trackingDotsHtml;
-
-            document.getElementById('rethinkActionBtn').disabled = false;
+            document.getElementById('gridExecutionSubpanel').style.display = 'grid';
 
             currentChainTrace = [];
             successfulNodeCoords = [];
             selectedHandCardIndex = null;
             playerCoordinates = null;
+            window.lastHighSpotsMatched = 0;
 
             generateFreshExecutionHand();
-            constructGridFramework(move.gridSize);
+            constructGridFramework(move.gridSize, move.cost);
             updateRecipeChainProgressIcons(); 
         }
 
@@ -1282,10 +1352,13 @@
             }
 
             isFinisherRunning = false;
+            
+            // Instantly transition visuals back to standard default menu state
             document.getElementById('gridExecutionSubpanel').style.display = 'none';
             document.getElementById('movesMenuSubpanel').style.display = 'none';
-            
             clearActiveMenuTabs();
+            isListActiveView = false;
+            
             updatePlayerAtbVisualBar();
             syncHypeMeterDisplay();
             
@@ -1297,11 +1370,21 @@
             }
         }
 
+        function getRandomCardForHand(currentHand) {
+            const symbols = ['B', 'R', 'G', 'Y'];
+            let available = symbols.filter(sym => {
+                let count = currentHand.filter(c => c.symbol === sym).length;
+                return count < 3;
+            });
+            if (available.length === 0) available = symbols;
+            let picked = available[Math.floor(Math.random() * available.length)];
+            return ARCHETYPES[picked];
+        }
+
         function generateFreshExecutionHand() {
             executionHand = [];
-            const symbols = ['B', 'R', 'G', 'Y'];
             for(let i=0; i<5; i++) {
-                executionHand.push(ARCHETYPES[symbols[Math.floor(Math.random() * symbols.length)]]);
+                executionHand.push(getRandomCardForHand(executionHand));
             }
             renderHandUI();
         }
@@ -1329,17 +1412,23 @@
             });
         }
 
-        function constructGridFramework(size) {
+                function constructGridFramework(size, cost) {
             const board = document.getElementById('gridBoard');
             board.innerHTML = '';
             board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
             board.style.gridTemplateRows = `repeat(${size}, 1fr)`;
             
             gridMatrix = [];
+            let availableSpaces = [];
+            randomStartPos = { r: Math.floor(Math.random() * size), c: Math.floor(Math.random() * size) };
+
             for (let r = 0; r < size; r++) {
                 gridMatrix[r] = [];
                 for (let c = 0; c < size; c++) {
-                    gridMatrix[r][c] = { occupied: false, symbol: null, color: null };
+                    gridMatrix[r][c] = { occupied: false, symbol: null, color: null, highSpot: null };
+                    if (!(r === randomStartPos.r && c === randomStartPos.c)) {
+                        availableSpaces.push({r, c});
+                    }
                     
                     let space = document.createElement('div');
                     space.id = `space-${r}-${c}`; space.className = 'grid-space';
@@ -1348,9 +1437,31 @@
                 }
             }
 
-            randomStartPos = { r: Math.floor(Math.random() * size), c: Math.floor(Math.random() * size) };
-            let spawnSpace = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
+            let highSpotCount = cost || 1;
+            availableSpaces.sort(() => Math.random() - 0.5);
+            let selectedSpots = availableSpaces.slice(0, highSpotCount);
             
+            const symbols = ['B', 'R', 'G', 'Y'];
+            let availableSymbols = [...symbols].sort(() => Math.random() - 0.5);
+            
+            selectedSpots.forEach((spot, idx) => {
+                // Guarantee unique color per high spot space by referencing index
+                let sym = availableSymbols[idx % availableSymbols.length];
+                let arch = ARCHETYPES[sym];
+                gridMatrix[spot.r][spot.c].highSpot = { symbol: sym, color: arch.color };
+                
+                let el = document.getElementById(`space-${spot.r}-${spot.c}`);
+                el.style.boxShadow = `0 0 10px ${arch.color}, inset 0 0 10px ${arch.color}`;
+                el.style.border = `2px solid ${arch.color}`;
+                el.style.background = 'transparent';
+                
+                let hsLabel = document.createElement('div');
+                hsLabel.className = 'high-spot-label';
+                hsLabel.innerHTML = "HIGH<br>SPOT";
+                el.appendChild(hsLabel);
+            });
+
+            let spawnSpace = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
             let label = document.createElement('div');
             label.className = 'start-label'; label.id = 'startLabelText'; label.innerText = "START";
             spawnSpace.appendChild(label);
@@ -1371,15 +1482,13 @@
                 }
             }
 
+            let activeColor = selectedHandCardIndex !== null ? executionHand[selectedHandCardIndex].color : '#ffffff';
+
             if (playerCoordinates === null) {
                 legalMovesCount = 1;
                 let el = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
                 el.classList.add('valid-move');
-                if (selectedHandCardIndex !== null) {
-                    el.style.setProperty('--active-glow-color', executionHand[selectedHandCardIndex].color);
-                } else {
-                    el.style.setProperty('--active-glow-color', '#ffffff'); 
-                }
+                el.style.setProperty('--active-glow-color', activeColor);
                 return;
             }
 
@@ -1397,16 +1506,23 @@
                     let targetSpace = gridMatrix[m.r][m.c];
                     if(!targetSpace.occupied) {
                         legalMovesCount++;
-                        if (selectedHandCardIndex !== null) {
-                            let el = document.getElementById(`space-${m.r}-${m.c}`);
-                            el.classList.add('valid-move');
-                            el.style.setProperty('--active-glow-color', executionHand[selectedHandCardIndex].color);
-                        }
+                        let el = document.getElementById(`space-${m.r}-${m.c}`);
+                        el.classList.add('valid-move');
+                        el.style.setProperty('--active-glow-color', activeColor);
                     }
                 }
             });
 
-            if (legalMovesCount === 0) {
+            // Mathematical Trapped Grid Validation
+            let totalEmpty = 0;
+            for(let r=0; r<gridMatrix.length; r++) {
+                for(let c=0; c<gridMatrix[r].length; c++) {
+                    if (!gridMatrix[r][c].occupied) totalEmpty++;
+                }
+            }
+            let needed = selectedMoveInstance.recipe.length - currentChainTrace.length;
+
+            if (legalMovesCount === 0 || totalEmpty < needed) {
                 terminateExecutionPhase(false);
             }
         }
@@ -1441,8 +1557,9 @@
                 document.getElementById('rethinkActionBtn').disabled = true;
             }
 
-            const symbols = ['B', 'R', 'G', 'Y'];
-            executionHand[selectedHandCardIndex] = ARCHETYPES[symbols[Math.floor(Math.random() * symbols.length)]];
+            // Shuffle in functionality execution via array splicing
+            executionHand.splice(selectedHandCardIndex, 1);
+            executionHand.push(getRandomCardForHand(executionHand));
             selectedHandCardIndex = null;
 
             renderHandUI();
@@ -1470,7 +1587,7 @@
             dotElements.forEach((dot, idx) => {
                 if (idx < maxMatchLength) {
                     dot.style.opacity = '1';
-                    dot.style.boxShadow = `0 0 10px ${dot.style.backgroundColor}`;
+                    dot.style.boxShadow = `0 0 12px ${dot.style.backgroundColor}`;
                 } else {
                     dot.style.opacity = '0.35';
                     dot.style.boxShadow = 'none';
@@ -1513,7 +1630,13 @@
             let bossArch = boss.archetype; 
             let baseValue = boss.basePoints; 
             
+            window.lastHighSpotsMatched = 0;
             successfulNodeCoords.forEach(node => {
+                let cell = gridMatrix[node.r][node.c];
+                if (cell.highSpot && cell.highSpot.symbol === node.symbol) {
+                    window.lastHighSpotsMatched++;
+                }
+
                 let statBonus = PLAYER_STATS[node.symbol] || 0;
                 let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
                 
@@ -1524,7 +1647,11 @@
             let addedTotal = calculatedBatchPoints + extraGridBonusPoints;
             
             const scaleMultiplier = getPlayerMomentumMultiplier();
-            const absoluteFinalScore = Math.floor(addedTotal * scaleMultiplier);
+            let absoluteFinalScore = Math.floor(addedTotal * scaleMultiplier);
+            
+            if (window.lastHighSpotsMatched > 0) {
+                absoluteFinalScore *= Math.pow(2, window.lastHighSpotsMatched);
+            }
             
             currentHypePoints += absoluteFinalScore;
             currentMomentum += 15.0; 
@@ -1533,6 +1660,7 @@
             MATCH_TRACKER.totalPointsScored += absoluteFinalScore;
             if (absoluteFinalScore > MATCH_TRACKER.highestSinglePop) {
                 MATCH_TRACKER.highestSinglePop = absoluteFinalScore;
+                MATCH_TRACKER.highestPopMove = selectedMoveInstance.name;
             }
             
             syncHypeMeterDisplay();
@@ -1549,33 +1677,33 @@
         }
 
         function animateCombatSprites(attacker, isSuccess) {
-            if (isFinisherPinnedVictory) return;
             const wrapper = document.getElementById('playerSpriteWrapper');
             const bossWrap = document.getElementById('bossSpriteWrapper');
             if (!wrapper || !bossWrap) return;
 
-            wrapper.classList.remove('animate-dropkick', 'animate-damage');
-            bossWrap.classList.remove('animate-boss-dropkick', 'animate-damage');
+            wrapper.classList.remove('animate-dropkick', 'animate-damage', 'animate-damage-delayed');
+            bossWrap.classList.remove('animate-boss-dropkick', 'animate-damage', 'animate-damage-delayed');
             void wrapper.offsetWidth; 
+            void bossWrap.offsetWidth;
 
             if (attacker === 'player') {
                 if (isSuccess) {
                     wrapper.classList.add('animate-dropkick');
-                    bossWrap.classList.add('animate-damage');
+                    bossWrap.classList.add('animate-damage-delayed');
                 } else {
                     wrapper.classList.add('animate-damage');
                 }
             } else if (attacker === 'boss') {
                 if (isSuccess) {
                     bossWrap.classList.add('animate-boss-dropkick');
-                    wrapper.classList.add('animate-damage');
+                    wrapper.classList.add('animate-damage-delayed');
                 } else {
                     bossWrap.classList.add('animate-damage');
                 }
             }
         }
 
-        function runCinematicThreePinfallSequence() {
+                function runCinematicThreePinfallSequence() {
             const playerWrapper = document.getElementById('playerSpriteWrapper');
             const bossWrapper = document.getElementById('bossSpriteWrapper');
             const countOverlay = document.getElementById('pinCountNode');
@@ -1583,11 +1711,16 @@
 
             if (!playerWrapper || !bossWrapper) return;
 
-            playerWrapper.classList.remove('animate-dropkick', 'animate-damage');
-            bossWrapper.classList.remove('animate-boss-dropkick', 'animate-damage');
+            // Strip attack animations FIRST
+            playerWrapper.classList.remove('animate-dropkick', 'animate-damage', 'animate-damage-delayed');
+            bossWrapper.classList.remove('animate-boss-dropkick', 'animate-damage', 'animate-damage-delayed');
             
-            playerWrapper.classList.add('animate-pinfall-dive');
-            bossWrapper.classList.add('animate-damage');
+            // Force browser to recalculate styles so transitions can fire
+            void playerWrapper.offsetWidth; 
+            void bossWrapper.offsetWidth;
+            
+            playerWrapper.classList.add('player-center-pin');
+            bossWrapper.classList.add('boss-center-pinned');
 
             setTimeout(() => {
                 countOverlay.innerText = "1";
@@ -1613,9 +1746,6 @@
             }, 2900);
 
             setTimeout(() => {
-                document.getElementById('gridExecutionSubpanel').style.display = 'none';
-                document.getElementById('movesMenuSubpanel').style.display = 'none';
-                document.getElementById('finisherMenuBtn').style.display = 'none';
                 displayPostMatchPaydayEnvelope();
             }, 4500);
         }
@@ -1678,8 +1808,8 @@
                     favoriteMove = mv;
                 }
             }
-            document.getElementById('envHighlightFavorite').innerText = maxCount > 0 ? `${favoriteMove} (${maxCount}x)` : "None";
-            document.getElementById('envHighlightHighest').innerText = `${MATCH_TRACKER.highestSinglePop} Hype`;
+            document.getElementById('envHighlightFavorite').innerHTML = maxCount > 0 ? `${favoriteMove}<br><span style="font-size: 13px; color: #666; white-space: nowrap;">(${maxCount}x)</span>` : "None";
+            document.getElementById('envHighlightHighest').innerHTML = `${MATCH_TRACKER.highestPopMove}<br><span style="font-size: 13px; color: #666; white-space: nowrap;">(${MATCH_TRACKER.highestSinglePop} pts)</span>`;
             
             let totalSeconds = Math.floor((MATCH_TRACKER.endTime - MATCH_TRACKER.startTime) / 1000);
             let mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -1710,8 +1840,13 @@
             document.getElementById('paydayEnvelopeModal').style.display = 'flex';
         }
 
-        function executePlayerSignatureSignOff() {
-            document.getElementById('envelopeSigArea').innerHTML = '<span class="envelope-player-signature">GEOFF</span>'; 
+                function executePlayerSignatureSignOff() {
+            // Replaces button with signature resting directly on the dashed line
+            document.getElementById('envelopeSigArea').innerHTML = `
+                <div style="width: 80%; border-bottom: 2px dashed #777; text-align: center; margin: 0 auto; padding: 10px;">
+                    <span class="envelope-player-signature">GEOFF</span>
+                </div>
+            `; 
             
             setTimeout(() => {
                 document.getElementById('paydayEnvelopeModal').style.display = 'none';
@@ -1739,12 +1874,24 @@
 
         function terminateExecutionPhase(isSuccess) {
             isGridPuzzleExecuting = false; 
+            isPlayerExecuting = true;
+            
             const moveBanner = document.getElementById('playerMoveBanner');
             const moveName = selectedMoveInstance ? selectedMoveInstance.name : "ATTACK";
 
+            document.getElementById('gridExecutionSubpanel').style.display = 'none';
+            document.getElementById('movesMenuSubpanel').style.display = 'none';
             clearActiveMenuTabs();
+            isListActiveView = false;
 
             if (isSuccess) {
+                let bannerColor = 'var(--color-blue)';
+                if (selectedMoveInstance.cost === 2) bannerColor = 'var(--color-green)';
+                if (selectedMoveInstance.cost === 3) bannerColor = 'var(--color-red)';
+                
+                moveBanner.style.borderColor = bannerColor;
+                moveBanner.style.color = '#fff';
+
                 if (isFinisherRunning) {
                     isFinisherPinnedVictory = true; 
                     if (atbIntervalLoop) {
@@ -1753,9 +1900,12 @@
                     }
                     isBossExecuting = false; 
 
-                    moveBanner.innerText = "★ RUNNING FINISHER ★";
+                    moveBanner.innerHTML = `★ RUNNING FINISHER ★`;
+                    moveBanner.style.borderColor = 'var(--color-red)';
                     moveBanner.classList.add('active');
                     isFinisherRunning = false;
+
+                    animateCombatSprites('player', true);
 
                     setTimeout(() => {
                         moveBanner.classList.remove('active');
@@ -1764,7 +1914,7 @@
                     return;
                 } else {
                     let sideBonusAwarded = processSuccessfulChainScoring();
-                    triggerKineticDamagePop(sideBonusAwarded, 'bossSpriteWrapper');
+                    triggerKineticDamagePop(sideBonusAwarded, 'bossSpriteWrapper', 500);
                     animateCombatSprites('player', isSuccess);
                 }
 
@@ -1776,6 +1926,13 @@
                         cellEl.style.setProperty('--match-color', node.color);
                     }
                 });
+                
+                if (window.lastHighSpotsMatched > 0) {
+                    moveBanner.innerHTML = `<div class="high-spot-tag">HIGH<br>SPOT</div>${moveName}`;
+                } else {
+                    moveBanner.innerText = moveName;
+                }
+                moveBanner.classList.add('active');
             } else {
                 MATCH_TRACKER.botchesCount++; 
                 currentMomentum -= 15.0; 
@@ -1784,22 +1941,33 @@
                 }
                 syncHypeMeterDisplay();
                 syncMomentumBar();
-                triggerKineticDamagePop(10, 'playerSpriteWrapper');
+                triggerKineticDamagePop(10, 'playerSpriteWrapper', 0);
                 animateCombatSprites('player', isSuccess);
+                
+                const botchTerms = ["REVERSED!", "COUNTERED!", "BOTCHED!"];
+                let randomBotch = botchTerms[Math.floor(Math.random() * botchTerms.length)];
+                
+                moveBanner.innerHTML = `<span style="text-decoration: line-through; opacity: 0.6;">${moveName}</span><br><span style="color: #ff3333; font-size: 22px;">${randomBotch}</span>`;
+                moveBanner.classList.add('broken-banner');
+                moveBanner.classList.add('active');
             }
 
             isFinisherRunning = false;
 
             setTimeout(() => {
                 if (isFinisherPinnedVictory) return;
-                moveBanner.classList.remove('active');
+                moveBanner.classList.remove('active', 'broken-banner');
                 
-                document.getElementById('gridExecutionSubpanel').style.display = 'none';
-                document.getElementById('movesMenuSubpanel').style.display = 'none';
+                const playerWrapper = document.getElementById('playerSpriteWrapper');
+                const bossWrapper = document.getElementById('bossSpriteWrapper');
+                if (playerWrapper) playerWrapper.classList.remove('animate-dropkick', 'animate-damage', 'animate-damage-delayed');
+                if (bossWrapper) bossWrapper.classList.remove('animate-boss-dropkick', 'animate-damage', 'animate-damage-delayed');
                 
                 updatePlayerAtbVisualBar();
                 updateBossAtbVisualBar();
                 syncHypeMeterDisplay();
+                
+                isPlayerExecuting = false;
                 
                 if (totalAtbChargePoints >= 100) {
                     document.getElementById('attackMenuBtn').classList.add('active-tab');
@@ -1807,7 +1975,6 @@
                     updateMoveSelectabilityState();
                     document.getElementById('movesMenuSubpanel').style.display = 'grid';
                 }
-                startAtbCycle();
             }, 1200); 
         }
     </script>
