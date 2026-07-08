@@ -55,7 +55,7 @@
         .bottom-command {
             height: 25vh; width: 100vw;
             background-color: var(--panel-bg);
-            position: relative; padding: 8px;
+            position: relative; padding: 6px;
             display: flex; gap: 12px;
         }
 
@@ -81,18 +81,35 @@
             font-weight: bold !important;
         }
 
-        /* Hype Meter Center Alignment */
+        /* Thickened, Centered Real Estate For Display Indicators */
         .hype-container { 
             position: absolute; 
             left: 50%; 
             transform: translateX(-50%); 
-            width: 30%; 
+            width: 38%; 
             text-align: center; 
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(5, 5, 8, 0.85);
+            padding: 14px;
+            border-radius: 6px;
+            border: 1px solid #333;
         }
-        .hype-header { display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; margin-bottom: 4px; }
-        .hype-track { background: #111; border: 2px solid #444; height: 18px; border-radius: 9px; overflow: hidden; }
+        .hype-header, .momentum-header { display: flex; justify-content: center; font-size: 13px; font-weight: bold; margin-bottom: 4px; letter-spacing: 1px; }
+        .hype-track, .momentum-track { border: 2px solid #444; height: 26px; border-radius: 13px; overflow: hidden; position: relative; background: #111; }
         .hype-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff0000, #f1c40f, #00ff00); transition: width 0.3s ease; }
+        
+        /* Bidirectional Custom Fill Setup */
+        .momentum-fill { 
+            position: absolute;
+            top: 0;
+            height: 100%; 
+            width: 0%;
+            transition: left 0.15s ease, width 0.15s ease, background-color 0.3s ease;
+        }
+        .momentum-center-notch { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: #fff; opacity: 0.4; transform: translateX(-50%); z-index: 5; }
 
         /* ATB METER BARS WITH CENTERED TEXT LABELS */
         .atb-wrapper { margin-top: 8px; width: 100%; }
@@ -108,9 +125,9 @@
 
         /* SPRITE PERSPECTIVE AND COMBAT ANIMATION MATRIX */
         .stage-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        .sprite-container { position: absolute; width: 22vw; height: 35vh; max-width: 220px; max-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-        .opponent-placement { top: 15%; right: 15%; }
-        .player-placement { bottom: 5%; left: 15%; }
+        .sprite-container { position: absolute; width: 22vw; height: 35vh; max-width: 220px; max-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; transition: all 0.5s ease-in-out; }
+        .opponent-placement { top: 18%; right: 15%; }
+        .player-placement { bottom: 8%; left: 15%; }
         
         .wrestler-png { 
             width: 100%; height: auto; max-height: 100%; object-fit: contain;
@@ -118,28 +135,123 @@
             transition: filter 0.4s ease-in-out;
         }
 
-        .wrestler-label {
-            font-size: 15px !important;
-            font-weight: bold !important;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 4px 10px;
-            margin-top: 4px;
-            border-radius: 4px;
-            border: 1px solid #333;
+        /* JRPG FIXED POSITION MOVE ANNOUNCEMENT BANNERS */
+        .move-banner {
+            position: absolute;
+            background: rgba(12, 12, 16, 0.95);
+            border: 2px solid #fff;
+            padding: 8px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            opacity: 0;
+            z-index: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+            transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        }
+        .player-move-banner {
+            bottom: 46vh;
+            left: 26vw;
+            transform: translate(-50%, 15px) scale(0.9);
+            border-color: var(--color-blue);
+            color: #fff;
+        }
+        .player-move-banner.active {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+        .boss-move-banner {
+            top: 56vh;
+            right: 26vw;
+            transform: translate(50%, -15px) scale(0.9);
+            border-color: var(--color-red);
+            color: #ff3333;
+        }
+        .boss-move-banner.active {
+            opacity: 1;
+            transform: translate(50%, 0) scale(1);
+        }
+
+        /* WIN AND PINFALL CINEMATIC OVERLAYS */
+        .pin-count-overlay {
+            position: absolute;
+            top: 40%;
+            left: 66%;
+            transform: translate(-50%, -50%) scale(0.1);
+            font-size: 110px;
+            font-weight: 900;
+            color: #f1c40f;
+            text-shadow: 0 0 20px #000, 0 0 40px #ff3333;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .animate-pin-count { animation: countZoom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards; }
+
+        .victory-banner {
+            position: absolute;
+            bottom: 42%;
+            left: 26%;
+            transform: translate(-50%, -50%);
+            font-size: 42px;
+            font-weight: 900;
+            color: #00ff00;
+            text-shadow: 0 0 15px #000, 0 0 30px #00ff00;
+            z-index: 9999;
+            letter-spacing: 4px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .victory-banner.active { opacity: 1; transform: translate(-50%, -50%) scale(1.1); transition: all 0.3s ease; }
+
+        @keyframes countZoom {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+            30% { opacity: 1; transform: translate(-50%, -50%) scale(1.4); }
+            70% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        /* KINETIC DAMAGE POP TEXT */
+        .damage-pop {
+            position: absolute;
+            font-size: 24px;
+            font-weight: 900;
+            color: #ff3333;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 4px 8px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 1000;
+            animation: damageFloatUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes damageFloatUp {
+            0% { opacity: 0; transform: translateY(0) scale(0.6); }
+            15% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+            30% { transform: translateY(-35px) scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-120px) scale(0.7); }
         }
 
         /* --- SPRITE ANIMATION KEYFRAMES --- */
-        /* DROPKICK BLUEPRINT: Wind-up tilt, diagonal dash launch, recoil return */
-        @keyframes dropkickSequence {
+        @keyframes playerDropkickSequence {
             0% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(-30px, 30px) rotate(-90deg); } 
             45% { transform: translate(35vw, -30vh) rotate(-90deg); } 
             60% { transform: translate(30vw, -25vh) rotate(-75deg); } 
             100% { transform: translate(0, 0) rotate(0deg); }
         }
-        .animate-dropkick { animation: dropkickSequence 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        .animate-dropkick { animation: playerDropkickSequence 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
-        /* DAMAGE TAKEN SHAKE: Fast horizontal micro-jittering */
+        @keyframes bossDropkickSequence {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -30px) rotate(90deg); } 
+            45% { transform: translate(-35vw, 30vh) rotate(90deg); } 
+            60% { transform: translate(-30vw, 25vh) rotate(75deg); } 
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .animate-boss-dropkick { animation: bossDropkickSequence 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
         @keyframes damageShakeSequence {
             0%, 100% { transform: translate(0, 0); }
             15% { transform: translate(-15px, 0); }
@@ -150,6 +262,13 @@
             90% { transform: translate(6px, 0); }
         }
         .animate-damage { animation: damageShakeSequence 0.6s linear forwards; }
+
+        /* Dynamic Pinfall Physical Movement Override Keyframe */
+        @keyframes pinfallSpans {
+            0% { bottom: 8%; left: 15%; transform: rotate(0deg); }
+            100% { bottom: 44%; left: 66%; transform: rotate(90deg) scaleY(-1); }
+        }
+        .animate-pinfall-dive { animation: pinfallSpans 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
         /* === PERSISTENT LEFT MENU SELECTION PANEL === */
         .menu-column { width: 180px; border-right: 2px solid #2a2a2a; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; height: 100%; }
@@ -162,36 +281,49 @@
         #finisherMenuBtn:hover:not(:disabled) { background: #ff3333; color: #fff; }
 
         /* DYNAMIC CONTENT WRAPPER CONTAINER */
-        .submenu-wrapper { flex: 1; height: 100%; position: relative; }
+        .submenu-wrapper { flex: 1; height: 100%; position: relative; overflow: hidden; }
 
-        /* MOVES MATRIX WORKSPACE GRID (2-Columns x 5-Rows) */
+        /* MOVES MATRIX WORKSPACE GRID - Perfectly Aligned via Grid Columns */
         .moves-grid-matrix {
             display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr);
-            gap: 4px; height: 100%; width: 100%;
+            gap: 2px 4px; height: 100%; width: 100%;
         }
         
         .action-row-card { 
             border: 1px solid #2a2a35; border-radius: 4px; 
-            padding: 6px 14px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 10px; display: grid; 
+            grid-template-columns: 1fr max-content 40px; align-items: center; text-align: left; gap: 8px;
             transition: opacity 0.2s ease, box-shadow 0.2s ease;
-            background-color: #13131a;
+            height: 100%; min-height: 0;
         }
-        .action-row-card.cost-1 { border-color: rgba(51, 136, 255, 0.4); box-shadow: inset 0 0 10px rgba(51, 136, 255, 0.12); }
-        .action-row-card.cost-2 { border-color: rgba(0, 128, 0, 0.4); box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.12); }
-        .action-row-card.cost-3 { border-color: rgba(255, 51, 51, 0.4); box-shadow: inset 0 0 10px rgba(255, 51, 51, 0.12); }
+        .action-row-card.cost-1 { 
+            background-color: rgba(51, 136, 255, 0.08); 
+            border-color: rgba(51, 136, 255, 0.4); 
+            box-shadow: inset 0 0 10px rgba(51, 136, 255, 0.15); 
+        }
+        .action-row-card.cost-2 { 
+            background-color: rgba(0, 128, 0, 0.08); 
+            border-color: rgba(0, 128, 0, 0.4); 
+            box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.15); 
+        }
+        .action-row-card.cost-3 { 
+            background-color: rgba(255, 51, 51, 0.08); 
+            border-color: rgba(255, 51, 51, 0.4); 
+            box-shadow: inset 0 0 10px rgba(255, 51, 51, 0.15); 
+        }
         
         .action-row-card.selectable { cursor: pointer !important; opacity: 1 !important; }
         .action-row-card.disabled { cursor: not-allowed !important; opacity: 0.25 !important; }
         
-        /* Typography Parity 1:1 Matching Definitions */
-        .move-title-txt { font-size: 15px; font-weight: bold; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-        .move-cost-sub { font-size: 15px; font-weight: bold; color: #888; }
-        .recipe-dots { display: flex; gap: 4px; align-items: center; }
+        .move-title-txt { font-size: 13px; font-weight: bold; color: #fff; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .move-cost-sub { font-size: 11px; font-weight: bold; color: #888; display: block; margin-top: 1px; }
+        
+        .recipe-dots { display: flex; gap: 4px; align-items: center; justify-self: start; }
         .mini-dot { width: 20px; height: 20px; border-radius: 3px; font-size: 11px; font-weight: bold; text-align: center; line-height: 20px; color: #fff; flex-shrink: 0; }
-        .uses-counter-label { font-size: 15px; color: #fff; font-weight: bold; }
+        .uses-counter-label { font-size: 12px; color: #bbb; font-weight: bold; white-space: nowrap; justify-self: end; }
 
         /* PUZZLE GRID EXECUTION OVERLAY LAYOUT */
-        .grid-panel-layout { display: flex; gap: 15px; height: 100%; width: 100%; }
+        .grid-panel-layout { display: flex; gap: 12px; height: 100%; width: 100%; }
         .grid-left-side { flex: 0 0 auto; height: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; }
         .grid-board {
             display: grid; background-color: #050508; padding: 4px;
@@ -208,16 +340,12 @@
             box-shadow: inset 0 0 10px var(--active-glow-color, rgba(255,255,255,0.5));
         }
         
-        /* FIXED: Dashed outlines removed completely when placed */
         .grid-space.player-here { box-shadow: inset 0 0 12px #fff !important; z-index: 2; }
-        
-        /* FAINT SUBTLE INNER GLOW ON SELECTIONS */
         .grid-space.placed-dim { 
             opacity: 1; 
             box-shadow: inset 0 0 14px var(--match-color) !important; 
         }
         
-        /* SUCCESSFUL MATCH OUTLINE AND INTENSIFIED INNER GLOW */
         .grid-space.completed { 
             border: 3px solid var(--match-color) !important; 
             box-shadow: inset 0 0 25px var(--match-color), 0 0 10px var(--match-color) !important;
@@ -228,66 +356,212 @@
             position: absolute; font-size: 8px; font-weight: bold; color: #fff;
             text-shadow: 0 0 4px #000; z-index: 5; pointer-events: none;
         }
-        .start-locked { color: rgba(255,255,255,0.25); }
 
-        /* STATE B PARITY LAYOUT */
-        .grid-right-side { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-left: 2px; height: 100%; overflow: hidden; }
-        .execution-tracker-box { width: 100%; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
-        .execution-header { border-bottom: 1px dashed #2a2a35; padding-bottom: 4px; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
+        .grid-right-side { flex: 1; display: flex; flex-direction: column; gap: 6px; height: 100%; overflow: hidden; }
         
-        .move-name-display { font-size: 15px; font-weight: bold; color: var(--color-yellow); }
-        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 15px; padding: 4px 12px; cursor: pointer; border-radius: 3px; font-weight: bold; }
-        .rethink-action-btn:hover { background: #551111; color: #fff; }
+        /* Retooled State B Cards to aesthetically mirror State A row components */
+        .execution-tracker-box { 
+            display: flex; flex-direction: column; justify-content: center; align-items: stretch;
+            background-color: rgba(51, 136, 255, 0.08); border: 1px solid rgba(51, 136, 255, 0.4);
+            box-shadow: inset 0 0 10px rgba(51, 136, 255, 0.15);
+            border-radius: 4px; padding: 6px 12px; height: 45%; gap: 8px; width: 100%;
+        }
+        .execution-header { display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: 100%; }
+        
+        .move-name-display { font-size: 14px; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .rethink-action-btn { background: #221111; border: 1px solid #ff3333; color: #ff8888; font-size: 11px; padding: 4px 10px; cursor: pointer; border-radius: 3px; font-weight: bold; transition: all 0.2s; }
+        .rethink-action-btn:hover:not(:disabled) { background: #551111; color: #fff; }
+        .rethink-action-btn:disabled { opacity: 0.2; cursor: not-allowed; border-color: #333; color: #555; }
 
         .execution-tracker-box .mini-dot {
-            width: 32px;
-            height: 32px;
-            line-height: 32px;
-            font-size: 14px;
-            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            font-size: 11px;
+            border-radius: 3px;
             opacity: 0.35; 
             transition: opacity 0.15s ease, box-shadow 0.15s ease;
         }
 
-        .hand-rack-container { width: 100%; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; flex: 1; overflow: hidden; }
-        .hand-label-txt { font-size: 15px; color: #888; font-weight: bold; text-transform: uppercase; }
+        .hand-rack-container { 
+            display: flex; flex-direction: column; align-items: stretch; justify-content: center; 
+            background-color: rgba(0, 128, 0, 0.08); border: 1px solid rgba(0, 128, 0, 0.4);
+            box-shadow: inset 0 0 10px rgba(0, 128, 0, 0.15);
+            border-radius: 4px; padding: 8px 12px; height: 55%; width: 100%; gap: 6px;
+        }
+        .hand-label-txt { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; text-align: center; }
         
-        .hand-rack { display: flex; flex-direction: column; gap: 4px; flex: 1; width: 100%; }
+        .hand-rack { display: flex; flex-direction: row; gap: 6px; flex: 1; height: 100%; justify-content: space-between; }
         .hand-card {
             background: #111; border: 1px solid #333; border-radius: 4px;
-            padding: 0 12px; width: 100%; flex: 1; cursor: pointer; 
-            display: flex; align-items: center; gap: 8px; transition: border-color 0.1s;
+            padding: 4px; width: 100%; flex: 1; cursor: pointer; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: border-color 0.1s;
         }
-        .hand-card.selected { border-color: #fff !important; box-shadow: 0 0 8px var(--card-glow); background: #161622; }
-        .hand-card-badge { width: 16px; height: 16px; border-radius: 2px; font-size: 11px; font-weight: bold; text-align: center; line-height: 16px; color:#fff; flex-shrink: 0; }
-        .hand-card-name { font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; color: #eee; white-space: nowrap; font-weight: bold; }
+        .hand-card.selected { border-color: #fff !important; box-shadow: 0 0 6px var(--card-glow); background: #161622; }
+        .hand-card-badge { width: 24px; height: 24px; border-radius: 4px; font-size: 12px; font-weight: bold; text-align: center; line-height: 24px; color:#fff; flex-shrink: 0; }
+        .hand-card-name { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #eee; white-space: nowrap; font-weight: bold; text-align: center; }
 
-        /* TOAST OVERLAY SCREEN NOTIFICATION */
-        .toast-overlay {
-            position: absolute; top: 25%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            background: rgba(5, 5, 8, 0.95); border: 3px solid #fff; border-radius: 8px;
-            padding: 15px 40px; z-index: 99999; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; pointer-events: none; opacity: 0;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* THEMATIC MODAL SEQUENCES */
+        .flyer-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center; z-index: 999999;
         }
-        .toast-overlay.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        .toast-title { font-size: 20px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin: 0; text-align: center; }
-        .toast-desc { font-size: 13px; color: #aaa; margin-top: 6px; text-align: center; font-weight: bold; }
+
+        .indie-flyer {
+            background: #ffeb3b; color: #111; width: 450px; padding: 40px;
+            border: 3px dashed #111; box-shadow: 0px 15px 30px rgba(0,0,0,0.5);
+            text-align: center; transform: rotate(0.5deg);
+        }
+        .indie-flyer * { font-family: monospace !important; }
+
+        .flyer-header { font-size: 24px; font-weight: bold; letter-spacing: 1px; }
+        .flyer-venue { font-size: 16px; font-weight: bold; margin-top: 5px; color: #333; }
+        .flyer-matchup { margin: 30px 0; border-top: 2px solid #111; border-bottom: 2px solid #111; padding: 20px 0; }
+        .wrestler-card h2 { margin: 0; font-size: 22px; }
+        .wrestler-card p { margin: 2px 0 0 0; font-size: 14px; color: #444; }
+        .vs-text { font-size: 32px; font-weight: bold; margin: 10px 0; color: #d32f2f; }
+        .flyer-footer p { font-size: 13px; margin: 0; font-weight: bold; }
+        
+        .ring-bell-btn {
+            background: #111; color: #ffeb3b; font-size: 18px; padding: 10px 20px;
+            border: none; cursor: pointer; margin-top: 20px; width: 100%; font-weight: bold;
+        }
+
+        .payday-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center; z-index: 999999;
+        }
+        
+        .payday-envelope {
+            background-color: #e6dbb9; color: #1a1a1a; width: 420px; padding: 35px;
+            border: 2px solid #bdae83; border-left: 12px solid #c7b88e; 
+            box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.4); transform: rotate(-1deg); user-select: none;
+        }
+        .payday-envelope * { font-family: monospace !important; }
+
+        .envelope-title {
+            font-size: 22px; font-weight: bold; text-align: center;
+            margin-bottom: 15px; border-bottom: 2px dashed #555; padding-bottom: 5px; text-transform: uppercase;
+        }
+        .envelope-section-heading { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: #555; margin: 10px 0 5px 0; font-weight: bold; }
+        .envelope-stat-row { display: flex; justify-content: space-between; font-size: 16px; margin: 6px 0; }
+        .envelope-stat-label { font-weight: bold; }
+        .envelope-divider { border-bottom: 1px dashed #777; margin: 15px 0; }
+        
+        .envelope-rating-box { text-align: center; margin: 15px 0 20px 0; }
+        .envelope-rating-label { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .envelope-rating-stars { font-size: 32px; color: #8b6c31; font-weight: bold; line-height: 1; margin-top: 5px; }
+        
+        .envelope-payout-box { background: rgba(0, 0, 0, 0.03); border: 2px dashed #8b6c31; padding: 15px; text-align: center; margin-top: 15px; }
+        .envelope-payout-amount { font-size: 32px; font-weight: bold; color: #27ae60; line-height: 1; }
+        
+        .envelope-signature-area { margin-top: 25px; min-height: 55px; display: flex; justify-content: center; align-items: center; }
+        .envelope-cash-out-btn {
+            display: block; width: 100%; background: none; border: 2px solid #1a1a1a;
+            font-size: 16px; font-weight: bold; color: #1a1a1a; padding: 10px; cursor: pointer; text-align: center;
+        }
+        .envelope-player-signature {
+            font-size: 24px; font-weight: bold; color: #003366;
+            transform: skewX(-10deg) rotate(-2deg); animation: inkSpread 0.3s ease-out;
+        }
+        @keyframes inkSpread {
+            from { opacity: 0; transform: scale(0.9) skewX(-10deg) rotate(-2deg); }
+            to { opacity: 1; transform: scale(1) skewX(-10deg) rotate(-2deg); }
+        }
     </style>
 </head>
 <body>
 
-    <div id="combatToast" class="toast-overlay">
-        <h2 id="toastTitle" class="toast-title">COMBO SIGNED!</h2>
-        <div id="toastDesc" class="toast-desc">Execution parameters successfully applied.</div>
+    <!-- PRE-MATCH INTERACTIVE FLYER MODAL -->
+    <div class="flyer-overlay" id="eventFlyerModal">
+        <div class="indie-flyer">
+            <div class="flyer-header">INDIE WRESTLING TONIGHT !!!</div>
+            <div class="flyer-venue" id="flyerVenueNode">LIVE FROM THE LOGAN SQUARE AUDITORIUM</div>
+            
+            <div class="flyer-matchup">
+                <div class="wrestler-card player-side">
+                    <h2>GEOFF</h2>
+                    <p id="flyerPlayerSubtitle">The High-Flying Tech Prodigy</p>
+                </div>
+                
+                <div class="vs-text">VS</div>
+                
+                <div class="wrestler-card opponent-side">
+                    <h2 id="flyerOpponentName">BINTERMAN</h2>
+                    <p id="flyerOpponentSubtitle">The Unstoppable Bruiser</p>
+                </div>
+            </div>
+
+            <div class="flyer-footer">
+                <p>DOORS AT 7PM | TICKETS $15 | NO REFUNDS</p>
+                <button class="ring-bell-btn" onclick="dismissFlyerAndStartMatch()">
+                    [STEP INTO THE RING]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST-MATCH MANILA PAYDAY ENVELOPE MODAL (HIDDEN BY DEFAULT) -->
+    <div class="payday-overlay" id="paydayEnvelopeModal" style="display: none;">
+        <div class="payday-envelope">
+            <div class="envelope-title" id="envelopeTitleNode">Show Results</div>
+            
+            <!-- MATCH HIGHLIGHTS PERFORMANCE SECTION -->
+            <div class="envelope-section-heading">Match Highlights</div>
+            <div class="envelope-stat-row">
+                <span class="envelope-stat-label">Total Hype Generated:</span>
+                <span id="envHighlightHype">0 pts</span>
+            </div>
+            <div class="envelope-stat-row">
+                <span class="envelope-stat-label">Successful Attacks:</span>
+                <span id="envHighlightAttacks">0 Hits</span>
+            </div>
+            <div class="envelope-stat-row">
+                <span class="envelope-stat-label">Crowd Favorite Move:</span>
+                <span id="envHighlightFavorite">None</span>
+            </div>
+            <div class="envelope-stat-row">
+                <span class="envelope-stat-label">Highest Single Pop:</span>
+                <span id="envHighlightHighest">0 Hype</span>
+            </div>
+            <div class="envelope-stat-row">
+                <span class="envelope-stat-label">Total Match Time:</span>
+                <span id="envHighlightTime">00:00</span>
+            </div>
+
+            <div class="envelope-divider"></div>
+
+            <!-- CRITIC DAVE VERDICT RATING BOX -->
+            <div class="envelope-rating-box">
+                <div class="envelope-rating-label">Dave's Verdict</div>
+                <div class="envelope-rating-stars" id="envRatingStarsDisplay">★★★★.25</div>
+            </div>
+
+            <!-- CLEAN REWARD DISPLAY -->
+            <div class="envelope-payout-box">
+                <div class="envelope-payout-amount" id="envPayoutCashDisplay">PAYDAY: $0.00</div>
+            </div>
+
+            <!-- INTERACTIVE AUTOGRAPH SIGN-OFF CONTAINER -->
+            <div class="envelope-signature-area" id="envelopeSigArea">
+                <button class="envelope-cash-out-btn" onclick="executePlayerSignatureSignOff()">
+                    [ SIGN PAYDAY SLIP ]
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- TOP ARENA PANEL (75%) -->
-    <div class="top-arena">
+    <div class="top-arena" id="topArenaCanvas">
+        <!-- FIXED VENUE BACKGROUND MATRIX SLOT -->
+        <div id="venueBackgroundLayer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0.15; z-index: 0; transition: background-image 0.5s ease;"></div>
+
         <div class="hud-row">
             <!-- PLAYER CARD (LEFT PANEL) -->
             <div class="player-card">
-                <div style="font-weight: bold; font-size: 13px;">BINTERMAN BOT</div>
+                <div style="font-weight: bold; font-size: 13px;">GEOFF</div>
                 <span id="hudPlayerBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-blue); color:#fff;"></span>
                 
                 <div class="atb-wrapper">
@@ -300,16 +574,24 @@
                 </div>
             </div>
 
-            <!-- CENTERED HYPE TRACKER -->
+            <!-- CENTERED MATCH HYPE & MATCH MOMENTUM TRACKERS -->
             <div class="hype-container">
-                <div class="hype-header"><span>MATCH HYPE CAPACITY</span><span id="hypeTxt">0%</span></div>
-                <div class="hype-track"><div id="hypeFill" class="hype-fill"></div></div>
+                <div>
+                    <div class="hype-header"><span>HYPE</span></div>
+                    <div class="hype-track"><div id="hypeFill" class="hype-fill"></div></div>
+                </div>
+                <div>
+                    <div class="momentum-header"><span>MOMENTUM</span></div>
+                    <div class="momentum-track">
+                        <div class="momentum-center-notch"></div>
+                        <div id="momentumFill" class="momentum-fill"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- BOSS CARD (RIGHT PANEL) -->
             <div class="boss-card">
                 <div id="bossNameHeader" style="font-weight: bold; font-size: 13px;">BINTERMAN</div>
-    <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
                 <span id="hudBossBadge" style="font-size:9px; padding:1px 4px; border-radius:2px; font-weight: bold; background-color: var(--color-red); color:#fff;"></span>
                 
                 <div class="atb-wrapper">
@@ -323,19 +605,23 @@
             </div>
         </div>
 
-        <!-- STAGE CANVAS PLATFORM WITH SYNCED LABELS -->
+        <!-- STAGE CANVAS PLATFORM WITH ISOLATED FIXED POSITION ANNOUNCEMENT VIEWPORTS -->
         <div class="stage-view">
+            <div id="playerMoveBanner" class="move-banner player-move-banner">MOVE NAME</div>
+            <div id="bossMoveBanner" class="move-banner boss-move-banner">MOVE NAME</div>
+            
+            <!-- Dynamic Pinfall Count Elements -->
+            <div id="pinCountNode" class="pin-count-overlay">1</div>
+            <div id="victoryMarqueeNode" class="victory-banner">YOU WIN!!</div>
+
             <!-- Boss Container -->
-            <div class="sprite-container opponent-placement">
+            <div class="sprite-container opponent-placement" id="bossSpriteWrapper">
                 <img src="https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png" class="wrestler-png" id="bossSprite">
-                <!-- Replace your hardcoded div with this -->
-<div class="wrestler-label" id="bossNameLabel"></div>
             </div>
 
             <!-- Player Container -->
             <div class="sprite-container player-placement" id="playerSpriteWrapper">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Geoff&backgroundColor=transparent" class="wrestler-png" id="playerSprite">
-                <div class="wrestler-label" style="color:var(--color-blue);">BINTERMAN BOT</div>
+                <img src="https://geoffhenao.github.io/wrestlepath/images/geoff-by-profbanzi-ryo.PNG" class="wrestler-png" id="playerSprite">
             </div>
         </div>
     </div>
@@ -367,14 +653,13 @@
                     <div class="execution-tracker-box">
                         <div class="execution-header">
                             <div id="executionMoveName" class="move-name-display">MOVE</div>
-                            <button class="rethink-action-btn" onclick="abortGridPuzzleExecution()">RE-THINK MOVE</button>
+                            <button id="rethinkActionBtn" class="rethink-action-btn" onclick="abortGridPuzzleExecution()">RE-THINK</button>
                         </div>
-                        <div class="hand-label-txt" style="margin-bottom: 2px;">Target Sequence Chain:</div>
-                        <div id="executionRecipeTracker" class="recipe-dots"></div>
+                        <div class="recipe-dots" id="executionRecipeTracker"></div>
                     </div>
 
                     <div class="hand-rack-container">
-                        <div class="hand-label-txt" style="margin-bottom: 2px;">Reflex Hand:</div>
+                        <div class="hand-label-txt">REFLEX HAND</div>
                         <div class="hand-rack" id="handContainer"></div>
                     </div>
                 </div>
@@ -384,97 +669,96 @@
     </div>
 
     <script>
-        function initUiTextProfiles() {
-    if (currentBossIndex >= BOSS_MANIFEST.length) return;
+        // MATCH REAL-TIME METRIC TRACKER REGISTRY Object
+        let MATCH_TRACKER = {
+            startTime: null,
+            endTime: null,
+            successfulHitsCount: 0,
+            highestSinglePop: 0,
+            botchesCount: 0,
+            uniqueMovesUsed: new Set(),
+            moveExecutionCounter: {},
+            totalPointsScored: 0,
+            highMomentumTicks: 0,
+            totalTicks: 0
+        };
 
-    const boss = BOSS_MANIFEST[currentBossIndex];
-    const bossArch = ARCHETYPES[boss.archetype];
-    
-    // 1. Update the Header Name (The part that was hardcoded)
-    const bossHeader = document.getElementById('bossNameHeader');
-    bossHeader.innerText = boss.name;
+        const ARCHETYPES = {
+            'R': { symbol: 'R', name: 'Hardcore', color: 'var(--color-red)', glowRaw: "rgba(255, 0, 0, 0.8)" },
+            'B': { symbol: 'B', name: 'Flyer', color: 'var(--color-blue)', glowRaw: "rgba(51, 102, 153, 0.8)" },
+            'G': { symbol: 'G', name: 'Technician', color: 'var(--color-green)', glowRaw: "rgba(0, 128, 0, 0.8)" },
+            'Y': { symbol: 'Y', name: 'Brawler', color: 'var(--color-yellow)', glowRaw: "rgba(241, 196, 15, 0.8)" } 
+        };
 
-    // 2. Update Boss Badge (Archetype Name)
-    const bossBadge = document.getElementById('hudBossBadge');
-    bossBadge.style.backgroundColor = bossArch.color;
-    bossBadge.innerText = `${bossArch.name.toUpperCase()}`; 
-    
-    // 3. Update Boss Label below sprite
-    const bossLabel = document.getElementById('bossNameLabel');
-    bossLabel.innerText = boss.name;
-    bossLabel.style.color = bossArch.color;
+        const STRENGTH_CYCLE = {
+            'B': 'R', 'R': 'G', 'G': 'Y', 'Y': 'B'
+        };
 
-    // 4. Update the Sprite Image
-    const bossSprite = document.getElementById('bossSprite');
-    bossSprite.src = boss.img; 
+        const BOSS_MANIFEST = [
+            { 
+                name: "BINTERMAN", 
+                archetype: "Y", 
+                img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png",
+                basePoints: 10, 
+                winThreshold: 10 
+            },
+            { 
+                name: "GEOFF (AND A GAGGLE OF GIRLS)", 
+                archetype: "R", 
+                img: "https://geoffhenao.github.io/wrestlepath/images/geoff-by-isamar-2018.png",
+                basePoints: 15,
+                winThreshold: 750
+            },
+            { 
+                name: "ULTIMATE WARRIOR", 
+                archetype: "G", 
+                img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png",
+                basePoints: 20,
+                winThreshold: 1000 
+            }
+        ];
 
-    // 5. Sync Player Panel
-    const playerArch = ARCHETYPES['B'];
-    const playerBadge = document.getElementById('hudPlayerBadge');
-    playerBadge.style.backgroundColor = playerArch.color;
-    playerBadge.innerText = `${playerArch.name.toUpperCase()}`;
-}
-        // FIXED REVERSAL MAPPING: R = Hardcore, Y = Brawler
-const ARCHETYPES = {
-    'R': { symbol: 'R', name: 'Hardcore', color: 'var(--color-red)', glowRaw: "rgba(255, 0, 0, 0.8)" },
-    'B': { symbol: 'B', name: 'Flyer', color: 'var(--color-blue)', glowRaw: "rgba(51, 102, 153, 0.8)" },
-    'G': { symbol: 'G', name: 'Technician', color: 'var(--color-green)', glowRaw: "rgba(0, 128, 0, 0.8)" },
-    'Y': { symbol: 'Y', name: 'Brawler', color: 'var(--color-yellow)', glowRaw: "rgba(241, 196, 15, 0.8)" } 
-};
+        const MOVES_MANIFEST = [
+            { id: 'm1', name: 'DROPKICK', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','G','Y'], gridSize: 3 },
+            { id: 'm2', name: 'GERMAN SUPLEX', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','G','R'], gridSize: 3 },
+            { id: 'm3', name: 'CHOP SERIES', cost: 1, maxUses: 5, currentUses: 5, recipe: ['R','R','Y'], gridSize: 3 },
+            { id: 'm4', name: 'ARMBAR HOLD', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','B','G'], gridSize: 3 },
+            { id: 'm5', name: 'HURRICANRANA', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','B','G'], gridSize: 3 },
+            { id: 'm6', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','Y','G','R'], gridSize: 4 },
+            { id: 'm7', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, recipe: ['B','R','B','Y'], gridSize: 4 },
+            { id: 'm8', name: 'FIGURE-4 LEGLOCK', cost: 2, maxUses: 3, currentUses: 3, recipe: ['G','Y','G','B'], gridSize: 4 },
+            { id: 'm9', name: 'CHOKESLAM', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','R','Y','Y'], gridSize: 4 },
+            { id: 'm10', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, recipe: ['R','G','B','Y','R'], gridSize: 5 }
+        ];
 
-// This defines the "Advantage" relationship
-const STRENGTH_CYCLE = {
-    'B': 'R', // Blue (Flyer) > Red (Brawler)
-    'R': 'G', // Red (Brawler) > Green (Technician)
-    'G': 'Y', // Green (Technician) > Yellow (Hardcore)
-    'Y': 'B'  // Yellow (Hardcore) > Blue (Flyer)
-};
+        const ARCHETYPE_NICKNAMES = {
+            'R': ["The Hardcore Icon", "The Sultan of Scars", "The Deathmatch Legend", "The Unhinged Anarchist"],
+            'B': ["The High-Flying Prodigy", "The Aerial Assassin", "The Daredevil Sensation", "The Gravity Defier"],
+            'G': ["The Technical Wizard", "The Submission Master", "The Ring General", "The Master Tactician"],
+            'Y': ["The Unstoppable Bruiser", "The King of the Brawl", "The Concrete Heavyweight", "The Powerhouse Striker"]
+        };
 
-const BOSS_MANIFEST = [
-    { 
-        name: "BINTERMAN", 
-        archetype: "Y", 
-        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png",
-        basePoints: 10, // Base points per square
-        winThreshold: 10 // Points needed to defeat boss 
-    },
-    { 
-        name: "IRON SHEIK", 
-        archetype: "R", 
-        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-sheik.png",
-        basePoints: 15,
-        winThreshold: 750
-    },
-    { 
-        name: "ULTIMATE WARRIOR", 
-        archetype: "G", 
-        img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png",
-        basePoints: 20,
-        winThreshold: 1000 
-    }
-];
-let currentBossIndex = 0; // Increment this when you defeat a boss
+        // STEP 4 IMPLEMENTATION: GENTLER LINEAR SCALING baseline matrices
+        const BOSS_ATTACKS_MANIFEST = {
+            1: [
+                { name: "CLUBBING FOREARM", hypePen: 0.05, momPen: 5, dmg: 10 },
+                { name: "CHOP SERIES", hypePen: 0.05, momPen: 5, dmg: 12 },
+                { name: "BIG BOOT", hypePen: 0.05, momPen: 5, dmg: 15 }
+            ],
+            2: [
+                { name: "BRUISER LARIAT", hypePen: 0.10, momPen: 10, dmg: 25 },
+                { name: "BACKBREAKER", hypePen: 0.10, momPen: 10, dmg: 28 },
+                { name: "GERMAN SUPLEX", hypePen: 0.10, momPen: 10, dmg: 30 }
+            ],
+            3: [
+                { name: "MEGA POWERBOMB", hypePen: 0.15, momPen: 15, dmg: 45 },
+                { name: "CHOKESLAM TO HELL", hypePen: 0.15, momPen: 15, dmg: 50 },
+                { name: "SPIKE PILEDRIVER", hypePen: 0.15, momPen: 15, dmg: 55 }
+            ]
+        };
 
-const MOVES_MANIFEST = [
-    { id: 'm1', name: 'DROPKICK', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','G','Y'], gridSize: 3 },
-    { id: 'm2', name: 'GERMAN SUPLEX', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','G','R'], gridSize: 3 },
-    { id: 'm3', name: 'CHOP SERIES', cost: 1, maxUses: 5, currentUses: 5, recipe: ['R','R','Y'], gridSize: 3 },
-    { id: 'm4', name: 'ARMBAR HOLD', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','B','G'], gridSize: 3 },
-    { id: 'm5', name: 'HURRICANRANA', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','B','G'], gridSize: 3 },
-    { id: 'm6', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','Y','G','R'], gridSize: 4 },
-    { id: 'm7', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, recipe: ['B','R','B','Y'], gridSize: 4 },
-    { id: 'm8', name: 'FIGURE-4 LEGLOCK', cost: 2, maxUses: 3, currentUses: 3, recipe: ['G','Y','G','B'], gridSize: 4 },
-    { id: 'm9', name: 'CHOKESLAM', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','R','Y','Y'], gridSize: 4 },
-    { id: 'm10', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, recipe: ['R','G','B','Y','R'], gridSize: 5 }
-];
-
-        const ACTIVE_BOSS = { name: "BINTERMAN BOT", archetype: "Y" };
-        let PLAYER_STATS = {
-    'B': 0, // Flyer
-    'R': 0, // Brawler
-    'G': 0, // Technician
-    'Y': 0  // Hardcore
-};
+        let currentBossIndex = 0; 
+        let PLAYER_STATS = { 'B': 0, 'R': 0, 'G': 0, 'Y': 0 };
 
         let totalAtbChargePoints = 0.0; 
         let bossAtbChargePoints = 0.0; 
@@ -482,9 +766,11 @@ const MOVES_MANIFEST = [
         let atbIntervalLoop = null;
         let isListActiveView = false; 
         let isGridPuzzleExecuting = false; 
+        let isBossExecuting = false; 
+        let isFinisherPinnedVictory = false; 
 
         let currentHypePoints = 0; 
-        const MAX_HYPE_LIMIT = 10;
+        let currentMomentum = 50.0; 
 
         let selectedMoveInstance = null;
         let isFinisherRunning = false; 
@@ -502,46 +788,102 @@ const MOVES_MANIFEST = [
             applyDynamicCharacterPngGlow();
             buildMovesMatrixOnce(); 
             syncHypeMeterDisplay();
-            startAtbCycle();
+            syncMomentumBar();
         };
 
+        function getDynamicClassNickname(archetypeKey) {
+            const pool = ARCHETYPE_NICKNAMES[archetypeKey] || ARCHETYPE_NICKNAMES['Y'];
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function initUiTextProfiles() {
+            if (currentBossIndex >= BOSS_MANIFEST.length) return;
+
+            const boss = BOSS_MANIFEST[currentBossIndex];
+            const bossArch = ARCHETYPES[boss.archetype];
+            
+            const bossHeader = document.getElementById('bossNameHeader');
+            bossHeader.innerText = boss.name;
+
+            const bossBadge = document.getElementById('hudBossBadge');
+            bossBadge.style.backgroundColor = bossArch.color;
+            bossBadge.innerText = `${bossArch.name.toUpperCase()}`; 
+            
+            const bossSprite = document.getElementById('bossSprite');
+            bossSprite.src = boss.img; 
+
+            const playerArch = ARCHETYPES['B'];
+            const playerBadge = document.getElementById('hudPlayerBadge');
+            playerBadge.style.backgroundColor = playerArch.color;
+            playerBadge.innerText = `${playerArch.name.toUpperCase()}`;
+
+            const venueBg = document.getElementById('venueBackgroundLayer');
+            if (currentBossIndex === 0) {
+                venueBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80')"; 
+                document.getElementById('flyerVenueNode').innerText = "LIVE FROM THE LOGAN SQUARE AUDITORIUM";
+            } else if (currentBossIndex === 1) {
+                venueBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1540747737956-378724044282?auto=format&fit=crop&w=1200&q=80')"; 
+                document.getElementById('flyerVenueNode').innerText = "LIVE FROM THE TOKYO DOME";
+            } else {
+                venueBg.style.backgroundImage = "url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80')"; 
+                document.getElementById('flyerVenueNode').innerText = "LIVE FROM THE AMERICAN LEGION POST #12";
+            }
+
+            document.getElementById('flyerPlayerSubtitle').innerText = getDynamicClassNickname('B');
+            document.getElementById('flyerOpponentSubtitle').innerText = getDynamicClassNickname(boss.archetype);
+            document.getElementById('flyerOpponentName').innerText = boss.name;
+        }
+
+        function dismissFlyerAndStartMatch() {
+            document.getElementById('eventFlyerModal').style.display = 'none';
+            
+            const playerWrapper = document.getElementById('playerSpriteWrapper');
+            if (playerWrapper) {
+                playerWrapper.className = "sprite-container player-placement";
+            }
+            document.getElementById('victoryMarqueeNode').classList.remove('active');
+
+            MATCH_TRACKER.startTime = Date.now();
+            MATCH_TRACKER.endTime = null;
+            MATCH_TRACKER.successfulHitsCount = 0;
+            MATCH_TRACKER.highestSinglePop = 0;
+            MATCH_TRACKER.botchesCount = 0;
+            MATCH_TRACKER.uniqueMovesUsed.clear();
+            MATCH_TRACKER.moveExecutionCounter = {};
+            MATCH_TRACKER.totalPointsScored = 0;
+            MATCH_TRACKER.highMomentumTicks = 0;
+            MATCH_TRACKER.totalTicks = 0;
+            currentMomentum = 50.0;
+            isFinisherPinnedVictory = false;
+
+            startAtbCycle();
+        }
+
         function getArchetypeMultiplier(attackerArchetype, defenderArchetype) {
-    // 1. Check for Advantage: Attacker beats Defender
-    if (STRENGTH_CYCLE[attackerArchetype] === defenderArchetype) {
-        return 1.5; 
-    }
-    
-    // 2. Check for Disadvantage: Defender beats Attacker (Reverse of the cycle)
-    if (STRENGTH_CYCLE[defenderArchetype] === attackerArchetype) {
-        return 0.5; // Halve the points
-    }
-    
-    // 3. Neutral
-    return 1.0;
-}
+            if (STRENGTH_CYCLE[attackerArchetype] === defenderArchetype) return 1.5; 
+            if (STRENGTH_CYCLE[defenderArchetype] === attackerArchetype) return 0.5; 
+            return 1.0;
+        }
 
         function applyDynamicCharacterPngGlow() {
             document.getElementById('playerSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES.B.glowRaw})`;
-            document.getElementById('bossSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES.Y.glowRaw})`; 
+            const currentBoss = BOSS_MANIFEST[currentBossIndex];
+            const bossArch = ARCHETYPES[currentBoss.archetype];
+            document.getElementById('bossSprite').style.filter = `drop-shadow(0 0 16px ${bossArch.glowRaw})`; 
         }
 
         function syncHypeMeterDisplay() {
-    // Get the dynamic threshold for the current boss
-    const currentBoss = BOSS_MANIFEST[currentBossIndex];
-    const threshold = currentBoss.winThreshold;
-    
-    // Calculate percentage based on the threshold
-    let percent = Math.floor((currentHypePoints / threshold) * 100);
-    
-    // Cap the visuals at 100%
-    if (percent > 100) percent = 100;
-    if (percent < 0) percent = 0;
+            const currentBoss = BOSS_MANIFEST[currentBossIndex];
+            const threshold = currentBoss.winThreshold;
+            
+            let percent = Math.floor((currentHypePoints / threshold) * 100);
+            if (percent > 100) percent = 100;
+            if (percent < 0) percent = 0;
 
-    document.getElementById('hypeTxt').innerText = percent + '%';
-    document.getElementById('hypeFill').style.width = percent + '%';
+            document.getElementById('hypeFill').style.width = percent + '%';
 
             const finishBtn = document.getElementById('finisherMenuBtn');
-            if (currentHypePoints >= MAX_HYPE_LIMIT) {
+            if (currentHypePoints >= threshold) {
                 finishBtn.style.display = isGridPuzzleExecuting ? 'none' : 'block';
             } else {
                 finishBtn.style.display = 'none';
@@ -549,25 +891,152 @@ const MOVES_MANIFEST = [
             }
         }
 
+        function syncMomentumBar() {
+            if (currentMomentum > 100) currentMomentum = 100;
+            if (currentMomentum < 0) currentMomentum = 0;
+
+            const mFill = document.getElementById('momentumFill');
+
+            if (currentMomentum >= 50) {
+                mFill.style.left = "50%";
+                mFill.style.width = (currentMomentum - 50) + "%";
+                mFill.style.backgroundColor = "#00ff00"; 
+            } else {
+                mFill.style.left = currentMomentum + "%";
+                mFill.style.width = (50 - currentMomentum) + "%";
+                mFill.style.backgroundColor = "#ff3333"; 
+            }
+        }
+
+        function triggerKineticDamagePop(amount, targetElementId) {
+            if (isFinisherPinnedVictory) return;
+            const container = document.getElementById(targetElementId);
+            if (!container) return;
+
+            const pop = document.createElement('div');
+            pop.className = 'damage-pop';
+            pop.innerText = `+${Math.floor(amount)}`;
+            
+            pop.style.left = '50%';
+            pop.style.top = '40%';
+            pop.style.transform = 'translate(-50%, -50%)';
+
+            container.appendChild(pop);
+            setTimeout(() => pop.remove(), 1200);
+        }
+
+        function getPlayerMomentumMultiplier() {
+            if (currentMomentum >= 50) {
+                if (currentMomentum >= 90) return 2.00;
+                if (currentMomentum >= 80) return 1.75;
+                if (currentMomentum >= 70) return 1.50;
+                if (currentMomentum >= 60) return 1.25;
+                return 1.00;
+            } else {
+                if (currentMomentum <= 10) return 0.10;
+                if (currentMomentum <= 20) return 0.15;
+                if (currentMomentum <= 30) return 0.50;
+                if (currentMomentum <= 40) return 0.75;
+                return 1.00;
+            }
+        }
+
         function startAtbCycle() {
             if (atbIntervalLoop) clearInterval(atbIntervalLoop);
-            if (isGridPuzzleExecuting) return; 
             
             atbIntervalLoop = setInterval(() => {
-                if (totalAtbChargePoints < MAX_ATB_CAPACITY) {
-                    totalAtbChargePoints += 1.5; 
-                    if (totalAtbChargePoints > MAX_ATB_CAPACITY) totalAtbChargePoints = MAX_ATB_CAPACITY;
-                    updatePlayerAtbVisualBar();
+                if (isFinisherPinnedVictory) {
+                    clearInterval(atbIntervalLoop);
+                    return;
+                }
+                MATCH_TRACKER.totalTicks++;
+                const currentBoss = BOSS_MANIFEST[currentBossIndex];
+                if (currentHypePoints >= (currentBoss.winThreshold * 0.5)) {
+                    MATCH_TRACKER.highMomentumTicks++;
+                }
+
+                if (currentMomentum > 50) currentMomentum -= 0.1;
+                if (currentMomentum < 50) currentMomentum += 0.1;
+                syncMomentumBar();
+
+                if (!isGridPuzzleExecuting && !isBossExecuting) {
+                    if (totalAtbChargePoints < MAX_ATB_CAPACITY) {
+                        const playerMomentumBonus = getPlayerMomentumMultiplier();
+                        totalAtbChargePoints += 1.5 * playerMomentumBonus; 
+                        if (totalAtbChargePoints > MAX_ATB_CAPACITY) totalAtbChargePoints = MAX_ATB_CAPACITY;
+                        updatePlayerAtbVisualBar();
+                    }
                 }
                 
-                if (bossAtbChargePoints < MAX_ATB_CAPACITY) {
-                    bossAtbChargePoints += 1.5;
-                    if (bossAtbChargePoints > MAX_ATB_CAPACITY) bossAtbChargePoints = MAX_ATB_CAPACITY;
-                    updateBossAtbVisualBar();
+                if (!isBossExecuting) {
+                    if (bossAtbChargePoints < MAX_ATB_CAPACITY) {
+                        const bossMomentumBonus = 1.0 + ((50 - currentMomentum) / 50) * 0.5;
+                        bossAtbChargePoints += 1.5 * bossMomentumBonus;
+                        if (bossAtbChargePoints > MAX_ATB_CAPACITY) bossAtbChargePoints = MAX_ATB_CAPACITY;
+                        updateBossAtbVisualBar();
+                    }
+                }
+
+                if (!isBossExecuting && !isGridPuzzleExecuting) {
+                    evaluateBossActionTrigger();
                 }
 
                 updateMoveSelectabilityState(); 
             }, 50);
+        }
+
+        function evaluateBossActionTrigger() {
+            if (isFinisherPinnedVictory) return;
+            let availableTiers = Math.floor(bossAtbChargePoints / 100);
+            if (availableTiers < 1) return;
+
+            let chosenTier = 1;
+            if (availableTiers >= 3 && Math.random() < 0.35) {
+                chosenTier = 3;
+            } else if (availableTiers >= 2 && Math.random() < 0.45) {
+                chosenTier = 2;
+            }
+
+            executeSimulatedBossCounterStrike(chosenTier);
+        }
+
+        function executeSimulatedBossCounterStrike(tier) {
+            if (isFinisherPinnedVictory) return;
+            isBossExecuting = true;
+            bossAtbChargePoints -= (tier * 100);
+            updateBossAtbVisualBar();
+
+            const movePool = BOSS_ATTACKS_MANIFEST[tier];
+            const chosenMove = movePool[Math.floor(Math.random() * movePool.length)];
+
+            const bossBanner = document.getElementById('bossMoveBanner');
+            bossBanner.innerText = chosenMove.name;
+            bossBanner.classList.add('active');
+            
+            animateCombatSprites('boss', true);
+
+            const currentBoss = BOSS_MANIFEST[currentBossIndex];
+            const hypeLossTally = Math.floor(currentBoss.winThreshold * chosenMove.hypePen);
+            
+            currentHypePoints -= hypeLossTally;
+            if (currentHypePoints < 0) currentHypePoints = 0;
+
+            currentMomentum -= chosenMove.momPen; 
+            
+            syncHypeMeterDisplay();
+            syncMomentumBar();
+            triggerKineticDamagePop(chosenMove.dmg, 'playerSpriteWrapper');
+
+            setTimeout(() => {
+                bossBanner.classList.remove('active');
+                
+                const playerWrapper = document.getElementById('playerSpriteWrapper');
+                const bossWrapper = document.getElementById('bossSpriteWrapper');
+                if (playerWrapper) playerWrapper.classList.remove('animate-damage');
+                if (bossWrapper) bossWrapper.classList.remove('animate-boss-dropkick');
+                
+                isBossExecuting = false;
+            }, 1200);
         }
 
         function updatePlayerAtbVisualBar() {
@@ -595,7 +1064,9 @@ const MOVES_MANIFEST = [
 
             let hasAnyValidCharge = totalAtbChargePoints >= 100;
             document.getElementById('attackMenuBtn').disabled = !hasAnyValidCharge;
-            document.getElementById('finisherMenuBtn').disabled = (totalAtbChargePoints < 300);
+            
+            const currentBoss = BOSS_MANIFEST[currentBossIndex];
+            document.getElementById('finisherMenuBtn').disabled = (totalAtbChargePoints < 300 || currentHypePoints < currentBoss.winThreshold);
 
             if (totalAtbChargePoints === 0) {
                 fillNode.style.backgroundColor = 'transparent';
@@ -678,26 +1149,9 @@ const MOVES_MANIFEST = [
             document.getElementById('movesMenuSubpanel').style.display = 'grid';
         }
 
-        function checkWinCondition() {
-    const currentBoss = BOSS_MANIFEST[currentBossIndex];
-    
-    // Check if threshold is met
-    if (currentHypePoints >= currentBoss.winThreshold) {
-        // Instead of advancing, we just reveal the Finisher
-        const finishBtn = document.getElementById('finisherMenuBtn');
-        finishBtn.style.display = 'block'; 
-        console.log("Threshold met! Finisher is now available.");
-    }
-}
-
-function advanceToNextBoss() {
-    currentBossIndex++;
-    currentHypePoints = 0; // Reset meter for next fight
-    initUiTextProfiles(); // Refresh everything for the new boss
-}
-
         function clickFinisherMenuTab() {
-            if (totalAtbChargePoints < 300 || currentHypePoints < MAX_HYPE_LIMIT || isGridPuzzleExecuting) return;
+            const currentBoss = BOSS_MANIFEST[currentBossIndex];
+            if (totalAtbChargePoints < 300 || currentHypePoints < currentBoss.winThreshold || isGridPuzzleExecuting) return;
 
             clearActiveMenuTabs();
             document.getElementById('finisherMenuBtn').classList.add('active-tab');
@@ -731,11 +1185,12 @@ function advanceToNextBoss() {
                 
                 innerHTMLStructure += `
                     <div class="action-row-card disabled cost-${move.cost}" id="card-node-${move.id}" onclick="triggerMoveSelection('${move.id}')">
-                        <div>
-                            <div class="move-title-txt">${move.name} <span class="move-cost-sub">[COST ${move.cost}]</span></div>
-                            <div class="recipe-dots">${dotHTML}</div>
+                        <div style="overflow: hidden; white-space: nowrap;">
+                            <div class="move-title-txt">${move.name}</div>
+                            <div class="move-cost-sub">[COST ${move.cost}]</div>
                         </div>
-                        <div class="uses-counter-label" id="uses-node-${move.id}">USES: ${move.currentUses}/${move.maxUses}</div>
+                        <div class="recipe-dots">${dotHTML}</div>
+                        <div class="uses-counter-label" id="uses-node-${move.id}">${move.currentUses}/${move.maxUses}</div>
                     </div>
                 `;
             });
@@ -777,10 +1232,6 @@ function advanceToNextBoss() {
 
         function initializeGridExecution(move) {
             isGridPuzzleExecuting = true; 
-            if (atbIntervalLoop) {
-                clearInterval(atbIntervalLoop);
-                atbIntervalLoop = null;
-            }
 
             document.getElementById('attackMenuBtn').disabled = true;
             document.getElementById('finisherMenuBtn').disabled = true;
@@ -791,7 +1242,13 @@ function advanceToNextBoss() {
             totalAtbChargePoints -= (move.cost * 100);
             if (move.id !== 'm_finish') {
                 move.currentUses--;
-                document.getElementById(`uses-node-${move.id}`).innerText = `Uses: ${move.currentUses}/${move.maxUses}`;
+                document.getElementById(`uses-node-${move.id}`).innerText = `${move.currentUses}/${move.maxUses}`;
+                
+                MATCH_TRACKER.uniqueMovesUsed.add(move.name);
+                MATCH_TRACKER.moveExecutionCounter[move.name] = (MATCH_TRACKER.moveExecutionCounter[move.name] || 0) + 1;
+            } else {
+                MATCH_TRACKER.uniqueMovesUsed.add("FINISHER");
+                MATCH_TRACKER.moveExecutionCounter["FINISHER"] = (MATCH_TRACKER.moveExecutionCounter["FINISHER"] || 0) + 1;
             }
             updatePlayerAtbVisualBar();
 
@@ -802,6 +1259,8 @@ function advanceToNextBoss() {
             
             let trackingDotsHtml = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}">${sym}</div>`).join('');
             document.getElementById('executionRecipeTracker').innerHTML = trackingDotsHtml;
+
+            document.getElementById('rethinkActionBtn').disabled = false;
 
             currentChainTrace = [];
             successfulNodeCoords = [];
@@ -814,11 +1273,12 @@ function advanceToNextBoss() {
         }
 
         function abortGridPuzzleExecution() {
+            if (currentChainTrace.length > 0) return; 
             isGridPuzzleExecuting = false; 
             
             if (selectedMoveInstance && selectedMoveInstance.id !== 'm_finish') {
                 selectedMoveInstance.currentUses++; 
-                document.getElementById(`uses-node-${selectedMoveInstance.id}`).innerText = `Uses: ${selectedMoveInstance.currentUses}/${selectedMoveInstance.maxUses}`;
+                document.getElementById(`uses-node-${selectedMoveInstance.id}`).innerText = `${selectedMoveInstance.currentUses}/${selectedMoveInstance.maxUses}`;
             }
 
             isFinisherRunning = false;
@@ -835,8 +1295,6 @@ function advanceToNextBoss() {
                 updateMoveSelectabilityState();
                 document.getElementById('movesMenuSubpanel').style.display = 'grid';
             }
-
-            startAtbCycle();
         }
 
         function generateFreshExecutionHand() {
@@ -892,6 +1350,7 @@ function advanceToNextBoss() {
 
             randomStartPos = { r: Math.floor(Math.random() * size), c: Math.floor(Math.random() * size) };
             let spawnSpace = document.getElementById(`space-${randomStartPos.r}-${randomStartPos.c}`);
+            
             let label = document.createElement('div');
             label.className = 'start-label'; label.id = 'startLabelText'; label.innerText = "START";
             spawnSpace.appendChild(label);
@@ -964,7 +1423,7 @@ function advanceToNextBoss() {
                 document.getElementById(`space-${playerCoordinates.r}-${playerCoordinates.c}`).classList.remove('player-here');
             } else {
                 let lbl = document.getElementById('startLabelText');
-                if(lbl) lbl.classList.add('start-locked');
+                if(lbl) lbl.remove(); 
             }
 
             playerCoordinates = { r: r, c: c };
@@ -977,6 +1436,10 @@ function advanceToNextBoss() {
             el.classList.add('player-here');
 
             currentChainTrace.push({ r: r, c: c, symbol: placedCard.symbol, color: placedCard.color });
+
+            if (currentChainTrace.length > 0) {
+                document.getElementById('rethinkActionBtn').disabled = true;
+            }
 
             const symbols = ['B', 'R', 'G', 'Y'];
             executionHand[selectedHandCardIndex] = ARCHETYPES[symbols[Math.floor(Math.random() * symbols.length)]];
@@ -1044,98 +1507,265 @@ function advanceToNextBoss() {
             return totalUnusedSquares * 5; 
         }
 
-        // Inside your processSuccessfulChainScoring() function:
-function processSuccessfulChainScoring() {
-    let calculatedBatchPoints = 0;
-    let boss = BOSS_MANIFEST[currentBossIndex]; // Get the active boss
-    let bossArch = boss.archetype; 
-    let baseValue = boss.basePoints; 
-    
-    successfulNodeCoords.forEach(node => {
-        let statBonus = PLAYER_STATS[node.symbol] || 0;
-        let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
-        
-        calculatedBatchPoints += ((baseValue + statBonus) * multiplier);
-    });
+        function processSuccessfulChainScoring() {
+            let calculatedBatchPoints = 0;
+            let boss = BOSS_MANIFEST[currentBossIndex]; 
+            let bossArch = boss.archetype; 
+            let baseValue = boss.basePoints; 
+            
+            successfulNodeCoords.forEach(node => {
+                let statBonus = PLAYER_STATS[node.symbol] || 0;
+                let multiplier = getArchetypeMultiplier(node.symbol, bossArch);
+                
+                calculatedBatchPoints += ((baseValue + statBonus) * multiplier);
+            });
 
-    let extraGridBonusPoints = calculateUnusedGridSpacesBonus();
-    currentHypePoints += (calculatedBatchPoints + extraGridBonusPoints);
-    
-    // UPDATE THIS LINE: Change currentBoss to boss
-    if (currentHypePoints > boss.winThreshold) { 
-        currentHypePoints = boss.winThreshold;
-    }
-    
-    syncHypeMeterDisplay();
-    
-    return extraGridBonusPoints;
-}
-// Example: Call this after a win
-function allocateStatPoints(archetypeKey, points) {
-    if (PLAYER_STATS.hasOwnProperty(archetypeKey)) {
-        PLAYER_STATS[archetypeKey] += points;
-        
-        // Dynamically look up the name using the ARCHETYPES constant
-        const name = ARCHETYPES[archetypeKey].name;
-        
-        console.log(`${name} (${archetypeKey}) updated! Current total: ${PLAYER_STATS[archetypeKey]}`);
-    }
-}
-
-// Usage: allocateStatPoints('B', 5);
-
-        /* DYNAMIC COMBAT SPRITE ROUTING DISPATCH ENGINE */
-        function animateCombatSprites(isSuccess, moveName) {
-            const wrapper = document.getElementById('playerSpriteWrapper');
-            if (!wrapper) return;
-
-            // Clear legacy residual tracking animations safely
-            wrapper.classList.remove('animate-dropkick', 'animate-damage');
-            void wrapper.offsetWidth; // Force hardware geometry rendering computation reflows safely
-
-            if (isSuccess) {
-                // If it is a Dropkick execution, trigger the multi-phase rotation-dash keyframe chain
-                if (moveName === "DROPKICK") {
-                    wrapper.classList.add('animate-dropkick');
-                } else {
-                    // Fallback attack sequence anchor route options can safely link here
-                    wrapper.classList.add('animate-dropkick');
-                }
-            } else {
-                // Trigger localized hardware failure jitter shake routine
-                wrapper.classList.add('animate-damage');
+            let extraGridBonusPoints = calculateUnusedGridSpacesBonus();
+            let addedTotal = calculatedBatchPoints + extraGridBonusPoints;
+            
+            const scaleMultiplier = getPlayerMomentumMultiplier();
+            const absoluteFinalScore = Math.floor(addedTotal * scaleMultiplier);
+            
+            currentHypePoints += absoluteFinalScore;
+            currentMomentum += 15.0; 
+            
+            MATCH_TRACKER.successfulHitsCount++;
+            MATCH_TRACKER.totalPointsScored += absoluteFinalScore;
+            if (absoluteFinalScore > MATCH_TRACKER.highestSinglePop) {
+                MATCH_TRACKER.highestSinglePop = absoluteFinalScore;
             }
+            
+            syncHypeMeterDisplay();
+            syncMomentumBar();
+            return absoluteFinalScore;
+        }
+
+        function allocateStatPoints(archetypeKey, points) {
+            if (PLAYER_STATS.hasOwnProperty(archetypeKey)) {
+                PLAYER_STATS[archetypeKey] += points;
+                const name = ARCHETYPES[archetypeKey].name;
+                console.log(`${name} (${archetypeKey}) updated! Current total: ${PLAYER_STATS[archetypeKey]}`);
+            }
+        }
+
+        function animateCombatSprites(attacker, isSuccess) {
+            if (isFinisherPinnedVictory) return;
+            const wrapper = document.getElementById('playerSpriteWrapper');
+            const bossWrap = document.getElementById('bossSpriteWrapper');
+            if (!wrapper || !bossWrap) return;
+
+            wrapper.classList.remove('animate-dropkick', 'animate-damage');
+            bossWrap.classList.remove('animate-boss-dropkick', 'animate-damage');
+            void wrapper.offsetWidth; 
+
+            if (attacker === 'player') {
+                if (isSuccess) {
+                    wrapper.classList.add('animate-dropkick');
+                    bossWrap.classList.add('animate-damage');
+                } else {
+                    wrapper.classList.add('animate-damage');
+                }
+            } else if (attacker === 'boss') {
+                if (isSuccess) {
+                    bossWrap.classList.add('animate-boss-dropkick');
+                    wrapper.classList.add('animate-damage');
+                } else {
+                    bossWrap.classList.add('animate-damage');
+                }
+            }
+        }
+
+        function runCinematicThreePinfallSequence() {
+            const playerWrapper = document.getElementById('playerSpriteWrapper');
+            const bossWrapper = document.getElementById('bossSpriteWrapper');
+            const countOverlay = document.getElementById('pinCountNode');
+            const winBanner = document.getElementById('victoryMarqueeNode');
+
+            if (!playerWrapper || !bossWrapper) return;
+
+            playerWrapper.classList.remove('animate-dropkick', 'animate-damage');
+            bossWrapper.classList.remove('animate-boss-dropkick', 'animate-damage');
+            
+            playerWrapper.classList.add('animate-pinfall-dive');
+            bossWrapper.classList.add('animate-damage');
+
+            setTimeout(() => {
+                countOverlay.innerText = "1";
+                countOverlay.classList.add('animate-pin-count');
+            }, 600);
+
+            setTimeout(() => {
+                countOverlay.classList.remove('animate-pin-count');
+                void countOverlay.offsetWidth;
+                countOverlay.innerText = "2";
+                countOverlay.classList.add('animate-pin-count');
+            }, 1400);
+
+            setTimeout(() => {
+                countOverlay.classList.remove('animate-pin-count');
+                void countOverlay.offsetWidth;
+                countOverlay.innerText = "3";
+                countOverlay.classList.add('animate-pin-count');
+            }, 2200);
+
+            setTimeout(() => {
+                winBanner.classList.add('active');
+            }, 2900);
+
+            setTimeout(() => {
+                document.getElementById('gridExecutionSubpanel').style.display = 'none';
+                document.getElementById('movesMenuSubpanel').style.display = 'none';
+                document.getElementById('finisherMenuBtn').style.display = 'none';
+                displayPostMatchPaydayEnvelope();
+            }, 4500);
+        }
+
+        function evaluateDaveMeltzerStarRating(points, threshold) {
+            let ratio = points / threshold;
+            let baseStars = 0;
+
+            if (ratio < 1.0) return 0;
+            
+            if (ratio <= 2.0) {
+                baseStars = 1.0 + ((ratio - 1.0) / 0.25) * 0.375;
+            } else {
+                let overPerf = Math.min(ratio, 3.0) - 2.0;
+                baseStars = 2.5 + (overPerf / 0.25) * 0.25;
+            }
+
+            let bonuses = 0;
+            let uniqueCount = MATCH_TRACKER.uniqueMovesUsed.size;
+            if (uniqueCount >= 7) bonuses += 0.5;
+            else if (uniqueCount >= 4) bonuses += 0.25;
+            
+            let durationSeconds = Math.floor((MATCH_TRACKER.endTime - MATCH_TRACKER.startTime) / 1000);
+            if (durationSeconds < 240) bonuses += 0.5; 
+            else if (durationSeconds <= 600) bonuses += 0.25; 
+            
+            let perfScore = 0;
+            if (MATCH_TRACKER.moveExecutionCounter["FINISHER"] > 0) perfScore += 0.25;
+            if (MATCH_TRACKER.highestSinglePop >= (threshold * 0.2)) perfScore += 0.25;
+            else if (MATCH_TRACKER.highestSinglePop >= (threshold * 0.1)) perfScore += 0.125;
+            bonuses += Math.min(0.5, perfScore);
+            
+            let engagementRatio = MATCH_TRACKER.totalTicks > 0 ? (MATCH_TRACKER.highMomentumTicks / MATCH_TRACKER.totalTicks) : 0;
+            if (engagementRatio > 0.5) bonuses += 0.5;
+            else if (engagementRatio > 0.25) bonuses += 0.25;
+            
+            let allowedBotchLimit = 2 + Math.floor((currentBossIndex) / 4);
+            if (MATCH_TRACKER.botchesCount <= 1) bonuses += 0.5;
+            else if (MATCH_TRACKER.botchesCount <= allowedBotchLimit) bonuses += 0.25;
+
+            let finalTally = baseStars + bonuses;
+            return Math.round(finalTally * 4) / 4; 
+        }
+
+        function displayPostMatchPaydayEnvelope() {
+            if (atbIntervalLoop) clearInterval(atbIntervalLoop);
+            
+            const boss = BOSS_MANIFEST[currentBossIndex];
+            MATCH_TRACKER.endTime = Date.now();
+
+            document.getElementById('envelopeTitleNode').innerText = `Show Results: ${boss.name}`;
+            document.getElementById('envHighlightHype').innerText = `${MATCH_TRACKER.totalPointsScored} pts`;
+            document.getElementById('envHighlightAttacks').innerText = `${MATCH_TRACKER.successfulHitsCount} Hits`;
+            
+            let favoriteMove = "None";
+            let maxCount = 0;
+            for (let mv in MATCH_TRACKER.moveExecutionCounter) {
+                if (MATCH_TRACKER.moveExecutionCounter[mv] > maxCount && mv !== "FINISHER") {
+                    maxCount = MATCH_TRACKER.moveExecutionCounter[mv];
+                    favoriteMove = mv;
+                }
+            }
+            document.getElementById('envHighlightFavorite').innerText = maxCount > 0 ? `${favoriteMove} (${maxCount}x)` : "None";
+            document.getElementById('envHighlightHighest').innerText = `${MATCH_TRACKER.highestSinglePop} Hype`;
+            
+            let totalSeconds = Math.floor((MATCH_TRACKER.endTime - MATCH_TRACKER.startTime) / 1000);
+            let mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            let secs = (totalSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('envHighlightTime').innerText = `${mins}:${secs}`;
+
+            let starValue = evaluateDaveMeltzerStarRating(MATCH_TRACKER.totalPointsScored, boss.winThreshold);
+            
+            let fullStarsCount = Math.floor(starValue);
+            let partialRemainder = starValue - fullStarsCount;
+            let starsString = "★".repeat(fullStarsCount);
+            if (partialRemainder === 0.25) starsString += ".25";
+            else if (partialRemainder === 0.5) starsString += "½";
+            else if (partialRemainder === 0.75) starsString += ".75";
+            if (starsString === "") starsString = "0 Stars";
+            
+            document.getElementById('envRatingStarsDisplay').innerText = starsString;
+
+            let dollarPayout = (MATCH_TRACKER.totalPointsScored / 10).toFixed(2);
+            document.getElementById('envPayoutCashDisplay').innerText = `PAYDAY: $${dollarPayout}`;
+
+            document.getElementById('envelopeSigArea').innerHTML = `
+                <button class="envelope-cash-out-btn" onclick="executePlayerSignatureSignOff()">
+                    [ SIGN PAYDAY SLIP ]
+                </button>
+            `;
+
+            document.getElementById('paydayEnvelopeModal').style.display = 'flex';
+        }
+
+        function executePlayerSignatureSignOff() {
+            document.getElementById('envelopeSigArea').innerHTML = '<span class="envelope-player-signature">GEOFF</span>'; 
+            
+            setTimeout(() => {
+                document.getElementById('paydayEnvelopeModal').style.display = 'none';
+                currentBossIndex++;
+                
+                if (currentBossIndex >= BOSS_MANIFEST.length) {
+                    alert("WRESTLEPATH COMPLETED! You've conquered the independent circuit territory!");
+                    currentBossIndex = 0;
+                }
+
+                currentHypePoints = 0;
+                totalAtbChargePoints = 0;
+                bossAtbChargePoints = 0;
+                playerCoordinates = null;
+
+                initUiTextProfiles();
+                applyDynamicCharacterPngGlow();
+                syncHypeMeterDisplay();
+                currentMomentum = 50.0;
+                syncMomentumBar();
+
+                document.getElementById('eventFlyerModal').style.display = 'flex';
+            }, 2000);
         }
 
         function terminateExecutionPhase(isSuccess) {
             isGridPuzzleExecuting = false; 
-            const toast = document.getElementById('combatToast');
-            const title = document.getElementById('toastTitle');
-            const desc = document.getElementById('toastDesc');
+            const moveBanner = document.getElementById('playerMoveBanner');
+            const moveName = selectedMoveInstance ? selectedMoveInstance.name : "ATTACK";
 
             clearActiveMenuTabs();
-            
-            // Route structural graphic vectors
-            animateCombatSprites(isSuccess, selectedMoveInstance ? selectedMoveInstance.name : "");
 
             if (isSuccess) {
-        if (isFinisherRunning) {
-            title.innerText = "FINISHER SUCCESSFUL!";
-            title.style.color = "var(--color-yellow)";
-            desc.innerText = "ULTIMATE PIN COMBINATION SECURED! MATCH WON!";
-            toast.style.borderColor = "var(--color-yellow)";
-            
-            // 1. Advance the boss immediately upon successful finisher
-            advanceToNextBoss();
-            
-            // 2. Hide the finisher button for the next match
-            document.getElementById('finisherMenuBtn').style.display = 'none';
-        } else {
+                if (isFinisherRunning) {
+                    isFinisherPinnedVictory = true; 
+                    if (atbIntervalLoop) {
+                        clearInterval(atbIntervalLoop);
+                        atbIntervalLoop = null;
+                    }
+                    isBossExecuting = false; 
+
+                    moveBanner.innerText = "★ RUNNING FINISHER ★";
+                    moveBanner.classList.add('active');
+                    isFinisherRunning = false;
+
+                    setTimeout(() => {
+                        moveBanner.classList.remove('active');
+                        runCinematicThreePinfallSequence();
+                    }, 1200);
+                    return;
+                } else {
                     let sideBonusAwarded = processSuccessfulChainScoring();
-                    title.innerText = "HIT SUCCESSFUL!";
-                    title.style.color = "var(--color-green)";
-                    desc.innerText = `${selectedMoveInstance.name} connected perfectly.\nGrid Clear Efficiency Bonus added: +${sideBonusAwarded} Hype.`;
-                    toast.style.borderColor = "var(--color-green)";
+                    triggerKineticDamagePop(sideBonusAwarded, 'bossSpriteWrapper');
+                    animateCombatSprites('player', isSuccess);
                 }
 
                 successfulNodeCoords.forEach(node => {
@@ -1147,26 +1777,22 @@ function allocateStatPoints(archetypeKey, points) {
                     }
                 });
             } else {
+                MATCH_TRACKER.botchesCount++; 
+                currentMomentum -= 15.0; 
                 if (isFinisherRunning) {
-                    title.innerText = "FINISHER CRITICAL FAIL!";
-                    title.style.color = "var(--color-red)";
-                    desc.innerText = "Finisher reversed! Hype plummeted back down to 80%.";
-                    toast.style.borderColor = "var(--color-red)";
-                    currentHypePoints = 400; 
-                } else {
-                    title.innerText = "MOVE REVERSED!";
-                    title.style.color = "var(--color-red)";
-                    desc.innerText = "Wrestler got trapped and boxed out of position. Counter damage sustained.";
-                    toast.style.borderColor = "var(--color-red)";
+                    currentHypePoints = 0; 
                 }
                 syncHypeMeterDisplay();
+                syncMomentumBar();
+                triggerKineticDamagePop(10, 'playerSpriteWrapper');
+                animateCombatSprites('player', isSuccess);
             }
 
-            toast.classList.add('active');
             isFinisherRunning = false;
 
             setTimeout(() => {
-                toast.classList.remove('active');
+                if (isFinisherPinnedVictory) return;
+                moveBanner.classList.remove('active');
                 
                 document.getElementById('gridExecutionSubpanel').style.display = 'none';
                 document.getElementById('movesMenuSubpanel').style.display = 'none';
@@ -1181,9 +1807,8 @@ function allocateStatPoints(archetypeKey, points) {
                     updateMoveSelectabilityState();
                     document.getElementById('movesMenuSubpanel').style.display = 'grid';
                 }
-                
                 startAtbCycle();
-            }, 1800); 
+            }, 1200); 
         }
     </script>
 </body>
