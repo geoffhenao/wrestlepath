@@ -17,7 +17,7 @@
             --atb-level-2: #008000; 
             --atb-level-3: #ff3333; 
 
-            /* Style Archetype Definitions */
+            /* Style Class Definitions */
             --color-blue: #336699;
             --color-red: #ff0000;
             --color-green: #008000;
@@ -192,7 +192,64 @@
             100% { transform: translate(-50%, 0) rotate(-1deg) scale(0.95); opacity: 1; }
         }
 
-        /* WIN AND PINFALL CINEMATIC OVERLAYS */
+        /* NEON CYCLE ANIMATION FOR TEXT EFFECTS */
+        @keyframes neonCycle {
+            0%, 100% { text-shadow: 0 0 10px var(--color-blue), 0 0 20px var(--color-blue), 0 0 30px var(--color-blue); }
+            20%      { text-shadow: 0 0 10px var(--color-green), 0 0 20px var(--color-green), 0 0 30px var(--color-green); }
+            40%      { text-shadow: 0 0 10px var(--color-red), 0 0 20px var(--color-red), 0 0 30px var(--color-red); }
+            60%      { text-shadow: 0 0 10px var(--color-yellow), 0 0 20px var(--color-yellow), 0 0 30px var(--color-yellow); }
+            80%      { text-shadow: 0 0 10px var(--color-white), 0 0 20px var(--color-white), 0 0 30px var(--color-white); }
+        }
+
+        /* WIN, PINFALL, DEFEND AND HYPE CINEMATIC OVERLAYS */
+        .hype-popup {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.1);
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .hype-popup.active {
+            animation: popupZoom 2s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards, neonCycle 0.5s infinite linear;
+        }
+
+        .defended-popup {
+            position: absolute;
+            bottom: 2%; /* Positioned underneath the player sprite */
+            left: 26vw;
+            transform: translate(-50%, 0) scale(0.1);
+            font-size: 38px;
+            font-weight: 900;
+            color: #fff;
+            -webkit-text-stroke: 2px #ff3333;
+            text-shadow: 0 0 15px #ff3333, 0 0 25px #ff3333;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .defended-popup.active {
+            animation: defendZoom 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards;
+        }
+
+        @keyframes popupZoom {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        @keyframes defendZoom {
+            0% { opacity: 0; transform: translate(-50%, 0) scale(0.2); }
+            20% { opacity: 1; transform: translate(-50%, -20px) scale(1.2); }
+            80% { opacity: 1; transform: translate(-50%, -20px) scale(1.0); }
+            100% { opacity: 0; transform: translate(-50%, -40px) scale(0.8); }
+        }
+
         .pin-count-overlay {
             position: absolute;
             top: 40%;
@@ -200,13 +257,14 @@
             transform: translate(-50%, -50%) scale(0.1);
             font-size: 110px;
             font-weight: 900;
-            color: #f1c40f;
-            text-shadow: 0 0 20px #000, 0 0 40px #ff3333;
+            color: #fff;
             z-index: 9999;
             opacity: 0;
             pointer-events: none;
         }
-        .animate-pin-count { animation: countZoom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards; }
+        .animate-pin-count { 
+            animation: countZoom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards, neonCycle 0.25s infinite linear; 
+        }
 
         .victory-banner {
             position: absolute;
@@ -244,6 +302,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            white-space: nowrap;
         }
 
         .damage-base { color: #ff3333; line-height: 1; }
@@ -305,13 +364,23 @@
 
         /* === PERSISTENT LEFT MENU SELECTION PANEL === */
         .menu-column { width: 180px; border-right: 2px solid #2a2a2a; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; height: 100%; }
-        .menu-btn { background: #111; border: 1px solid #444; color: #fff; padding: 0 12px; text-align: left; cursor: pointer; font-size: 15px; flex: 1; display: flex; align-items: center; font-weight: bold; }
-        .menu-btn:hover:not(:disabled) { background: var(--yellow-jeopardy); }
+        .menu-btn { 
+            background: #111; border: 1px solid #444; color: #fff; padding: 0 12px; 
+            text-align: center; cursor: pointer; font-size: 15px; flex: 1; display: flex; 
+            align-items: center; justify-content: center; font-weight: bold; border-radius: 6px; 
+        }
+        .menu-btn:hover:not(:disabled) { background: var(--yellow-jeopardy); color: #fff; }
         .menu-btn:disabled { opacity: 0.25; cursor: not-allowed; }
-        .menu-btn.active-tab { background: #111; border-color: var(--yellow-jeopardy); color: var(--yellow-jeopardy); font-weight: bold; }
         
+        .menu-btn.active-tab { background: #111; border-color: var(--yellow-jeopardy); color: #fff; font-weight: bold; }
+        
+        /* Specific Defend Button States */
+        #defendMenuBtn:hover:not(:disabled) { background: #ff3333; border-color: #ff3333; color: #ffffff; }
+        .active-defend { background: #111 !important; border-color: #ff3333 !important; color: #ff3333 !important; font-weight: bold; }
+
         #finisherMenuBtn { background: #230a0a; border-color: #ff3333; color: #ff3333; font-weight: bold; }
         #finisherMenuBtn:hover:not(:disabled) { background: #ff3333; color: #fff; }
+        #finisherMenuBtn.active-tab { color: #fff; }
 
         /* DYNAMIC CONTENT WRAPPER CONTAINER */
         .submenu-wrapper { flex: 1; height: 100%; position: relative; overflow: hidden; }
@@ -646,6 +715,8 @@
             <div id="playerMoveBanner" class="move-banner player-move-banner">MOVE NAME</div>
             <div id="bossMoveBanner" class="move-banner boss-move-banner">MOVE NAME</div>
             
+            <div id="hypePopupNode" class="hype-popup">THE CROWD IS HYPED!</div>
+            <div id="defendedPopupNode" class="defended-popup">DEFENDING!</div>
             <div id="pinCountNode" class="pin-count-overlay">1</div>
             <div id="victoryMarqueeNode" class="victory-banner">YOU WIN!!</div>
 
@@ -661,10 +732,10 @@
 
     <div class="bottom-command">
         <div class="menu-column" id="persistentMenuSidebar">
-            <button class="menu-btn" id="attackMenuBtn" onclick="clickAttackMenuTab()">&gt; ATTACK</button>
-            <button class="menu-btn" id="finisherMenuBtn" style="display: none;" onclick="clickFinisherMenuTab()">&gt; FINISHER</button>
-            <button class="menu-btn" id="defendMenuBtn" disabled>&gt; DEFEND</button>
-            <button class="menu-btn" id="itemMenuBtn" disabled>&gt; ITEM</button>
+            <button class="menu-btn" id="attackMenuBtn" onclick="clickAttackMenuTab()">ATTACK</button>
+            <button class="menu-btn" id="finisherMenuBtn" style="display: none;" onclick="clickFinisherMenuTab()">FINISHER</button>
+            <button class="menu-btn" id="defendMenuBtn" onclick="clickDefendMenuTab()" disabled>DEFEND</button>
+            <button class="menu-btn" id="itemMenuBtn" disabled>ITEM</button>
         </div>
 
         <div class="submenu-wrapper">
@@ -699,7 +770,7 @@
             totalTicks: 0
         };
 
-        const ARCHETYPES = {
+        const CLASSES = {
             'R': { symbol: 'R', name: 'Hardcore', color: 'var(--color-red)', glowRaw: "rgba(255, 0, 0, 0.8)" },
             'B': { symbol: 'B', name: 'Flyer', color: 'var(--color-blue)', glowRaw: "rgba(51, 102, 153, 0.8)" },
             'G': { symbol: 'G', name: 'Technician', color: 'var(--color-green)', glowRaw: "rgba(0, 128, 0, 0.8)" },
@@ -714,21 +785,21 @@
         const BOSS_MANIFEST = [
             { 
                 name: "BINTERMAN", 
-                archetype: "Y", 
+                charClass: "Y", 
                 img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-binterman-T.png",
                 basePoints: 10, 
                 winThreshold: 500
             },
             { 
                 name: "GEOFF (AND A GAGGLE OF GIRLS)", 
-                archetype: "R", 
+                charClass: "R", 
                 img: "https://geoffhenao.github.io/wrestlepath/images/geoff-by-isamar-2018.png",
                 basePoints: 15,
                 winThreshold: 1000
             },
             { 
                 name: "ULTIMATE WARRIOR", 
-                archetype: "G", 
+                charClass: "G", 
                 img: "https://geoffhenao.github.io/wrestlepath/images/8-bit-warrior.png",
                 basePoints: 20,
                 winThreshold: 1500 
@@ -736,14 +807,14 @@
         ];
 
         const MOVES_MANIFEST = [
-            { id: 'm1', name: 'DROPKICK', cost: 1, maxUses: 5, currentUses: 5, recipe: ['B','G','Y'], gridSize: 3 },
-            { id: 'm2', name: 'GERMAN SUPLEX', cost: 1, maxUses: 5, currentUses: 5, recipe: ['G','G','R'], gridSize: 3 },
-            { id: 'm3', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, recipe: ['R','Y','G','R'], gridSize: 4 },
-            { id: 'm4', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, recipe: ['B','R','B','Y'], gridSize: 4 },
-            { id: 'm5', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, recipe: ['R','G','B','Y','R'], gridSize: 5 }
+            { id: 'm1', name: 'DROPKICK', cost: 1, maxUses: 5, currentUses: 5, chain: ['B','G','Y'], gridSize: 3, moveType: 'strike', requiredClass: 'W' },
+            { id: 'm2', name: 'GERMAN SUPLEX', cost: 1, maxUses: 5, currentUses: 5, chain: ['G','G','R'], gridSize: 3, moveType: 'grapple', requiredClass: 'W' },
+            { id: 'm3', name: 'POWERBOMB', cost: 2, maxUses: 3, currentUses: 3, chain: ['R','Y','G','R'], gridSize: 4, moveType: 'grapple', requiredClass: 'W' },
+            { id: 'm4', name: 'SPRINGBOARD ELBOW', cost: 2, maxUses: 3, currentUses: 3, chain: ['B','R','B','Y'], gridSize: 4, moveType: 'dive', requiredClass: 'B' },
+            { id: 'm5', name: 'FINISHER (RGBY)', cost: 3, maxUses: 1, currentUses: 1, chain: ['R','G','B','Y','R'], gridSize: 5, moveType: 'finisher', requiredClass: 'W' }
         ];
 
-        const ARCHETYPE_NICKNAMES = {
+        const CLASS_NICKNAMES = {
             'R': ["The Hardcore Icon", "The Sultan of Scars", "The Deathmatch Legend", "The Unhinged Anarchist"],
             'B': ["The High-Flying Prodigy", "The Aerial Assassin", "The Daredevil Sensation", "The Gravity Defier"],
             'G': ["The Technical Wizard", "The Submission Master", "The Ring General", "The Master Tactician"],
@@ -771,19 +842,24 @@
 
         let currentBossIndex = 0; 
         let PLAYER_STATS = { 'B': 0, 'R': 0, 'G': 0, 'Y': 0, 'W': 0 };
-        let currentPlayerArchetype = 'W';
+        let currentPlayerClass = 'W';
 
         let totalAtbChargePoints = 0.0; 
         let bossAtbChargePoints = 0.0; 
         const MAX_ATB_CAPACITY = 300.0; 
         let atbIntervalLoop = null;
+        
         let isListActiveView = false; 
         let isGridPuzzleExecuting = false; 
         let isPlayerExecuting = false;
         let isBossExecuting = false; 
         let isFinisherPinnedVictory = false; 
+        
+        let isDefending = false; 
+        let defendTimer = null;
 
         let currentHypePoints = 0; 
+        let hasTriggeredHypePopup = false; 
 
         let selectedMoveInstance = null;
         let isFinisherRunning = false; 
@@ -804,8 +880,8 @@
             syncHypeMeterDisplay();
         };
 
-        function getDynamicClassNickname(archetypeKey) {
-            const pool = ARCHETYPE_NICKNAMES[archetypeKey] || ARCHETYPE_NICKNAMES['W'];
+        function getDynamicClassNickname(classKey) {
+            const pool = CLASS_NICKNAMES[classKey] || CLASS_NICKNAMES['W'];
             return pool[Math.floor(Math.random() * pool.length)];
         }
 
@@ -813,7 +889,7 @@
             if (currentBossIndex >= BOSS_MANIFEST.length) return;
 
             const boss = BOSS_MANIFEST[currentBossIndex];
-            const bossArch = ARCHETYPES[boss.archetype];
+            const bossArch = CLASSES[boss.charClass];
             
             const bossHeader = document.getElementById('bossNameHeader');
             bossHeader.innerText = boss.name;
@@ -826,10 +902,10 @@
             const bossSprite = document.getElementById('bossSprite');
             bossSprite.src = boss.img; 
 
-            const playerArch = ARCHETYPES[currentPlayerArchetype];
+            const playerArch = CLASSES[currentPlayerClass];
             const playerBadge = document.getElementById('hudPlayerBadge');
             playerBadge.style.backgroundColor = playerArch.color;
-            playerBadge.style.color = currentPlayerArchetype === 'W' ? '#000' : '#fff';
+            playerBadge.style.color = currentPlayerClass === 'W' ? '#000' : '#fff';
             playerBadge.innerText = `${playerArch.name.toUpperCase()}`;
 
             const venueBg = document.getElementById('venueBackgroundLayer');
@@ -845,7 +921,7 @@
             }
 
             document.getElementById('flyerPlayerSubtitle').innerText = getDynamicClassNickname('W');
-            document.getElementById('flyerOpponentSubtitle').innerText = getDynamicClassNickname(boss.archetype);
+            document.getElementById('flyerOpponentSubtitle').innerText = getDynamicClassNickname(boss.charClass);
             document.getElementById('flyerOpponentName').innerText = boss.name;
         }
 
@@ -873,23 +949,31 @@
             MATCH_TRACKER.totalPointsScored = 0;
             MATCH_TRACKER.totalTicks = 0;
             
+            MOVES_MANIFEST.forEach(move => {
+                move.currentUses = move.maxUses;
+            });
+            buildMovesMatrixOnce();
+            
             isFinisherPinnedVictory = false;
             isPlayerExecuting = false;
             isBossExecuting = false;
+            isDefending = false;
+            if (defendTimer) clearTimeout(defendTimer);
+            hasTriggeredHypePopup = false;
 
             startAtbCycle();
         }
 
-        function getArchetypeMultiplier(attackerArchetype, defenderArchetype) {
-            if (STRENGTH_CYCLE[attackerArchetype] === defenderArchetype) return 1.5; 
-            if (STRENGTH_CYCLE[defenderArchetype] === attackerArchetype) return 0.5; 
+        function getClassMultiplier(attackerClass, defenderClass) {
+            if (STRENGTH_CYCLE[attackerClass] === defenderClass) return 1.5; 
+            if (STRENGTH_CYCLE[defenderClass] === attackerClass) return 0.5; 
             return 1.0;
         }
 
         function applyDynamicCharacterPngGlow() {
-            document.getElementById('playerSprite').style.filter = `drop-shadow(0 0 16px ${ARCHETYPES[currentPlayerArchetype].glowRaw})`;
+            document.getElementById('playerSprite').style.filter = `drop-shadow(0 0 16px ${CLASSES[currentPlayerClass].glowRaw})`;
             const currentBoss = BOSS_MANIFEST[currentBossIndex];
-            const bossArch = ARCHETYPES[currentBoss.archetype];
+            const bossArch = CLASSES[currentBoss.charClass];
             document.getElementById('bossSprite').style.filter = `drop-shadow(0 0 16px ${bossArch.glowRaw})`; 
         }
 
@@ -906,13 +990,22 @@
             const finishBtn = document.getElementById('finisherMenuBtn');
             if (currentHypePoints >= threshold) {
                 finishBtn.style.display = isGridPuzzleExecuting ? 'none' : 'block';
+                
+                if (!hasTriggeredHypePopup) {
+                    hasTriggeredHypePopup = true;
+                    const popup = document.getElementById('hypePopupNode');
+                    popup.classList.remove('active');
+                    void popup.offsetWidth; 
+                    popup.classList.add('active');
+                }
             } else {
                 finishBtn.style.display = 'none';
                 finishBtn.classList.remove('active-tab');
+                hasTriggeredHypePopup = false; 
             }
         }
 
-        function triggerKineticDamagePop(amountData, targetElementId, delayMs = 0) {
+        function triggerKineticDamagePop(amountData, targetElementId, delayMs = 0, isEvade = false) {
             if (isFinisherPinnedVictory) return;
             setTimeout(() => {
                 const container = document.getElementById(targetElementId);
@@ -927,12 +1020,22 @@
                         innerHTML += `<div class="damage-bonus">+${amountData.bonus}</div>`;
                     }
                     pop.innerHTML = innerHTML;
+                } else if (typeof amountData === 'string') {
+                    pop.innerHTML = `<div class="damage-base" style="font-size:24px; color:#fff; -webkit-text-stroke: 1px #ff3333; text-shadow:0 2px 4px rgba(0,0,0,0.8);">${amountData}</div>`;
                 } else {
                     pop.innerHTML = `<div class="damage-base">${Math.floor(amountData)}</div>`;
                 }
                 
-                pop.style.left = '50%';
-                pop.style.top = '40%';
+                if (isEvade) {
+                    let offsetX = (Math.random() * 80 - 40); 
+                    let offsetY = (Math.random() * 60 - 30);
+                    pop.style.left = `calc(50% + ${offsetX}px)`;
+                    pop.style.top = `calc(40% + ${offsetY}px)`;
+                } else {
+                    pop.style.left = '50%';
+                    pop.style.top = '40%';
+                }
+                
                 pop.style.transform = 'translate(-50%, -50%)';
 
                 container.appendChild(pop);
@@ -1004,15 +1107,20 @@
             animateCombatSprites('boss', true);
 
             const currentBoss = BOSS_MANIFEST[currentBossIndex];
+            let hypeLossTally = Math.floor(currentBoss.winThreshold * chosenMove.dmgPct);
             
-            // Damage scales directly from Boss Threshold Requirements
-            const hypeLossTally = Math.floor(currentBoss.winThreshold * chosenMove.dmgPct);
-            
-            currentHypePoints -= hypeLossTally;
-            if (currentHypePoints < 0) currentHypePoints = 0;
+            if (isDefending) {
+                hypeLossTally = 0; 
+                const defTerms = ["BLOCKED!", "DEFENDED!", "REVERSED!", "DODGED!"];
+                let randomDef = defTerms[Math.floor(Math.random() * defTerms.length)];
+                triggerKineticDamagePop(randomDef, 'playerSpriteWrapper', 500, true);
+            } else {
+                currentHypePoints -= hypeLossTally;
+                if (currentHypePoints < 0) currentHypePoints = 0;
+                triggerKineticDamagePop(hypeLossTally, 'playerSpriteWrapper', 500);
+            }
             
             syncHypeMeterDisplay();
-            triggerKineticDamagePop(hypeLossTally, 'playerSpriteWrapper', 500);
 
             setTimeout(() => {
                 bossBanner.classList.remove('active');
@@ -1038,6 +1146,7 @@
             const fillNode = document.getElementById('playerAtbFill');
             const lblNode = document.getElementById('atbLevelIndicator');
             const trackFrame = document.getElementById('atbTrackFrame');
+            const defBtn = document.getElementById('defendMenuBtn');
 
             if (displayPercent === 0 && totalAtbChargePoints > 0 && totalAtbChargePoints < MAX_ATB_CAPACITY) {
                 displayPercent = 100;
@@ -1051,6 +1160,12 @@
 
             let hasAnyValidCharge = totalAtbChargePoints >= 100;
             document.getElementById('attackMenuBtn').disabled = !hasAnyValidCharge;
+            
+            if (totalAtbChargePoints >= 200 && !isDefending) {
+                defBtn.disabled = false;
+            } else {
+                defBtn.disabled = true;
+            }
             
             const currentBoss = BOSS_MANIFEST[currentBossIndex];
             document.getElementById('finisherMenuBtn').disabled = (totalAtbChargePoints < 300 || currentHypePoints < currentBoss.winThreshold);
@@ -1136,6 +1251,34 @@
             document.getElementById('movesMenuSubpanel').style.display = 'grid';
         }
 
+        window.clickDefendMenuTab = function() {
+            if (totalAtbChargePoints < 200 || isDefending || isGridPuzzleExecuting) return;
+            
+            clearActiveMenuTabs();
+            const btn = document.getElementById('defendMenuBtn');
+            btn.classList.add('active-defend');
+            
+            isListActiveView = false;
+            document.getElementById('movesMenuSubpanel').style.display = 'none';
+            document.getElementById('gridExecutionSubpanel').style.display = 'none';
+            
+            totalAtbChargePoints -= 200;
+            isDefending = true;
+            updatePlayerAtbVisualBar();
+
+            const popup = document.getElementById('defendedPopupNode');
+            popup.classList.remove('active');
+            void popup.offsetWidth;
+            popup.classList.add('active');
+
+            if (defendTimer) clearTimeout(defendTimer);
+            defendTimer = setTimeout(() => {
+                isDefending = false;
+                btn.classList.remove('active-defend');
+                updatePlayerAtbVisualBar();
+            }, 15000);
+        }
+
         function clickFinisherMenuTab() {
             const currentBoss = BOSS_MANIFEST[currentBossIndex];
             if (totalAtbChargePoints < 300 || currentHypePoints < currentBoss.winThreshold || isGridPuzzleExecuting) return;
@@ -1150,17 +1293,19 @@
                 id: 'm_finish',
                 name: 'RUNNING FINISHER',
                 cost: 3,
-                recipe: ['R', 'G', 'B', 'Y', 'R', 'B'], 
-                gridSize: 5
+                chain: ['R', 'G', 'B', 'Y', 'R', 'B'], 
+                gridSize: 5,
+                moveType: 'finisher'
             };
 
             isFinisherRunning = true;
-            initializeGridExecution(specialFinisherMove, true); // Always left-aligned for finisher
+            initializeGridExecution(specialFinisherMove, true);
         }
 
         function clearActiveMenuTabs() {
             document.getElementById('attackMenuBtn').classList.remove('active-tab');
             document.getElementById('finisherMenuBtn').classList.remove('active-tab');
+            document.getElementById('defendMenuBtn').classList.remove('active-defend');
         }
 
         function buildMovesMatrixOnce() {
@@ -1170,7 +1315,7 @@
             const lockLevels = [10, 15, 20, 25, 30];
 
             MOVES_MANIFEST.forEach((move, i) => {
-                let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}; color:${sym === 'W' ? '#000' : '#fff'}">${sym}</div>`).join('');
+                let dotHTML = move.chain.map(sym => `<div class="mini-dot" style="background-color:${CLASSES[sym].color}; color:${sym === 'W' ? '#000' : '#fff'}">${sym}</div>`).join('');
                 
                 innerHTMLStructure += `
                     <div class="action-row-card disabled cost-${move.cost}" id="card-node-${move.id}" onclick="triggerMoveSelection('${move.id}')">
@@ -1229,7 +1374,6 @@
             let cardEl = document.getElementById(`card-node-${moveId}`);
             let isLeft = true;
             if (cardEl && cardEl.parentElement) {
-                // Dynamically check the column index (0, 2, 4 are left; 1, 3, 5 are right)
                 let index = Array.from(cardEl.parentElement.children).indexOf(cardEl);
                 isLeft = (index % 2 === 0);
             }
@@ -1239,9 +1383,12 @@
 
         function initializeGridExecution(move, isLeft = true) {
             isGridPuzzleExecuting = true; 
+            let lbl = document.getElementById('startLabelText');
+            if(lbl) lbl.remove(); 
 
             document.getElementById('attackMenuBtn').disabled = true;
             document.getElementById('finisherMenuBtn').disabled = true;
+            document.getElementById('defendMenuBtn').disabled = true;
             isListActiveView = false;
             selectedMoveInstance = move;
 
@@ -1252,14 +1399,16 @@
             let panel = document.getElementById('gridExecutionSubpanel');
             panel.className = 'grid-panel-layout ' + (isLeft ? 'layout-left-selected' : 'layout-right-selected');
 
-            let dotHTML = move.recipe.map(sym => `<div class="mini-dot" style="background-color:${ARCHETYPES[sym].color}; color:${sym === 'W' ? '#000' : '#fff'}">${sym}</div>`).join('');
+            let dotHTML = move.chain.map(sym => `<div class="mini-dot" style="background-color:${CLASSES[sym].color}; color:${sym === 'W' ? '#000' : '#fff'}">${sym}</div>`).join('');
             
+            let costDisplayHtml = move.moveType === 'finisher' ? '' : `<span class="unified-cost">[COST ${move.cost}]</span>`;
+
             document.getElementById('execUnifiedCard').className = `execution-unified-card cost-${move.cost}`;
             document.getElementById('execUnifiedCard').innerHTML = `
                 <div class="unified-header">
                     <div class="unified-title">
                         <span>${move.name}</span>
-                        <span class="unified-cost">[COST ${move.cost}]</span>
+                        ${costDisplayHtml}
                     </div>
                 </div>
                 <div class="recipe-dots large-recipe" id="executionRecipeTracker">
@@ -1298,9 +1447,13 @@
             if (currentChainTrace.length > 0) return; 
             isGridPuzzleExecuting = false; 
             
-            if (selectedMoveInstance && selectedMoveInstance.id !== 'm_finish') {
-                selectedMoveInstance.currentUses++; 
-                document.getElementById(`uses-node-${selectedMoveInstance.id}`).innerText = `${selectedMoveInstance.currentUses}/${selectedMoveInstance.maxUses}`;
+            if (selectedMoveInstance) {
+                totalAtbChargePoints += (selectedMoveInstance.cost * 100) / 2;
+
+                if (selectedMoveInstance.id !== 'm_finish') {
+                    selectedMoveInstance.currentUses++; 
+                    document.getElementById(`uses-node-${selectedMoveInstance.id}`).innerText = `${selectedMoveInstance.currentUses}/${selectedMoveInstance.maxUses}`;
+                }
             }
 
             isFinisherRunning = false;
@@ -1333,7 +1486,7 @@
             
             if (available.length === 0) available = ['B', 'R', 'G', 'Y'];
             let picked = available[Math.floor(Math.random() * available.length)];
-            return ARCHETYPES[picked];
+            return CLASSES[picked];
         }
 
         function generateFreshExecutionHand() {
@@ -1403,7 +1556,7 @@
             
             selectedSpots.forEach((spot, idx) => {
                 let sym = availableSymbols[idx % availableSymbols.length];
-                let arch = ARCHETYPES[sym];
+                let arch = CLASSES[sym];
                 gridMatrix[spot.r][spot.c].highSpot = { symbol: sym, color: arch.color };
                 
                 let el = document.getElementById(`space-${spot.r}-${spot.c}`);
@@ -1475,7 +1628,7 @@
                     if (!gridMatrix[r][c].occupied) totalEmpty++;
                 }
             }
-            let needed = selectedMoveInstance.recipe.length - currentChainTrace.length;
+            let needed = selectedMoveInstance.chain.length - currentChainTrace.length;
 
             if (legalMovesCount === 0 || totalEmpty < needed) {
                 terminateExecutionPhase(false);
@@ -1524,7 +1677,7 @@
 
         function updateRecipeChainProgressIcons() {
             if (!selectedMoveInstance) return;
-            let recipe = selectedMoveInstance.recipe;
+            let recipe = selectedMoveInstance.chain;
             let maxMatchLength = 0;
 
             for (let k = recipe.length; k > 0; k--) {
@@ -1551,7 +1704,7 @@
         }
 
         function evaluateComboVerification() {
-            let targetRecipe = selectedMoveInstance.recipe;
+            let targetRecipe = selectedMoveInstance.chain;
             
             if (currentChainTrace.length >= targetRecipe.length) {
                 let tailSlice = currentChainTrace.slice(-targetRecipe.length);
@@ -1582,7 +1735,7 @@
         function processSuccessfulChainScoring() {
             let calculatedBatchPoints = 0;
             let boss = BOSS_MANIFEST[currentBossIndex]; 
-            let bossArch = boss.archetype; 
+            let bossArch = boss.charClass; 
             let baseValue = boss.basePoints; 
             
             window.lastHighSpotsMatched = 0;
@@ -1597,7 +1750,7 @@
                 let tileScore = 0;
 
                 if (node.symbol === 'W') { 
-                    if (currentPlayerArchetype === 'W') {
+                    if (currentPlayerClass === 'W') {
                         tileScore = baseValue + (PLAYER_STATS['W'] || 0);
                     } else {
                         tileScore = 0;
@@ -1606,9 +1759,9 @@
                     let statBonus = PLAYER_STATS[node.symbol] || 0;
                     tileScore = baseValue + statBonus;
                     
-                    if (currentPlayerArchetype !== 'W') {
-                        if (node.symbol === currentPlayerArchetype) {
-                            let multiplier = getArchetypeMultiplier(currentPlayerArchetype, bossArch);
+                    if (currentPlayerClass !== 'W') {
+                        if (node.symbol === currentPlayerClass) {
+                            let multiplier = getClassMultiplier(currentPlayerClass, bossArch);
                             tileScore *= multiplier;
                         }
                     }
@@ -1644,9 +1797,9 @@
             return { base: scaledBase, bonus: scaledBonus, total: absoluteFinalScore };
         }
 
-        function allocateStatPoints(archetypeKey, points) {
-            if (PLAYER_STATS.hasOwnProperty(archetypeKey)) {
-                PLAYER_STATS[archetypeKey] += points;
+        function allocateStatPoints(classKey, points) {
+            if (PLAYER_STATS.hasOwnProperty(classKey)) {
+                PLAYER_STATS[classKey] += points;
             }
         }
 
