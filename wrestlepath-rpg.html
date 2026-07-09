@@ -251,6 +251,10 @@
             80% { left: 65vw; bottom: 55vh; transform: scale(1); opacity: 1; }
             100% { left: 70vw; bottom: 60vh; transform: scale(1.5); opacity: 0; }
         }
+        .flow-state-glow {
+            animation: fsNeonCycle 0.2s infinite linear !important;
+            color: #fff !important;
+        }
         .taunt-projectile {
             position: absolute;
             font-size: 32px;
@@ -1397,7 +1401,7 @@
                 let comboMultiplier = 1.0;
                 if (MATCH_TRACKER.bossConsecutiveHits >= 3) {
                     comboMultiplier = 1.0 + ((MATCH_TRACKER.bossConsecutiveHits - 2) * 0.5);
-                    triggerStatusPop(`FLOW STATE ${comboMultiplier}x!`, 'boss', 0, '#00ffff');
+                    triggerStatusPop(`<span class="flow-state-glow">FLOW STATE ${comboMultiplier}x!</span>`, 'boss', 0, 'transparent');
                 }
                 
                 fsDamage = fsDamage * comboMultiplier;
@@ -2430,7 +2434,7 @@
                     let comboMultiplier = 1.0;
                     if (MATCH_TRACKER.playerConsecutiveHits >= 3) {
                         comboMultiplier = 1.0 + ((MATCH_TRACKER.playerConsecutiveHits - 2) * 0.5);
-                        triggerStatusPop(`FLOW STATE ${comboMultiplier}x!`, 'player', 0, '#00ffff');
+                        triggerStatusPop(`<span class="flow-state-glow">FLOW STATE ${comboMultiplier}x!</span>`, 'player', 0, 'transparent');
                     }
 
                     triggerDamagePop(scoringData, 'boss', 500);
