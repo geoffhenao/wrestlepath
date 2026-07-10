@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wrestling RPG - Master Animation Sandbox</title>
+    <style>
+        :root {
+            --cx-atk: 22vw;  
+            --cy-atk: -15vh;
+            --cx-def: -22vw; 
+            --cy-def: 25vh; 
+        }
+        
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: monospace;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- THE ARENA --- */
+        .arena {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(to top, #222, #050505);
+            border-bottom: 2px solid #444;
+        }
+
+        .sprite-wrapper {
+            position: absolute;
+            width: 150px; 
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center center; 
+        }
+
+        #playerSprite {
+            bottom: 20%;
+            left: 20%;
+            z-index: 10;
+        }
+
+        #bossSprite {
+            top: 20%;
+            right: 20%;
+            z-index: 5;
+        }
+
+        .sprite-image {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .player-img {
+            background-image: url('https://geoffhenao.github.io/wrestlepath/images/megaman1.png'); 
+        }
+
+        .boss-img {
+            background-image: url('https://geoffhenao.github.io/wrestlepath/images/protoman1.png'); 
+            transform: scaleX(-1); 
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            padding: 20px;
+            background-color: #000;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        button {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        button:hover { background-color: #555; }
+
+
+        /* =========================================
+           1. STRIKE FLURRY (Machine Gun Chops)
+        ========================================= */
+        @keyframes playerStrikeFlurry {
+            0%   { transform: translate(0, 0); }
+            10%  { transform: translate(var(--cx-atk), var(--cy-atk)); } 
+            20%, 40%, 60%, 80% { transform: translate(calc(var(--cx-atk) + 3vw), var(--cy-atk)); } 
+            30%, 50%, 70%      { transform: translate(calc(var(--cx-atk) - 1vw), var(--cy-atk)); }
+            90%  { transform: translate(var(--cx-atk), var(--cy-atk)); } 
+            100% { transform: translate(0, 0); } 
+        }
+        @keyframes bossFlurryBump {
+            0%      { transform: translate(0, 0); }
+            10%, 15%{ transform: translate(var(--cx-def), var(--cy-def)); }
+            20%, 40%, 60%, 80% { transform: translate(calc(var(--cx-def) + 1vw), var(--cy-def)); } 
+            30%, 50%, 70%      { transform: translate(calc(var(--cx-def) - 1vw), var(--cy-def)); }
+            90%     { transform: translate(var(--cx-def), var(--cy-def)); } 
+            100%    { transform: translate(0, 0); }
+        }
+        @keyframes bossStrikeFlurry {
+            0%   { transform: translate(0, 0); }
+            10%  { transform: translate(var(--cx-def), var(--cy-def)); } 
+            20%, 40%, 60%, 80% { transform: translate(calc(var(--cx-def) - 3vw), var(--cy-def)); } 
+            30%, 50%, 70%      { transform: translate(calc(var(--cx-def) + 1vw), var(--cy-def)); }
+            90%  { transform: translate(var(--cx-def), var(--cy-def)); } 
+            100% { transform: translate(0, 0); } 
+        }
+        @keyframes playerFlurryBump {
+            0%      { transform: translate(0, 0); }
+            10%, 15%{ transform: translate(var(--cx-atk), var(--cy-atk)); }
+            20%, 40%, 60%, 80% { transform: translate(calc(var(--cx-atk) - 1vw), var(--cy-atk)); } 
+            30%, 50%, 70%      { transform: translate(calc(var(--cx-atk) + 1vw), var(--cy-atk)); }
+            90%     { transform: translate(var(--cx-atk), var(--cy-atk)); } 
+            100%    { transform: translate(0, 0); }
+        }
+        .anim-strike_flurry-player { animation: playerStrikeFlurry 1.5s linear forwards; }
+        .anim-strike_flurry-bossBump { animation: bossFlurryBump 1.5s linear forwards; }
+        .anim-strike_flurry-boss { animation: bossStrikeFlurry 1.5s linear forwards; }
+        .anim-strike_flurry-playerBump { animation: playerFlurryBump 1.5s linear forwards; }
+
+
+        /* =========================================
+           2. STRIKE LEAP (Enzuigiri)
+        ========================================= */
+        @keyframes playerStrikeLeap {
+            0%   { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+            15%, 35% { transform: translate(calc(var(--cx-atk) + 2vw), var(--cy-atk)) rotateY(0deg) rotateZ(0deg); } 
+            45%  { transform: translate(var(--cx-atk), calc(var(--cy-atk) - 20vh)) rotateY(180deg) rotateZ(0deg); } 
+            60%  { transform: translate(calc(var(--cx-atk) + 5vw), calc(var(--cy-atk) - 15vh)) rotateY(180deg) rotateZ(45deg); } 
+            80%, 95% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 10vh)) rotateY(180deg) rotateZ(90deg); } 
+            100% { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+        }
+        @keyframes bossLeapBump {
+            0% { transform: translate(0, 0) rotate(0deg); } 
+            10%, 45% { transform: translate(calc(var(--cx-def) - 3vw), var(--cy-def)) rotate(0deg); } 
+            60%     { transform: translate(calc(var(--cx-def) + 5vw), calc(var(--cy-def) - 5vh)) rotate(45deg); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            75%, 95%{ transform: translate(calc(var(--cx-def) + 15vw), calc(var(--cy-def) + 10vh)) rotate(90deg); } 
+            100%    { transform: translate(0, 0) rotate(0deg); }
+        }
+        @keyframes bossStrikeLeap {
+            0%   { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+            15%, 35% { transform: translate(calc(var(--cx-def) - 2vw), var(--cy-def)) rotateY(0deg) rotateZ(0deg); } 
+            45%  { transform: translate(var(--cx-def), calc(var(--cy-def) + 20vh)) rotateY(180deg) rotateZ(0deg); } 
+            60%  { transform: translate(calc(var(--cx-def) - 5vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) rotateZ(-45deg); } 
+            80%, 95% { transform: translate(var(--cx-def), calc(var(--cy-def) - 10vh)) rotateY(180deg) rotateZ(-90deg); } 
+            100% { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+        }
+        @keyframes playerLeapBump {
+            0% { transform: translate(0, 0) rotate(0deg); } 
+            10%, 45% { transform: translate(calc(var(--cx-atk) + 3vw), var(--cy-atk)) rotate(0deg); } 
+            60%     { transform: translate(calc(var(--cx-atk) - 5vw), calc(var(--cy-atk) + 5vh)) rotate(-45deg); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            75%, 95%{ transform: translate(calc(var(--cx-atk) - 15vw), calc(var(--cy-atk) - 10vh)) rotate(-90deg); } 
+            100%    { transform: translate(0, 0) rotate(0deg); }
+        }
+        .anim-strike_leap-player { animation: playerStrikeLeap 1.5s ease-out forwards; }
+        .anim-strike_leap-bossBump { animation: bossLeapBump 1.5s ease-out forwards; }
+        .anim-strike_leap-boss { animation: bossStrikeLeap 1.5s ease-out forwards; }
+        .anim-strike_leap-playerBump { animation: playerLeapBump 1.5s ease-out forwards; }
+
+
+        /* =========================================
+           3. GRAPPLE CRUSH (Tiger Driver 91)
+        ========================================= */
+        @keyframes playerGrappleCrush {
+            0%       { transform: translate(0, 0); }
+            10%, 15% { transform: translate(calc(var(--cx-atk) + 3vw), var(--cy-atk)); } 
+            30%, 55% { transform: translate(calc(var(--cx-atk) + 3vw), var(--cy-atk)) scaleY(1.2); } 
+            65%, 85% { transform: translate(calc(var(--cx-atk) + 3vw), var(--cy-atk)) scaleY(1.0); } 
+            100%     { transform: translate(0, 0); }
+        }
+        @keyframes bossCrushBump {
+            0%       { transform: translate(0, 0) rotate(0deg); }
+            10%, 15% { transform: translate(calc(var(--cx-def) - 3vw), var(--cy-def)) rotate(0deg); } 
+            30%, 55% { transform: translate(calc(var(--cx-def) - 3vw), calc(var(--cy-def) - 8vh)) rotate(-180deg); } 
+            65%, 85% { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) rotate(-180deg); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%     { transform: translate(0, 0) rotate(0deg); }
+        }
+@keyframes bossGrappleCrush {
+            0%       { transform: translate(0, 0); }
+            10%, 15% { transform: translate(calc(var(--cx-def) - 3vw), var(--cy-def)); } 
+            30%, 55% { transform: translate(calc(var(--cx-def) - 3vw), var(--cy-def)) scaleY(1.2); } 
+            65%, 85% { transform: translate(calc(var(--cx-def) - 3vw), var(--cy-def)) scaleY(1.0); } 
+            100%     { transform: translate(0, 0); }
+        }
+        @keyframes playerCrushBump {
+            0%       { transform: translate(0, 0) rotate(0deg); }
+            10%, 15% { transform: translate(calc(var(--cx-atk) + 3vw), var(--cy-atk)) rotate(0deg); } 
+            /* Fixed: Lifted UP (-8vh) */
+            30%, 55% { transform: translate(calc(var(--cx-atk) + 3vw), calc(var(--cy-atk) - 8vh)) rotate(180deg); } 
+            /* Fixed: Slammed DOWN (+5vh) */
+            65%, 85% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 5vh)) rotate(180deg); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%     { transform: translate(0, 0) rotate(0deg); }
+        }
+        .anim-grapple_crush-player { animation: playerGrappleCrush 2.5s ease-in-out forwards; }
+        .anim-grapple_crush-bossBump { animation: bossCrushBump 2.5s ease-in-out forwards; }
+        .anim-grapple_crush-boss { animation: bossGrappleCrush 2.5s ease-in-out forwards; }
+        .anim-grapple_crush-playerBump { animation: playerCrushBump 2.5s ease-in-out forwards; }
+
+
+        /* =========================================
+           4. GRAPPLE SLAM (German Suplex)
+        ========================================= */
+        @keyframes playerGrappleSlam {
+            0%       { transform: translate(0, 0) rotate(0deg); }
+            15%, 25% { transform: translate(calc(var(--cx-atk) + 5vw), calc(var(--cy-atk) - 3vh)) rotate(0deg); } 
+            35%      { transform: translate(calc(var(--cx-atk) + 5vw), calc(var(--cy-atk) - 20vh)) rotate(0deg); }
+            45%, 85% { transform: translate(calc(var(--cx-atk) - 5vw), calc(var(--cy-atk) + 10vh)) rotate(-90deg); } 
+            100%     { transform: translate(0, 0) rotate(0deg); }
+        }
+        @keyframes bossSlamBump {
+            0%       { transform: translate(0, 0) rotate(0deg) rotateY(0deg); }
+            15%, 25% { transform: translate(var(--cx-def), var(--cy-def)) rotate(0deg) rotateY(180deg); } 
+            35%      { transform: translate(var(--cx-def), calc(var(--cy-def) - 25vh)) rotate(-30deg) rotateY(180deg); }
+            45%, 85% { transform: translate(calc(var(--cx-def) - 20vw), calc(var(--cy-def) + 13vh)) rotate(-100deg) rotateY(180deg); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%     { transform: translate(0, 0) rotate(0deg) rotateY(0deg); }
+        }
+        @keyframes bossGrappleSlam {
+            0%       { transform: translate(0, 0) rotate(0deg); }
+            15%, 25% { transform: translate(calc(var(--cx-def) - 5vw), calc(var(--cy-def) - 3vh)) rotate(0deg); } 
+            /* Fixed: Lifted UP (-20vh) */
+            35%      { transform: translate(calc(var(--cx-def) - 5vw), calc(var(--cy-def) - 20vh)) rotate(0deg); }
+            /* Fixed: Bridged DOWN (+10vh) */
+            45%, 85% { transform: translate(calc(var(--cx-def) + 5vw), calc(var(--cy-def) + 10vh)) rotate(90deg); } 
+            100%     { transform: translate(0, 0) rotate(0deg); }
+        }
+        @keyframes playerSlamBump {
+            0%       { transform: translate(0, 0) rotate(0deg) rotateY(0deg); }
+            15%, 25% { transform: translate(var(--cx-atk), var(--cy-atk)) rotate(0deg) rotateY(180deg); } 
+            /* Fixed: Lifted UP (-25vh) */
+            35%      { transform: translate(var(--cx-atk), calc(var(--cy-atk) - 25vh)) rotate(30deg) rotateY(180deg); }
+            /* Fixed: Slammed DOWN (+13vh) */
+            45%, 85% { transform: translate(calc(var(--cx-atk) + 20vw), calc(var(--cy-atk) + 13vh)) rotate(100deg) rotateY(180deg); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%     { transform: translate(0, 0) rotate(0deg) rotateY(0deg); }
+        }
+        .anim-grapple_slam-player { animation: playerGrappleSlam 2s ease-in-out forwards; }
+        .anim-grapple_slam-bossBump { animation: bossSlamBump 2s ease-in-out forwards; }
+        .anim-grapple_slam-boss { animation: bossGrappleSlam 2s ease-in-out forwards; }
+        .anim-grapple_slam-playerBump { animation: playerSlamBump 2s ease-in-out forwards; }
+
+
+        /* =========================================
+           5. DIVE FLIP (Top Rope Moonsault w/ Scaling)
+        ========================================= */
+        @keyframes playerDiveFlip {
+            0%   { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg) scale(1); }
+            15%, 30% { transform: translate(-10vw, -15vh) rotateY(180deg) rotateZ(0deg) scale(1.1); } 
+            45%  { transform: translate(calc(var(--cx-atk) - 5vw), calc(var(--cy-atk) - 40vh)) rotateY(180deg) rotateZ(-180deg) scale(2.5); z-index: 100; } 
+            60%, 85% { transform: translate(calc(var(--cx-atk) + 10vw), var(--cy-atk)) rotateY(180deg) rotateZ(-270deg) scale(1.2); } 
+            100% { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg) scale(1); } 
+        }
+        @keyframes bossDiveFlipBump {
+            0%      { transform: translate(0, 0) scale(1, 1); } 
+            10%, 55% { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) scale(1.1, 0.3); filter: none; } 
+            60%, 85% { transform: translate(var(--cx-def), calc(var(--cy-def) + 8vh)) scale(1.2, 0.2); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%    { transform: translate(0, 0) scale(1, 1); } 
+        }
+@keyframes bossDiveFlip {
+            0%   { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg) scale(1); }
+            15%, 30% { transform: translate(10vw, -15vh) rotateY(180deg) rotateZ(0deg) scale(1.1); } 
+            /* Fixed: Jump UP to peak (-40vh) */
+            45%  { transform: translate(calc(var(--cx-def) + 5vw), calc(var(--cy-def) - 40vh)) rotateY(180deg) rotateZ(180deg) scale(2.5); z-index: 100; } 
+            /* Fixed: Land HIGHER on screen to overlap (-15vh) */
+            60%, 85% { transform: translate(calc(var(--cx-def) - 10vw), calc(var(--cy-def) - 0vh)) rotateY(180deg) rotateZ(270deg) scale(1.2); } 
+            100% { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg) scale(1); } 
+        }
+        @keyframes playerDiveFlipBump {
+            0%      { transform: translate(0, 0) scale(1, 1); } 
+            /* Fixed: Lay flatter to the mat (+5vh) */
+            10%, 55% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 5vh)) scale(1.1, 0.3); filter: none; } 
+            60%, 85% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 8vh)) scale(1.2, 0.2); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%    { transform: translate(0, 0) scale(1, 1); } 
+        }
+        .anim-dive_flip-player { animation: playerDiveFlip 2s ease-in-out forwards; }
+        .anim-dive_flip-bossBump { animation: bossDiveFlipBump 2s ease-in-out forwards; }
+        .anim-dive_flip-boss { animation: bossDiveFlip 2s ease-in-out forwards; }
+        .anim-dive_flip-playerBump { animation: playerDiveFlipBump 2s ease-in-out forwards; }
+
+
+        /* =========================================
+           6. DIVE SPLASH (3D Z-Axis Scaling)
+        ========================================= */
+        @keyframes playerDiveSplash {
+            0%   { transform: translate(0, 0) scale(1); }
+            20%  { transform: translate(-10vw, -15vh) scale(1.1); } 
+            50%  { transform: translate(calc(var(--cx-atk) - 5vw), calc(var(--cy-atk) - 40vh)) scale(4.0) rotateZ(90deg); z-index: 100; } 
+            60%, 85% { transform: translate(calc(var(--cx-atk) + 10vw), var(--cy-atk)) rotateZ(90deg) scale(1.2); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes bossSplashBump {
+            0%      { transform: translate(0, 0) scale(1, 1); } 
+            15%, 65%{ transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) scale(1.1, 0.3); } 
+            70%, 85%{ transform: translate(var(--cx-def), calc(var(--cy-def) + 8vh)) scale(1.2, 0.2); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%    { transform: translate(0, 0) scale(1, 1); filter: none; }
+        }
+@keyframes bossDiveSplash {
+            0%   { transform: translate(0, 0) scale(1); }
+            20%  { transform: translate(10vw, -15vh) scale(1.1); } 
+            /* Fixed: Jump UP to peak (-40vh) */
+            50%  { transform: translate(calc(var(--cx-def) + 5vw), calc(var(--cy-def) - 40vh)) scale(4.0) rotateZ(-90deg); z-index: 100; } 
+            /* Fixed: Land HIGHER on screen to overlap (-15vh) */
+            60%, 85% { transform: translate(calc(var(--cx-def) - 10vw), calc(var(--cy-def) - 0vh)) rotateZ(-90deg) scale(1.2); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes playerSplashBump {
+            0%      { transform: translate(0, 0) scale(1, 1); } 
+            /* Fixed: Lay flatter to the mat (+5vh) */
+            15%, 65%{ transform: translate(var(--cx-atk), calc(var(--cy-atk) + 5vh)) scale(1.1, 0.3); } 
+            70%, 85%{ transform: translate(var(--cx-atk), calc(var(--cy-atk) + 8vh)) scale(1.2, 0.2); filter: brightness(2) drop-shadow(0 0 20px #ff3333); } 
+            100%    { transform: translate(0, 0) scale(1, 1); filter: none; }
+        }
+        .anim-dive_splash-player { animation: playerDiveSplash 1.8s ease-in-out forwards; }
+        .anim-dive_splash-bossBump { animation: bossSplashBump 1.8s ease-in-out forwards; }
+        .anim-dive_splash-boss { animation: bossDiveSplash 1.8s ease-in-out forwards; }
+        .anim-dive_splash-playerBump { animation: playerSplashBump 1.8s ease-in-out forwards; }
+
+
+        /* =========================================
+           7. SUB GROUND (Sharpshooter)
+        ========================================= */
+        @keyframes playerSubGround {
+            0%   { transform: translate(0, 0) rotateY(0deg); }
+            15%, 25% { transform: translate(calc(var(--cx-atk) + 8vw), var(--cy-atk)) rotateY(0deg) scale(1); } 
+            30% { transform: translate(calc(var(--cx-atk) + 8vw), var(--cy-atk)) rotateY(180deg) scale(1.0); }
+            50% { transform: translate(calc(var(--cx-atk) + 8vw), var(--cy-atk)) rotateY(180deg) scale(1.15); }
+            70% { transform: translate(calc(var(--cx-atk) + 8vw), var(--cy-atk)) rotateY(180deg) scale(1.0); }
+            85% { transform: translate(calc(var(--cx-atk) + 8vw), var(--cy-atk)) rotateY(180deg) scale(1.0); }
+            100% { transform: translate(0, 0) rotateY(0deg) scale(1); }
+        }
+        @keyframes bossGroundBump {
+            0%       { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+            5%, 25%  { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) rotate(90deg) scaleY(1); } 
+            30%      { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) rotate(-90deg) scaleY(-1); } 
+            50%      { transform: translate(var(--cx-def), calc(var(--cy-def) + 2vh)) rotate(-90deg) scaleY(-1); filter: drop-shadow(0 0 15px #ff3333); }
+            70%, 85% { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) rotate(-90deg) scaleY(-1); filter: drop-shadow(0 0 10px #ff3333); } 
+            100%     { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+        }
+@keyframes bossSubGround {
+            0%   { transform: translate(0, 0) rotateY(0deg); }
+            /* Everything here gets pushed down by adding + 15vh */
+            15%, 25% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(0deg) scale(1); } 
+            30% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) scale(1.0); }
+            50% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) scale(1.15); }
+            70% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) scale(1.0); }
+            85% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) scale(1.0); }
+            100% { transform: translate(0, 0) rotateY(0deg) scale(1); }
+        }
+        @keyframes playerGroundBump {
+            0%       { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+            5%, 25%  { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 15vh)) rotate(-90deg) scaleY(1); } 
+            30%      { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 15vh)) rotate(90deg) scaleY(-1); } 
+            /* The bounce pulls up slightly (+12vh) relative to the floor */
+            50%      { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 12vh)) rotate(90deg) scaleY(-1); filter: drop-shadow(0 0 15px #ff3333); }
+            70%, 85% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 15vh)) rotate(90deg) scaleY(-1); filter: drop-shadow(0 0 10px #ff3333); } 
+            100%     { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+        }
+        .anim-sub_ground-player { animation: playerSubGround 2.5s linear forwards; }
+        .anim-sub_ground-bossBump { animation: bossGroundBump 2.5s linear forwards; }
+        .anim-sub_ground-boss { animation: bossSubGround 2.5s linear forwards; }
+        .anim-sub_ground-playerBump { animation: playerGroundBump 2.5s linear forwards; }
+
+
+        /* =========================================
+           8. SUB STRETCH (Cattle Mutilation)
+        ========================================= */
+        @keyframes playerSubStretch {
+            0%       { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+            10%, 15% { transform: translate(calc(var(--cx-atk) + 8vw), var(--cy-atk)) rotateY(0deg) rotateZ(0deg); } 
+            20%, 45% { transform: translate(calc(var(--cx-atk) + 8vw), calc(var(--cy-atk))) rotateY(180deg) rotateZ(0deg) scale(1.05); } 
+            50%, 85% { transform: translate(calc(var(--cx-atk) + 8vw), calc(var(--cy-atk))) rotateY(180deg) rotateZ(270deg) scale(1.05); }
+            100%     { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+        }
+        @keyframes bossStretchBump {
+            0%       { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+            5%       { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) rotate(-90deg) scaleY(1); } 
+            50%, 70% { transform: translate(var(--cx-def), calc(var(--cy-def) + 5vh)) rotate(-90deg) scaleY(1); } 
+            60%, 80% { transform: translate(var(--cx-def), calc(var(--cy-def) + 2vh)) rotate(-90deg) scaleY(1); } 
+            90%      { transform: translate(calc(var(--cx-def) + 5vw), calc(var(--cy-def) + 2vh)) rotate(0deg) scaleY(1); } 
+            100%     { transform: translate(0, 0) rotate(0deg) scaleY(1); } 
+        }
+@keyframes bossSubStretch {
+            0%       { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+            10%, 15% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(0deg) rotateZ(0deg); } 
+            20%, 45% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) rotateZ(0deg) scale(1.05); } 
+            50%, 85% { transform: translate(calc(var(--cx-def) - 8vw), calc(var(--cy-def) + 15vh)) rotateY(180deg) rotateZ(-270deg) scale(1.05); }
+            100%     { transform: translate(0, 0) rotateY(0deg) rotateZ(0deg); }
+        }
+        @keyframes playerStretchBump {
+            0%       { transform: translate(0, 0) rotate(0deg) scaleY(1); }
+            5%       { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 15vh)) rotate(90deg) scaleY(1); } 
+            50%, 70% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 15vh)) rotate(90deg) scaleY(1); } 
+            60%, 80% { transform: translate(var(--cx-atk), calc(var(--cy-atk) + 12vh)) rotate(90deg) scaleY(1); } 
+            90%      { transform: translate(calc(var(--cx-atk) - 5vw), calc(var(--cy-atk) + 15vh)) rotate(0deg) scaleY(1); } 
+            100%     { transform: translate(0, 0) rotate(0deg) scaleY(1); } 
+        }
+        .anim-sub_stretch-player { animation: playerSubStretch 2.5s linear forwards; }
+        .anim-sub_stretch-bossBump { animation: bossStretchBump 2.5s linear forwards; }
+        .anim-sub_stretch-boss { animation: bossSubStretch 2.5s linear forwards; }
+        .anim-sub_stretch-playerBump { animation: playerStretchBump 2.5s linear forwards; }
+    </style>
+</head>
+<body>
+
+    <div class="arena">
+        <div id="playerSprite" class="sprite-wrapper">
+            <div class="sprite-image player-img"></div>
+        </div>
+        <div id="bossSprite" class="sprite-wrapper">
+            <div class="sprite-image boss-img"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div style="grid-column: 1 / -1; padding: 10px; background: #222; text-align: center; border-bottom: 1px solid #444; margin-bottom: 10px;">
+            <label>
+                <input type="radio" name="attacker" value="player" checked> Player (Mega Man) Attacking
+            </label>
+            <label style="margin-left: 20px;">
+                <input type="radio" name="attacker" value="boss"> Boss (Protoman) Attacking
+            </label>
+        </div>
+
+        <button onclick="triggerAnim('strike_flurry')">Machine Gun Chops (Strike)</button>
+        <button onclick="triggerAnim('strike_leap')">Enzuigiri (Strike)</button>
+        <button onclick="triggerAnim('grapple_crush')">Tiger Driver '91 (Grapple)</button>
+        <button onclick="triggerAnim('grapple_slam')">German Suplex (Grapple)</button>
+        <button onclick="triggerAnim('dive_flip')">Moonsault (Flip)</button>
+        <button onclick="triggerAnim('dive_splash')">Frog Splash (Flip)</button>
+        <button onclick="triggerAnim('sub_ground')">Sharpshooter (Submission)</button>
+        <button onclick="triggerAnim('sub_stretch')">Cattle Mutilation (Submission)</button>
+    </div>
+
+    <script>
+    function triggerAnim(moveType) {
+        const player = document.getElementById('playerSprite');
+        const boss = document.getElementById('bossSprite');
+        const attacker = document.querySelector('input[name="attacker"]:checked').value;
+
+        // Strip animation classes from the outer wrappers
+        player.className = 'sprite-wrapper';
+        boss.className = 'sprite-wrapper';
+
+        // Elevate the z-index of whoever is initiating the attack so they always overlap correctly
+        player.style.zIndex = attacker === 'player' ? 10 : 5;
+        boss.style.zIndex = attacker === 'boss' ? 10 : 5;
+
+        // Force reflow
+        void player.offsetWidth;
+        void boss.offsetWidth;
+
+        // Apply classes using the clean naming convention
+        if (attacker === 'player') {
+            player.classList.add(`anim-${moveType}-player`);
+            boss.classList.add(`anim-${moveType}-bossBump`);
+        } else {
+            boss.classList.add(`anim-${moveType}-boss`);
+            player.classList.add(`anim-${moveType}-playerBump`); 
+        }
+    }
+    </script>
+</body>
+</html>
